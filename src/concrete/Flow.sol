@@ -10,7 +10,7 @@ import {
 } from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {LibEncodedDispatch} from "rain.interpreter.interface/lib/caller/LibEncodedDispatch.sol";
 import {LibContext} from "rain.interpreter.interface/lib/caller/LibContext.sol";
-import {UnregisteredFlow, MIN_FLOW_SENTINELS} from "../interface/unstable/IFlowV5.sol";
+import {UnregisteredFlow, MIN_FLOW_SENTINELS} from "../interface/IFlowV5.sol";
 import {LibEvaluable, EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {
     SourceIndexV2,
@@ -31,7 +31,7 @@ import {ReentrancyGuardUpgradeable as ReentrancyGuard} from
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
 import {LibNamespace, StateNamespace} from "rain.interpreter.interface/lib/ns/LibNamespace.sol";
 import {UnsupportedFlowInputs, InsufficientFlowOutputs} from "../error/ErrFlow.sol";
-import {IFlowV5, MIN_FLOW_SENTINELS, FlowTransferV1} from "../interface/unstable/IFlowV5.sol";
+import {IFlowV5, MIN_FLOW_SENTINELS, FlowTransferV1} from "../interface/IFlowV5.sol";
 import {ICloneableV2, ICLONEABLE_V2_SUCCESS} from "rain.factory/src/interface/ICloneableV2.sol";
 import {LibFlow} from "../lib/LibFlow.sol";
 

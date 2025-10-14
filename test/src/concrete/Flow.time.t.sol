@@ -2,7 +2,7 @@
 pragma solidity =0.8.19;
 
 import {FlowTest} from "test/abstract/FlowTest.sol";
-import {IFlowV5} from "src/interface/unstable/IFlowV5.sol";
+import {IFlowV5} from "src/interface/IFlowV5.sol";
 import {EvaluableV2, SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {InvalidSignature} from "rain.interpreter.interface/lib/caller/LibContext.sol";
 

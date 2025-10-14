@@ -2,9 +2,7 @@
 pragma solidity =0.8.19;
 
 import {FlowTest} from "test/abstract/FlowTest.sol";
-import {
-    IFlowV5, FlowTransferV1, ERC20Transfer, ERC721Transfer, ERC1155Transfer
-} from "src/interface/unstable/IFlowV5.sol";
+import {IFlowV5, FlowTransferV1, ERC20Transfer, ERC721Transfer, ERC1155Transfer} from "src/interface/IFlowV5.sol";
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {LibEvaluable} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 

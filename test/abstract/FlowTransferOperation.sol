@@ -8,7 +8,7 @@ import {
     ERC721Transfer,
     ERC1155Transfer,
     RAIN_FLOW_SENTINEL
-} from "src/interface/unstable/IFlowV5.sol";
+} from "src/interface/IFlowV5.sol";
 import {REVERTING_MOCK_BYTECODE} from "./TestConstants.sol";
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
@@ -39,6 +39,7 @@ abstract contract FlowTransferOperation is Test {
         return FlowTransferV1(new ERC20Transfer[](0), new ERC721Transfer[](0), new ERC1155Transfer[](0));
     }
 
+    //forge-lint: disable-next-line(mixed-case-function)
     function transferERC721ToERC1155(
         address addressA,
         address addressB,
@@ -51,6 +52,7 @@ abstract contract FlowTransferOperation is Test {
         mockTransferERC721ToERC1155(addressA, addressB, erc721InTokenId, erc1155OutAmount, erc1155OutTokenId);
     }
 
+    //forge-lint: disable-next-line(mixed-case-function)
     function createTransferERC721ToERC1155(
         address addressA,
         address addressB,
@@ -82,6 +84,7 @@ abstract contract FlowTransferOperation is Test {
         return FlowTransferV1(new ERC20Transfer[](0), erc721Transfers, erc1155Transfers);
     }
 
+    //forge-lint: disable-next-line(mixed-case-function)
     function mockTransferERC721ToERC1155(
         address addressA,
         address addressB,
@@ -106,6 +109,7 @@ abstract contract FlowTransferOperation is Test {
         );
     }
 
+    //forge-lint: disable-next-line(mixed-case-function)
     function transferERC20ToERC721(address addressA, address addressB, uint256 erc20InAmount, uint256 erc721OutTokenId)
         internal
         returns (FlowTransferV1 memory transfer)
@@ -114,6 +118,7 @@ abstract contract FlowTransferOperation is Test {
         mockTransferERC20ToERC721(addressA, addressB, erc20InAmount, erc721OutTokenId);
     }
 
+    //forge-lint: disable-next-line(mixed-case-function)
     function createTransferERC20ToERC721(
         address addressA,
         address addressB,
@@ -139,6 +144,7 @@ abstract contract FlowTransferOperation is Test {
         }
     }
 
+    //forge-lint: disable-next-line(mixed-case-function)
     function mockTransferERC20ToERC721(
         address addressA,
         address addressB,
@@ -157,6 +163,7 @@ abstract contract FlowTransferOperation is Test {
         );
     }
 
+    //forge-lint: disable-next-line(mixed-case-function)
     function transferERC721ToERC721(
         address addressA,
         address addressB,

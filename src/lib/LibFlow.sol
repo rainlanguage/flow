@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: CAL
 pragma solidity ^0.8.18;
 
-import {IFlowV5, RAIN_FLOW_SENTINEL} from "../interface/unstable/IFlowV5.sol";
 import {Pointer} from "rain.solmem/lib/LibPointer.sol";
-import {FlowTransferV1, ERC20Transfer, ERC721Transfer, ERC1155Transfer} from "../interface/unstable/IFlowV5.sol";
+import {
+    FlowTransferV1,
+    ERC20Transfer,
+    ERC721Transfer,
+    ERC1155Transfer,
+    RAIN_FLOW_SENTINEL,
+    IFlowV5
+} from "../interface/IFlowV5.sol";
 import {IInterpreterStoreV2} from "rain.interpreter.interface/interface/IInterpreterStoreV2.sol";
 import {LibStackSentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {DEFAULT_STATE_NAMESPACE} from "rain.interpreter.interface/interface/IInterpreterV2.sol";
