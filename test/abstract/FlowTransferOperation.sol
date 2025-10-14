@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: CAL
 pragma solidity ^0.8.19;
 
-import {Test, Vm} from "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 import {
     FlowTransferV1,
     ERC20Transfer,
@@ -9,11 +9,10 @@ import {
     ERC1155Transfer,
     RAIN_FLOW_SENTINEL
 } from "src/interface/unstable/IFlowV5.sol";
-import {STUB_EXPRESSION_BYTECODE, REVERTING_MOCK_BYTECODE} from "./TestConstants.sol";
+import {REVERTING_MOCK_BYTECODE} from "./TestConstants.sol";
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {IERC1155} from "openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
-import {IERC721} from "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 
 abstract contract FlowTransferOperation is Test {
     address internal immutable iTokenA;
@@ -168,6 +167,7 @@ abstract contract FlowTransferOperation is Test {
         mockTransferERC721ToERC721(addressA, addressB, erc721InTokenId, erc721OutTokenId);
     }
 
+    //forge-lint: disable-next-line(mixed-case-function)
     function createTransferERC721ToERC721(
         address addressA,
         address addressB,
@@ -191,6 +191,7 @@ abstract contract FlowTransferOperation is Test {
         }
     }
 
+    //forge-lint: disable-next-line(mixed-case-function)
     function mockTransferERC721ToERC721(
         address addressA,
         address addressB,
@@ -214,6 +215,7 @@ abstract contract FlowTransferOperation is Test {
         );
     }
 
+    //forge-lint: disable-next-line(mixed-case-function)
     function transfersERC20toERC20(address addressA, address addressB, uint256 erc20BInAmount, uint256 erc20OutAmount)
         internal
         returns (FlowTransferV1 memory transfer)
@@ -222,6 +224,7 @@ abstract contract FlowTransferOperation is Test {
         mockTransfersERC20toERC20(addressA, addressB, erc20BInAmount, erc20OutAmount);
     }
 
+    //forge-lint: disable-next-line(mixed-case-function)
     function createTransfersERC20toERC20(
         address addressA,
         address addressB,
@@ -245,6 +248,7 @@ abstract contract FlowTransferOperation is Test {
         }
     }
 
+    //forge-lint: disable-next-line(mixed-case-function)
     function mockTransfersERC20toERC20(
         address addressA,
         address addressB,
@@ -260,6 +264,7 @@ abstract contract FlowTransferOperation is Test {
         vm.expectCall(address(iTokenB), abi.encodeWithSelector(IERC20.transfer.selector, addressA, erc20OutAmount));
     }
 
+    //forge-lint: disable-next-line(mixed-case-function)
     function transferERC1155ToERC1155(
         address addressA,
         address addressB,
@@ -276,6 +281,7 @@ abstract contract FlowTransferOperation is Test {
         );
     }
 
+    //forge-lint: disable-next-line(mixed-case-function)
     function createTransferERC1155ToERC1155(
         address addressA,
         address addressB,
@@ -316,6 +322,7 @@ abstract contract FlowTransferOperation is Test {
         }
     }
 
+    //forge-lint: disable-next-line(mixed-case-function)
     function MockTransferERC1155ToERC1155(
         address addressA,
         address addressB,

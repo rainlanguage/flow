@@ -31,6 +31,9 @@ import {ReentrancyGuardUpgradeable as ReentrancyGuard} from
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
 import {LibNamespace, StateNamespace} from "rain.interpreter.interface/lib/ns/LibNamespace.sol";
 import {UnsupportedFlowInputs, InsufficientFlowOutputs} from "../error/ErrFlow.sol";
+import {IFlowV5, MIN_FLOW_SENTINELS, FlowTransferV1} from "../interface/unstable/IFlowV5.sol";
+import {ICloneableV2, ICLONEABLE_V2_SUCCESS} from "rain.factory/src/interface/ICloneableV2.sol";
+import {LibFlow} from "../lib/LibFlow.sol";
 
 /// Thrown when the min outputs for a flow is fewer than the sentinels.
 /// This is always an implementation bug as the min outputs and sentinel count
@@ -82,7 +85,15 @@ uint256 constant FLOW_IS_NOT_REGISTERED = 0;
 /// This is a known issue with `Multicall` so in the future, we may refactor
 /// `Flow` to not use `Multicall` and instead implement flow batching
 /// directly in the flow contracts.
-contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInterpreterCallerV2 {
+contract Flow is
+    ERC721Holder,
+    ERC1155Holder,
+    Multicall,
+    ReentrancyGuard,
+    IInterpreterCallerV2,
+    ICloneableV2,
+    IFlowV5
+{
     using LibUint256Array for uint256[];
     using LibUint256Matrix for uint256[];
     using LibEvaluable for EvaluableV2;
@@ -125,7 +136,7 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
         EvaluableConfigV3[] memory flowConfig = abi.decode(data, (EvaluableConfigV3[]));
         emit Initialize(msg.sender, flowConfig);
 
-        flowCommonInit(flowConfig, MIN_FLOW_SENTINELS);
+        flowInit(flowConfig, MIN_FLOW_SENTINELS);
         return ICLONEABLE_V2_SUCCESS;
     }
 
@@ -155,10 +166,7 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
     /// movements at runtime for the inheriting contract.
     /// @param flowMinOutputs The minimum number of outputs for each flow. All
     /// flows share the same minimum number of outputs for simplicity.
-    function flowInit(EvaluableConfigV3[] memory evaluableConfigs, uint256 flowMinOutputs)
-        internal
-        onlyInitializing
-    {
+    function flowInit(EvaluableConfigV3[] memory evaluableConfigs, uint256 flowMinOutputs) internal onlyInitializing {
         unchecked {
             // First dispatch all the Open Zeppelin initializers.
             __ERC721Holder_init();

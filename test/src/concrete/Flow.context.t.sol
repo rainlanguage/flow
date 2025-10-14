@@ -9,7 +9,7 @@ import {LibEncodedDispatch} from "rain.interpreter.interface/lib/caller/LibEncod
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {LibContextWrapper} from "test/lib/LibContextWrapper.sol";
 
-contract FlowContextTest is FlowBasicTest {
+contract FlowContextTest is FlowTest {
     /**
      * @dev Tests context handling during interpreter call, ensuring proper input and output management.
      */

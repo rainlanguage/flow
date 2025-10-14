@@ -10,12 +10,17 @@ import {CloneFactory} from "rain.factory/src/concrete/CloneFactory.sol";
 import {LibLogHelper} from "test/lib/LibLogHelper.sol";
 import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
 import {Address} from "openzeppelin-contracts/contracts/utils/Address.sol";
-import {FlowTransferV1} from "src/interface/unstable/IFlowV5.sol";
+import {FlowTransferV1, IFlowV5} from "src/interface/unstable/IFlowV5.sol";
+import {Flow} from "src/concrete/Flow.sol";
+import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
+import {LibUint256Array} from "rain.solmem/lib/LibUint256Array.sol";
 
 abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
     using LibLogHelper for Vm.Log[];
     using LibStackGeneration for uint256;
     using Address for address;
+    using LibUint256Matrix for uint256[];
+    using LibUint256Array for uint256[];
 
     CloneFactory internal immutable iCloneFactory;
 
@@ -24,31 +29,6 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
         iCloneFactory = new CloneFactory();
         vm.resumeGasMetering();
     }
-
-    function buildConfig(
-        string memory name,
-        string memory symbol,
-        string memory baseURI,
-        address,
-        EvaluableConfigV3[] memory flowConfig
-    ) internal virtual returns (bytes memory);
-
-    function deployFlowImplementation() internal virtual returns (address);
-
-    function mintAndBurnFlowStack(address account, uint256 mint, uint256 burn, uint256, FlowTransferV1 memory transfer)
-        internal
-        virtual
-        returns (uint256[] memory, bytes32);
-
-    function mintFlowStack(address account, uint256 mint, uint256 id, FlowTransferV1 memory transfer)
-        internal
-        virtual
-        returns (uint256[] memory, bytes32);
-
-    function burnFlowStack(address account, uint256 burn, uint256 id, FlowTransferV1 memory transfer)
-        internal
-        virtual
-        returns (uint256[] memory, bytes32);
 
     function expressionDeployer(address expression, uint256[] memory constants, bytes memory bytecode)
         internal
@@ -141,7 +121,6 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
     function burnFlowStack(address, uint256, uint256, FlowTransferV1 memory transfer)
         internal
         view
-        override
         returns (uint256[] memory, bytes32)
     {
         bytes32 transferHash = keccak256(abi.encode(transfer));
@@ -152,7 +131,6 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
     function mintFlowStack(address, uint256, uint256, FlowTransferV1 memory transfer)
         internal
         view
-        override
         returns (uint256[] memory, bytes32)
     {
         bytes32 transferHash = keccak256(abi.encode(transfer));
@@ -163,13 +141,12 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
     function buildConfig(string memory, string memory, string memory, address, EvaluableConfigV3[] memory flowConfig)
         internal
         pure
-        override
         returns (bytes memory)
     {
         return abi.encode(flowConfig);
     }
 
-    function deployFlowImplementation() internal override returns (address) {
+    function deployFlowImplementation() internal returns (address) {
         return address(new Flow());
     }
 
@@ -199,7 +176,6 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
     function mintAndBurnFlowStack(address, uint256, uint256, uint256, FlowTransferV1 memory transfer)
         internal
         view
-        override
         returns (uint256[] memory, bytes32)
     {
         bytes32 transferHash = keccak256(abi.encode(transfer));
