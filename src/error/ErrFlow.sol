@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CAL
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.25;
 
 /// Thrown when the flow being evaluated is unregistered.
 /// @param unregisteredHash Hash of the unregistered flow.

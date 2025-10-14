@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CAL
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.25;
 
 import {SourceIndex} from "rain.interpreter.interface/interface/deprecated/IInterpreterV1.sol";
 import {Evaluable, EvaluableConfig} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
