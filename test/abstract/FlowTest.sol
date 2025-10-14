@@ -137,4 +137,73 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
         // The console.
         vm.assume(account != address(0x000000000000000000636F6e736F6c652e6c6f67));
     }
+
+    function burnFlowStack(address, uint256, uint256, FlowTransferV1 memory transfer)
+        internal
+        view
+        override
+        returns (uint256[] memory, bytes32)
+    {
+        bytes32 transferHash = keccak256(abi.encode(transfer));
+        uint256[] memory stack = sentinel.generateFlowStack(transfer);
+        return (stack, transferHash);
+    }
+
+    function mintFlowStack(address, uint256, uint256, FlowTransferV1 memory transfer)
+        internal
+        view
+        override
+        returns (uint256[] memory, bytes32)
+    {
+        bytes32 transferHash = keccak256(abi.encode(transfer));
+        uint256[] memory stack = sentinel.generateFlowStack(transfer);
+        return (stack, transferHash);
+    }
+
+    function buildConfig(string memory, string memory, string memory, address, EvaluableConfigV3[] memory flowConfig)
+        internal
+        pure
+        override
+        returns (bytes memory)
+    {
+        return abi.encode(flowConfig);
+    }
+
+    function deployFlowImplementation() internal override returns (address) {
+        return address(new Flow());
+    }
+
+    function deployFlow() internal returns (IFlowV5, EvaluableV2 memory) {
+        address[] memory expressions = new address[](1);
+        expressions[0] = address(uint160(uint256(keccak256("expression"))));
+        (IFlowV5 flow, EvaluableV2[] memory evaluables) =
+            deployFlow({expressions: expressions, constants: new uint256[](0).matrixFrom()});
+        return (flow, evaluables[0]);
+    }
+
+    function deployFlow(address[] memory expressions, uint256[][] memory constants)
+        internal
+        returns (IFlowV5, EvaluableV2[] memory)
+    {
+        (address flow, EvaluableV2[] memory evaluables) = deployFlow({
+            name: "",
+            symbol: "",
+            baseURI: "",
+            expressions: expressions,
+            configExpression: address(uint160(uint256(keccak256("configExpression")))),
+            constants: constants
+        });
+        return (IFlowV5(flow), evaluables);
+    }
+
+    function mintAndBurnFlowStack(address, uint256, uint256, uint256, FlowTransferV1 memory transfer)
+        internal
+        view
+        override
+        returns (uint256[] memory, bytes32)
+    {
+        bytes32 transferHash = keccak256(abi.encode(transfer));
+        uint256[] memory stack = sentinel.generateFlowStack(transfer);
+        return (stack, transferHash);
+    }
 }

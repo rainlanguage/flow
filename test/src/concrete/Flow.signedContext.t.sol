@@ -4,13 +4,13 @@ pragma solidity =0.8.19;
 import {Vm} from "forge-std/Test.sol";
 
 import {EvaluableConfigV3} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
-import {FlowBasicTest} from "test/abstract/FlowBasicTest.sol";
+import {FlowTest} from "test/abstract/FlowTest.sol";
 import {SignContextLib} from "test/lib/SignContextLib.sol";
 import {IFlowV5} from "src/interface/unstable/IFlowV5.sol";
 import {EvaluableV2, SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {InvalidSignature} from "rain.interpreter.interface/lib/caller/LibContext.sol";
 
-contract FlowSignedContextTest is FlowBasicTest {
+contract FlowSignedContextTest is FlowTest {
     using SignContextLib for Vm;
 
     /// Should validate multiple signed contexts

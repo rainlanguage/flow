@@ -3,7 +3,7 @@ pragma solidity =0.8.19;
 
 import {Vm} from "forge-std/Test.sol";
 
-import {FlowBasicTest} from "test/abstract/FlowBasicTest.sol";
+import {FlowTest} from "test/abstract/FlowTest.sol";
 import {IFlowV5} from "src/interface/unstable/IFlowV5.sol";
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
@@ -14,7 +14,7 @@ import {LibContext} from "rain.interpreter.interface/lib/caller/LibContext.sol";
 import {IInterpreterCallerV2} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {SignContextLib} from "test/lib/SignContextLib.sol";
 
-contract FlowExpressionTest is FlowBasicTest, IInterpreterCallerV2 {
+contract FlowExpressionTest is FlowTest, IInterpreterCallerV2 {
     using SignContextLib for Vm;
     using LibUint256Matrix for uint256[];
     using LibContextWrapper for uint256[][];
