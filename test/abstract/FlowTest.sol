@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CAL
-pragma solidity^0.8.25;
+pragma solidity ^0.8.25;
 
 import {Vm} from "forge-std/Test.sol";
 import {FlowUtilsAbstractTest} from "test/abstract/FlowUtilsAbstractTest.sol";
