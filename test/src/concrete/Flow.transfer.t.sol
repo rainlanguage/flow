@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: CAL
 pragma solidity =0.8.19;
 
-import {FlowBasicTest} from "test/abstract/FlowBasicTest.sol";
+import {FlowTest} from "test/abstract/FlowTest.sol";
 import {
     IFlowV5, FlowTransferV1, ERC20Transfer, ERC721Transfer, ERC1155Transfer
 } from "src/interface/unstable/IFlowV5.sol";
@@ -17,11 +17,11 @@ import {
     UnregisteredFlow
 } from "src/error/ErrFlow.sol";
 
-import {FLOW_ENTRYPOINT, FLOW_MAX_OUTPUTS} from "src/abstract/FlowCommon.sol";
+import {FLOW_ENTRYPOINT, FLOW_MAX_OUTPUTS} from "src/concrete/Flow.sol";
 import {LibEncodedDispatch} from "rain.interpreter.interface/lib/caller/LibEncodedDispatch.sol";
 import {LibContextWrapper} from "test/lib/LibContextWrapper.sol";
 
-contract FlowTest is FlowBasicTest {
+contract FlowTransferTest is FlowTest {
     using LibEvaluable for EvaluableV2;
 
     /// forge-config: default.fuzz.runs = 100

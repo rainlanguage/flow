@@ -31,6 +31,9 @@ import {ReentrancyGuardUpgradeable as ReentrancyGuard} from
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
 import {LibNamespace, StateNamespace} from "rain.interpreter.interface/lib/ns/LibNamespace.sol";
 import {UnsupportedFlowInputs, InsufficientFlowOutputs} from "../error/ErrFlow.sol";
+import {IFlowV5, MIN_FLOW_SENTINELS, FlowTransferV1} from "../interface/unstable/IFlowV5.sol";
+import {ICloneableV2, ICLONEABLE_V2_SUCCESS} from "rain.factory/src/interface/ICloneableV2.sol";
+import {LibFlow} from "../lib/LibFlow.sol";
 
 /// Thrown when the min outputs for a flow is fewer than the sentinels.
 /// This is always an implementation bug as the min outputs and sentinel count
@@ -52,7 +55,7 @@ uint256 constant FLOW_IS_REGISTERED = 1;
 /// @dev Zero indicates that the flow is not registered.
 uint256 constant FLOW_IS_NOT_REGISTERED = 0;
 
-/// @title FlowCommon
+/// @title Flow
 /// @notice Common functionality for flows. Largely handles the evaluable
 /// registration and dispatch. Also implementes the necessary interfaces for
 /// a smart contract to receive ERC721 and ERC1155 tokens.
@@ -76,13 +79,21 @@ uint256 constant FLOW_IS_NOT_REGISTERED = 0;
 /// of the flow tokens. In the future, this may be refactored so that a single
 /// flow contract can handle all flows.
 ///
-/// `FlowCommon` is `Multicall` so it is NOT compatible with receiving ETH. This
+/// `Flow` is `Multicall` so it is NOT compatible with receiving ETH. This
 /// is because `Multicall` uses `delegatecall` in a loop which reuses `msg.value`
 /// for each loop iteration, effectively "double spending" the ETH it receives.
 /// This is a known issue with `Multicall` so in the future, we may refactor
-/// `FlowCommon` to not use `Multicall` and instead implement flow batching
+/// `Flow` to not use `Multicall` and instead implement flow batching
 /// directly in the flow contracts.
-abstract contract FlowCommon is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInterpreterCallerV2 {
+contract Flow is
+    ERC721Holder,
+    ERC1155Holder,
+    Multicall,
+    ReentrancyGuard,
+    IInterpreterCallerV2,
+    ICloneableV2,
+    IFlowV5
+{
     using LibUint256Array for uint256[];
     using LibUint256Matrix for uint256[];
     using LibEvaluable for EvaluableV2;
@@ -114,6 +125,40 @@ abstract contract FlowCommon is ERC721Holder, ERC1155Holder, Multicall, Reentran
         _disableInitializers();
     }
 
+    /// Overloaded typed initialize function MUST revert with this error.
+    /// As per `ICloneableV2` interface.
+    function initialize(EvaluableConfigV3[] memory) external pure {
+        revert InitializeSignatureFn();
+    }
+
+    /// @inheritdoc ICloneableV2
+    function initialize(bytes calldata data) external initializer returns (bytes32) {
+        EvaluableConfigV3[] memory flowConfig = abi.decode(data, (EvaluableConfigV3[]));
+        emit Initialize(msg.sender, flowConfig);
+
+        flowInit(flowConfig, MIN_FLOW_SENTINELS);
+        return ICLONEABLE_V2_SUCCESS;
+    }
+
+    /// @inheritdoc IFlowV5
+    function stackToFlow(uint256[] memory stack) external pure virtual override returns (FlowTransferV1 memory) {
+        return LibFlow.stackToFlow(stack.dataPointer(), stack.endPointer());
+    }
+
+    /// @inheritdoc IFlowV5
+    function flow(EvaluableV2 memory evaluable, uint256[] memory callerContext, SignedContextV1[] memory signedContexts)
+        external
+        virtual
+        nonReentrant
+        returns (FlowTransferV1 memory)
+    {
+        (Pointer stackBottom, Pointer stackTop, uint256[] memory kvs) =
+            _flowStack(evaluable, callerContext, signedContexts);
+        FlowTransferV1 memory flowTransfer = LibFlow.stackToFlow(stackBottom, stackTop);
+        LibFlow.flow(flowTransfer, evaluable.store, kvs);
+        return flowTransfer;
+    }
+
     /// Common initialization logic for inheriting contracts. This MUST be
     /// called by inheriting contracts in their initialization logic (and only).
     /// @param evaluableConfigs The evaluable configs to register at
@@ -121,10 +166,7 @@ abstract contract FlowCommon is ERC721Holder, ERC1155Holder, Multicall, Reentran
     /// movements at runtime for the inheriting contract.
     /// @param flowMinOutputs The minimum number of outputs for each flow. All
     /// flows share the same minimum number of outputs for simplicity.
-    function flowCommonInit(EvaluableConfigV3[] memory evaluableConfigs, uint256 flowMinOutputs)
-        internal
-        onlyInitializing
-    {
+    function flowInit(EvaluableConfigV3[] memory evaluableConfigs, uint256 flowMinOutputs) internal onlyInitializing {
         unchecked {
             // First dispatch all the Open Zeppelin initializers.
             __ERC721Holder_init();

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: CAL
 pragma solidity =0.8.19;
 
-import {FlowBasicTest} from "test/abstract/FlowBasicTest.sol";
+import {FlowTest} from "test/abstract/FlowTest.sol";
 import {IFlowV5} from "src/interface/unstable/IFlowV5.sol";
 import {EvaluableV2, SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {InvalidSignature} from "rain.interpreter.interface/lib/caller/LibContext.sol";
@@ -9,7 +9,7 @@ import {InvalidSignature} from "rain.interpreter.interface/lib/caller/LibContext
 import {DEFAULT_STATE_NAMESPACE} from "rain.interpreter.interface/interface/IInterpreterV2.sol";
 import {IInterpreterStoreV2} from "rain.interpreter.interface/interface/IInterpreterStoreV2.sol";
 
-contract FlowTimeTest is FlowBasicTest {
+contract FlowTimeTest is FlowTest {
     function testFlowBasicFlowTime(uint256[] memory writeToStore) public {
         vm.assume(writeToStore.length != 0);
 

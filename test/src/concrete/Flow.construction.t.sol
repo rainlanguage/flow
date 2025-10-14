@@ -5,9 +5,9 @@ import {Vm} from "forge-std/Test.sol";
 
 import {EvaluableConfigV3} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {CloneFactory} from "rain.factory/src/concrete/CloneFactory.sol";
-import {FlowBasicTest} from "test/abstract/FlowBasicTest.sol";
+import {FlowTest} from "test/abstract/FlowTest.sol";
 
-contract FlowConstructionTest is FlowBasicTest {
+contract FlowConstructionTest is FlowTest {
     function testFlowConstructionInitialize(address expression, bytes memory bytecode, uint256[] memory constants)
         external
     {

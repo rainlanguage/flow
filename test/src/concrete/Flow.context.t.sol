@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: CAL
 pragma solidity =0.8.19;
 
-import {FlowBasicTest} from "test/abstract/FlowBasicTest.sol";
+import {FlowTest} from "test/abstract/FlowTest.sol";
 import {IFlowV5} from "src/interface/unstable/IFlowV5.sol";
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
-import {FLOW_MAX_OUTPUTS, FLOW_ENTRYPOINT} from "src/abstract/FlowCommon.sol";
+import {FLOW_MAX_OUTPUTS, FLOW_ENTRYPOINT} from "src/concrete/Flow.sol";
 import {LibEncodedDispatch} from "rain.interpreter.interface/lib/caller/LibEncodedDispatch.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {LibContextWrapper} from "test/lib/LibContextWrapper.sol";
 
-contract FlowContextTest is FlowBasicTest {
+contract FlowContextTest is FlowTest {
     /**
      * @dev Tests context handling during interpreter call, ensuring proper input and output management.
      */
