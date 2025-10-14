@@ -8,11 +8,15 @@ import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {
     FlowERC20IOV1,
     ERC20SupplyChange,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_HANDLE_TRANSFER_MIN_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_HANDLE_TRANSFER_MAX_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_MIN_FLOW_SENTINELS
-} from "../deprecated/v4/IFlowERC20V4.sol";
-import {RAIN_FLOW_SENTINEL} from "./IFlowV5.sol";
+} from "../v4/IFlowERC20V4.sol";
+//forge-lint: disable-next-line(unused-import)
+import {RAIN_FLOW_SENTINEL} from "../../IFlowV5.sol";
 
 SourceIndexV2 constant FLOW_ERC20_HANDLE_TRANSFER_ENTRYPOINT = SourceIndexV2.wrap(0);
 

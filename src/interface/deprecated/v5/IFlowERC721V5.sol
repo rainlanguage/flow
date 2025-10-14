@@ -12,12 +12,12 @@ import {
     FLOW_ERC721_HANDLE_TRANSFER_MIN_OUTPUTS,
     FLOW_ERC721_HANDLE_TRANSFER_MAX_OUTPUTS,
     FLOW_ERC721_MIN_FLOW_SENTINELS
-} from "../deprecated/v4/IFlowERC721V4.sol";
+} from "../v4/IFlowERC721V4.sol";
+//forge-lint: disable-next-line(unused-import)
+import {RAIN_FLOW_SENTINEL} from "../v4/IFlowV4.sol";
 
 SourceIndexV2 constant FLOW_ERC721_HANDLE_TRANSFER_ENTRYPOINT = SourceIndexV2.wrap(0);
 SourceIndexV2 constant FLOW_ERC721_TOKEN_URI_ENTRYPOINT = SourceIndexV2.wrap(1);
-
-import {RAIN_FLOW_SENTINEL} from "../deprecated/v4/IFlowV4.sol";
 
 /// Initialization config.
 /// @param name As per Open Zeppelin `ERC721Upgradeable`.

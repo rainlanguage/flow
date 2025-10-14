@@ -5,7 +5,7 @@ import {SourceIndexV2} from "rain.interpreter.interface/interface/IInterpreterV2
 import {SignedContextV1, EvaluableConfigV3} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
-import {RAIN_FLOW_SENTINEL} from "./IFlowV5.sol";
+import {RAIN_FLOW_SENTINEL} from "../../IFlowV5.sol";
 
 import {
     FlowERC1155IOV1,
@@ -13,7 +13,7 @@ import {
     FLOW_ERC1155_HANDLE_TRANSFER_MAX_OUTPUTS,
     FLOW_ERC1155_HANDLE_TRANSFER_MIN_OUTPUTS,
     FLOW_ERC1155_MIN_FLOW_SENTINELS
-} from "../deprecated/v4/IFlowERC1155V4.sol";
+} from "../v4/IFlowERC1155V4.sol";
 
 SourceIndexV2 constant FLOW_ERC1155_HANDLE_TRANSFER_ENTRYPOINT = SourceIndexV2.wrap(0);
 

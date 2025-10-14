@@ -2,7 +2,7 @@
 pragma solidity =0.8.19;
 
 import {FlowTest} from "test/abstract/FlowTest.sol";
-import {IFlowV5} from "src/interface/unstable/IFlowV5.sol";
+import {IFlowV5} from "src/interface/IFlowV5.sol";
 import {FLOW_MAX_OUTPUTS, FLOW_ENTRYPOINT} from "src/concrete/Flow.sol";
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {IERC1155} from "openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
