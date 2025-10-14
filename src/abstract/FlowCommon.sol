@@ -151,6 +151,7 @@ abstract contract FlowCommon is ERC721Holder, ERC1155Holder, Multicall, Reentran
                 // Reentrancy is just one of many ways that a malicious deployer
                 // can cause problems, and it's probably the least of your
                 // worries if you're using a malicious deployer.
+                //slither-disable-next-line calls-loop
                 (IInterpreterV2 interpreter, IInterpreterStoreV2 store, address expression, bytes memory io) =
                     config.deployer.deployExpression2(config.bytecode, config.constants);
 
