@@ -18,6 +18,7 @@ struct NativeTransfer {
     uint256 amount;
 }
 
+//forge-lint: disable-next-line(pascal-case-struct)
 struct ERC20Transfer {
     address token;
     address from;
@@ -25,6 +26,7 @@ struct ERC20Transfer {
     uint256 amount;
 }
 
+//forge-lint: disable-next-line(pascal-case-struct)
 struct ERC721Transfer {
     address token;
     address from;

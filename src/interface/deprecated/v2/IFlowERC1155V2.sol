@@ -3,9 +3,8 @@
 pragma solidity ^0.8.25;
 
 import "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
-import "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 
-import "./IFlowV2.sol";
+import {EvaluableConfig, FlowTransfer, Evaluable} from "./IFlowV2.sol";
 
 //forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC1155Config {

@@ -8,6 +8,7 @@ import "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 
 import {
     FlowERC721IOV1,
+    //forge-lint: disable-next-line(unused-import)
     ERC721SupplyChange,
     //forge-lint: disable-next-line(unused-import)
     FLOW_ERC721_TOKEN_URI_MIN_OUTPUTS,
@@ -89,5 +90,6 @@ interface IFlowERC721V4 {
         Evaluable calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
+    //forge-lint: disable-next-line(mixed-case-variable)
     ) external returns (FlowERC721IOV1 calldata flowERC721IO);
 }

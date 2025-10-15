@@ -16,7 +16,7 @@ abstract contract FlowUtilsAbstractTest is FlowTransferOperation {
 
     // A temporary solution for a smooth transition to using libraries.
     function generateFlowStack(FlowTransferV1 memory flowTransfer) internal view returns (uint256[] memory stack) {
-        stack = sentinel.generateFlowStack(flowTransfer);
+        stack = Sentinel.unwrap(RAIN_FLOW_SENTINEL).generateFlowStack(flowTransfer);
     }
 
     // A temporary solution for a smooth transition to using libraries.

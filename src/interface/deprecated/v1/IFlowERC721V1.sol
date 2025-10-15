@@ -20,6 +20,7 @@ struct FlowERC721Config {
     EvaluableConfig[] flowConfig;
 }
 
+//forge-lint: disable-next-line(pascal-case-struct)
 struct ERC721SupplyChange {
     address account;
     uint256 id;

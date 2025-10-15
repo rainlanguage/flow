@@ -42,6 +42,7 @@ struct ERC20SupplyChange {
 /// @param mints The mints that occurred.
 /// @param burns The burns that occurred.
 /// @param flow The transfers that occured.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC20IOV1 {
     ERC20SupplyChange[] mints;
     ERC20SupplyChange[] burns;
@@ -55,6 +56,7 @@ struct FlowERC20IOV1 {
 /// `evaluable` that can be used to handle transfers.
 /// @param flowConfig Initializer config for the `Evaluable`s that define the
 /// flow behaviours including self mints/burns.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC20Config {
     string name;
     string symbol;

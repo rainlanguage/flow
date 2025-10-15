@@ -3,9 +3,8 @@
 pragma solidity =0.8.25;
 
 import {FlowTest} from "test/abstract/FlowTest.sol";
-import {IFlowV5, FlowTransferV1, ERC20Transfer, ERC721Transfer, ERC1155Transfer} from "src/interface/IFlowV5.sol";
+import {IFlowV5, FlowTransferV1, ERC20Transfer, ERC721Transfer, ERC1155Transfer, RAIN_FLOW_SENTINEL, Sentinel} from "src/interface/IFlowV5.sol";
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
-import {IERC1155} from "openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {LibEvaluable} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
@@ -104,8 +103,8 @@ contract FlowTransferTest is FlowTest {
 
     /// forge-config: default.fuzz.runs = 100
     function testFlowERC721ToERC721(address alice, uint256 erc721OutTokenId, uint256 erc721InTokenId) external {
-        vm.assume(sentinel != erc721OutTokenId);
-        vm.assume(sentinel != erc721InTokenId);
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc721OutTokenId);
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc721InTokenId);
         vm.label(alice, "Alice");
 
         (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
@@ -152,7 +151,7 @@ contract FlowTransferTest is FlowTest {
         address bob,
         uint256 erc20Amount
     ) external {
-        vm.assume(sentinel != erc20Amount);
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc20Amount);
         vm.assume(bob != alice);
         vm.label(alice, "Alice");
         vm.label(bob, "Bob");
@@ -164,7 +163,7 @@ contract FlowTransferTest is FlowTest {
         {
             ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](2);
             erc20Transfers[0] =
-                ERC20Transfer({token: address(iTokenA), from: bob, to: address(flow), amount: erc20Amount});
+                ERC20Transfer({token: TOKEN_A, from: bob, to: address(flow), amount: erc20Amount});
             erc20Transfers[1] =
                 ERC20Transfer({token: address(iTokenB), from: address(flow), to: alice, amount: erc20Amount});
 
@@ -182,9 +181,9 @@ contract FlowTransferTest is FlowTest {
         {
             ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](2);
             erc20Transfers[0] =
-                ERC20Transfer({token: address(iTokenA), from: alice, to: address(flow), amount: erc20Amount});
+                ERC20Transfer({token: TOKEN_A, from: alice, to: address(flow), amount: erc20Amount});
             erc20Transfers[1] = ERC20Transfer({token: address(iTokenB), from: bob, to: alice, amount: erc20Amount});
-            vm.mockCall(iTokenA, abi.encodeWithSelector(IERC20.transferFrom.selector), abi.encode(true));
+            vm.mockCall(TOKEN_A, abi.encodeWithSelector(IERC20.transferFrom.selector), abi.encode(true));
 
             uint256[] memory stack =
                 generateFlowStack(FlowTransferV1(erc20Transfers, new ERC721Transfer[](0), new ERC1155Transfer[](0)));
@@ -204,7 +203,7 @@ contract FlowTransferTest is FlowTest {
         address bob,
         uint256 erc721TokenId
     ) external {
-        vm.assume(sentinel != erc721TokenId);
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc721TokenId);
         vm.assume(bob != alice);
 
         vm.label(alice, "Alice");
@@ -217,7 +216,7 @@ contract FlowTransferTest is FlowTest {
         {
             ERC721Transfer[] memory erc721Transfers = new ERC721Transfer[](2);
             erc721Transfers[0] =
-                ERC721Transfer({token: address(iTokenA), from: bob, to: address(flow), id: erc721TokenId});
+                ERC721Transfer({token: TOKEN_A, from: bob, to: address(flow), id: erc721TokenId});
             erc721Transfers[1] =
                 ERC721Transfer({token: address(iTokenB), from: address(flow), to: alice, id: erc721TokenId});
 
@@ -243,10 +242,10 @@ contract FlowTransferTest is FlowTest {
         uint256 erc1155InAmount
     ) external {
         vm.assume(bob != alice);
-        vm.assume(sentinel != erc1155OutTokenId);
-        vm.assume(sentinel != erc1155OutAmount);
-        vm.assume(sentinel != erc1155InTokenId);
-        vm.assume(sentinel != erc1155InAmount);
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc1155OutTokenId);
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc1155OutAmount);
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc1155InTokenId);
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc1155InAmount);
         vm.label(alice, "Alice");
         vm.label(bob, "Bob");
 
@@ -258,7 +257,7 @@ contract FlowTransferTest is FlowTest {
         {
             ERC1155Transfer[] memory erc1155Transfers = new ERC1155Transfer[](2);
             erc1155Transfers[0] = ERC1155Transfer({
-                token: address(iTokenA),
+                token: TOKEN_A,
                 from: bob,
                 to: address(flow),
                 id: erc1155OutTokenId,

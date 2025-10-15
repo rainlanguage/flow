@@ -12,6 +12,7 @@ import {
     FlowERC1155IOV1,
     ERC1155SupplyChange,
     FLOW_ERC1155_HANDLE_TRANSFER_MAX_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC1155_HANDLE_TRANSFER_MIN_OUTPUTS,
     //forge-lint: disable-next-line(unused-import)
     FLOW_ERC1155_MIN_FLOW_SENTINELS

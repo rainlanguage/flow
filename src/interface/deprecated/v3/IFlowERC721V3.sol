@@ -2,8 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.25;
 
-import "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
-import "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
+import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 
 import {SourceIndex, Sentinel, SENTINEL_HIGH_BITS, MIN_FLOW_SENTINELS, EvaluableConfig, FlowTransferV1, Evaluable} from "./IFlowV3.sol";
 

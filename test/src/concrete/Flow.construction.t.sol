@@ -18,7 +18,7 @@ contract FlowConstructionTest is FlowTest {
         flowConfig[0] = EvaluableConfigV3(iDeployer, bytecode, constants);
 
         vm.recordLogs();
-        iCloneFactory.clone(deployFlowImplementation(), abi.encode(flowConfig));
+        I_CLONE_FACTORY.clone(deployFlowImplementation(), abi.encode(flowConfig));
 
         Vm.Log[] memory logs = vm.getRecordedLogs();
         bytes32 eventSignature = keccak256("Initialize(address,(address,bytes,uint256[])[])");
@@ -27,7 +27,7 @@ contract FlowConstructionTest is FlowTest {
         (address sender, EvaluableConfigV3[] memory config) =
             abi.decode(concreteEvent.data, (address, EvaluableConfigV3[]));
 
-        assertEq(sender, address(iCloneFactory), "wrong sender in Initialize event");
+        assertEq(sender, address(I_CLONE_FACTORY), "wrong sender in Initialize event");
         assertEq(keccak256(abi.encode(flowConfig)), keccak256(abi.encode(config)), "wrong compare Structs");
     }
 }

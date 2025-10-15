@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.25;
 
+//forge-lint: disable-next-line(unused-import)
 import {SourceIndex} from "rain.interpreter.interface/interface/deprecated/IInterpreterV1.sol";
 import {Evaluable, EvaluableConfig} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";

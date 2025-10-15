@@ -70,6 +70,7 @@ interface IFlowERC721V5 {
 
     /// As per `IFlowV4` but returns a `FlowERC721IOV1` instead of a
     /// `FlowTransferV1`.
+    //forge-lint: disable-next-line(mixed-case-variable)
     function stackToFlow(uint256[] memory stack) external pure returns (FlowERC721IOV1 memory flowERC721IO);
 
     /// As per `IFlowV4` but returns a `FlowERC721IOV1` instead of a
@@ -83,5 +84,6 @@ interface IFlowERC721V5 {
         EvaluableV2 calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
+    //forge-lint: disable-next-line(mixed-case-variable)
     ) external returns (FlowERC721IOV1 calldata flowERC721IO);
 }

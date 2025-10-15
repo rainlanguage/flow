@@ -54,6 +54,7 @@ struct ERC1155SupplyChange {
 /// @param mints The mints that occurred.
 /// @param burns The burns that occurred.
 /// @param flow The transfers that occured.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC1155IOV1 {
     ERC1155SupplyChange[] mints;
     ERC1155SupplyChange[] burns;
@@ -88,6 +89,7 @@ interface IFlowERC1155V3 {
         Evaluable calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
+    //forge-lint: disable-next-line(mixed-case-variable)
     ) external view returns (FlowERC1155IOV1 calldata flowERC1155IO);
 
     /// As per `IFlowV3` but returns a `FlowERC1155IOV1` instead of a
