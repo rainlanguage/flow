@@ -11,7 +11,7 @@ import {CloneFactory} from "rain.factory/src/concrete/CloneFactory.sol";
 import {LibLogHelper} from "test/lib/LibLogHelper.sol";
 import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
 import {Address} from "openzeppelin-contracts/contracts/utils/Address.sol";
-import {FlowTransferV1, IFlowV5} from "src/interface/IFlowV5.sol";
+import {FlowTransferV1, IFlowV5, RAIN_FLOW_SENTINEL, Sentinel} from "src/interface/IFlowV5.sol";
 import {Flow} from "src/concrete/Flow.sol";
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
 import {LibUint256Array} from "rain.solmem/lib/LibUint256Array.sol";
@@ -23,11 +23,11 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
     using LibUint256Matrix for uint256[];
     using LibUint256Array for uint256[];
 
-    CloneFactory internal immutable iCloneFactory;
+    CloneFactory internal immutable I_CLONE_FACTORY;
 
     constructor() {
         vm.pauseGasMetering();
-        iCloneFactory = new CloneFactory();
+        I_CLONE_FACTORY = new CloneFactory();
         vm.resumeGasMetering();
     }
 
@@ -36,7 +36,7 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
         returns (EvaluableConfigV3 memory)
     {
         expressionDeployerDeployExpression2MockCall(bytecode, constants, expression, bytes(hex"00060001"));
-        return EvaluableConfigV3(iDeployer, bytecode, constants);
+        return EvaluableConfigV3(DEPLOYER, bytecode, constants);
     }
 
     function expressionDeployer(uint256 key, address expression, uint256[] memory constants)
@@ -64,7 +64,7 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
             }
 
             vm.recordLogs();
-            flow = iCloneFactory.clone(
+            flow = I_CLONE_FACTORY.clone(
                 deployFlowImplementation(), buildConfig(name, symbol, baseURI, configExpression, flowConfig)
             );
         }
@@ -106,13 +106,13 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
 
     function assumeEtchable(address account, address expression) internal view {
         assumeNotPrecompile(account);
-        vm.assume(account != address(iDeployer));
-        vm.assume(account != address(iInterpreter));
-        vm.assume(account != address(iStore));
-        vm.assume(account != address(iCloneFactory));
+        vm.assume(account != address(DEPLOYER));
+        vm.assume(account != address(INTERPRETER));
+        vm.assume(account != address(STORE));
+        vm.assume(account != address(I_CLONE_FACTORY));
         vm.assume(account != address(this));
         vm.assume(account != address(vm));
-        vm.assume(sentinel != uint256(uint160(account)));
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != uint256(uint160(account)));
         vm.assume(account != address(expression));
         vm.assume(!account.isContract());
         // The console.
@@ -121,21 +121,21 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
 
     function burnFlowStack(address, uint256, uint256, FlowTransferV1 memory transfer)
         internal
-        view
+        pure
         returns (uint256[] memory, bytes32)
     {
         bytes32 transferHash = keccak256(abi.encode(transfer));
-        uint256[] memory stack = sentinel.generateFlowStack(transfer);
+        uint256[] memory stack = Sentinel.unwrap(RAIN_FLOW_SENTINEL).generateFlowStack(transfer);
         return (stack, transferHash);
     }
 
     function mintFlowStack(address, uint256, uint256, FlowTransferV1 memory transfer)
         internal
-        view
+        pure
         returns (uint256[] memory, bytes32)
     {
         bytes32 transferHash = keccak256(abi.encode(transfer));
-        uint256[] memory stack = sentinel.generateFlowStack(transfer);
+        uint256[] memory stack = Sentinel.unwrap(RAIN_FLOW_SENTINEL).generateFlowStack(transfer);
         return (stack, transferHash);
     }
 
@@ -176,11 +176,11 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
 
     function mintAndBurnFlowStack(address, uint256, uint256, uint256, FlowTransferV1 memory transfer)
         internal
-        view
+        pure
         returns (uint256[] memory, bytes32)
     {
         bytes32 transferHash = keccak256(abi.encode(transfer));
-        uint256[] memory stack = sentinel.generateFlowStack(transfer);
+        uint256[] memory stack = Sentinel.unwrap(RAIN_FLOW_SENTINEL).generateFlowStack(transfer);
         return (stack, transferHash);
     }
 }

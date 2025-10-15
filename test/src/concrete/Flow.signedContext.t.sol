@@ -3,8 +3,6 @@
 pragma solidity =0.8.25;
 
 import {Vm} from "forge-std/Test.sol";
-
-import {EvaluableConfigV3} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {FlowTest} from "test/abstract/FlowTest.sol";
 import {SignContextLib} from "test/lib/SignContextLib.sol";
 import {IFlowV5} from "src/interface/IFlowV5.sol";

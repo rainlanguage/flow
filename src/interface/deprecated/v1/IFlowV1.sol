@@ -2,8 +2,11 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.25;
 
-import "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
-import "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
+import {
+    EvaluableConfig,
+    Evaluable,
+    SignedContext
+} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
 
 struct FlowConfig {
     // https://github.com/ethereum/solidity/issues/13597
@@ -17,6 +20,7 @@ struct NativeTransfer {
     uint256 amount;
 }
 
+//forge-lint: disable-next-line(pascal-case-struct)
 struct ERC20Transfer {
     address token;
     address from;
@@ -24,6 +28,7 @@ struct ERC20Transfer {
     uint256 amount;
 }
 
+//forge-lint: disable-next-line(pascal-case-struct)
 struct ERC721Transfer {
     address token;
     address from;
@@ -31,6 +36,7 @@ struct ERC721Transfer {
     uint256 id;
 }
 
+//forge-lint: disable-next-line(pascal-case-struct)
 struct ERC1155Transfer {
     address token;
     address from;

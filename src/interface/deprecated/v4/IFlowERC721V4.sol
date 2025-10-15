@@ -4,20 +4,28 @@ pragma solidity ^0.8.25;
 
 import {Evaluable, EvaluableConfigV2} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
-import "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 
 import {
     FlowERC721IOV1,
+    //forge-lint: disable-next-line(unused-import)
     ERC721SupplyChange,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC721_TOKEN_URI_MIN_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC721_TOKEN_URI_MAX_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC721_HANDLE_TRANSFER_MIN_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC721_HANDLE_TRANSFER_MAX_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC721_TOKEN_URI_ENTRYPOINT,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC721_HANDLE_TRANSFER_ENTRYPOINT,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC721_MIN_FLOW_SENTINELS
 } from "../v3/IFlowERC721V3.sol";
 
+//forge-lint: disable-next-line(unused-import)
 import {RAIN_FLOW_SENTINEL} from "./IFlowV4.sol";
 
 /// Thrown when burner of tokens is not the owner of tokens.
@@ -32,6 +40,7 @@ error BurnerNotOwner();
 /// token URI.
 /// @param flowConfig Initialization config for the `Evaluable`s that define the
 /// flow behaviours outside self mints/burns.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC721ConfigV2 {
     string name;
     string symbol;
@@ -68,6 +77,7 @@ interface IFlowERC721V4 {
 
     /// As per `IFlowV4` but returns a `FlowERC721IOV1` instead of a
     /// `FlowTransferV1`.
+    //forge-lint: disable-next-line(mixed-case-variable)
     function stackToFlow(uint256[] memory stack) external pure returns (FlowERC721IOV1 memory flowERC721IO);
 
     /// As per `IFlowV4` but returns a `FlowERC721IOV1` instead of a
@@ -81,5 +91,10 @@ interface IFlowERC721V4 {
         Evaluable calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
-    ) external returns (FlowERC721IOV1 calldata flowERC721IO);
+    )
+        external
+        returns (
+            //forge-lint: disable-next-line(mixed-case-variable)
+            FlowERC721IOV1 calldata flowERC721IO
+        );
 }

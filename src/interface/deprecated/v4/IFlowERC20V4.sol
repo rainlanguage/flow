@@ -4,15 +4,22 @@ pragma solidity ^0.8.25;
 
 import {Evaluable, EvaluableConfigV2} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
+//forge-lint: disable-next-line(unused-import)
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {
     FlowERC20IOV1,
+    //forge-lint: disable-next-line(unused-import)
     ERC20SupplyChange,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_HANDLE_TRANSFER_ENTRYPOINT,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_HANDLE_TRANSFER_MIN_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_HANDLE_TRANSFER_MAX_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_MIN_FLOW_SENTINELS
 } from "../v3/IFlowERC20V3.sol";
+//forge-lint: disable-next-line(unused-import)
 import {RAIN_FLOW_SENTINEL} from "./IFlowV4.sol";
 
 /// Initialization config.
@@ -22,6 +29,7 @@ import {RAIN_FLOW_SENTINEL} from "./IFlowV4.sol";
 /// `evaluable` that can be used to evaluate `handleTransfer`.
 /// @param flowConfig The `EvaluableConfigV2[]` to use to build the
 /// `evaluable`s for all the flows, including self minting and burning.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC20ConfigV2 {
     string name;
     string symbol;
@@ -53,6 +61,7 @@ interface IFlowERC20V4 {
     /// `FlowTransferV1`.
     /// @param stack The stack to convert to a `FlowERC20IOV1`.
     /// @return flowERC20IO The `FlowERC20IOV1` representation of the stack.
+    //forge-lint: disable-next-line(mixed-case-variable)
     function stackToFlow(uint256[] memory stack) external pure returns (FlowERC20IOV1 memory flowERC20IO);
 
     /// As per `IFlowV4` but returns a `FlowERC20IOV1` instead of a
@@ -66,5 +75,10 @@ interface IFlowERC20V4 {
         Evaluable calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
-    ) external returns (FlowERC20IOV1 calldata flowERC20IO);
+    )
+        external
+        returns (
+            //forge-lint: disable-next-line(mixed-case-variable)
+            FlowERC20IOV1 calldata flowERC20IO
+        );
 }

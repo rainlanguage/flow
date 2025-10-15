@@ -2,10 +2,10 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.25;
 
+//forge-lint: disable-next-line(unused-import)
 import {SourceIndex} from "rain.interpreter.interface/interface/deprecated/IInterpreterV1.sol";
 import {Evaluable, EvaluableConfig} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
-import "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 
 /// @dev The number of sentinels required by `FlowCommon`. An evaluable can never
@@ -43,6 +43,7 @@ struct FlowConfig {
 /// @param from The address the token is being transferred from.
 /// @param to The address the token is being transferred to.
 /// @param amount The amount of the token being transferred.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct ERC20Transfer {
     address token;
     address from;
@@ -55,6 +56,7 @@ struct ERC20Transfer {
 /// @param from The address the token is being transferred from.
 /// @param to The address the token is being transferred to.
 /// @param id The id of the token being transferred.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct ERC721Transfer {
     address token;
     address from;
@@ -68,6 +70,7 @@ struct ERC721Transfer {
 /// @param to The address the token is being transferred to.
 /// @param id The id of the token being transferred.
 /// @param amount The amount of the token being transferred.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct ERC1155Transfer {
     address token;
     address from;

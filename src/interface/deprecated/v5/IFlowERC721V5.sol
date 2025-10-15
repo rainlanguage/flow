@@ -7,11 +7,17 @@ import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.so
 import {SourceIndexV2} from "rain.interpreter.interface/interface/IInterpreterV2.sol";
 import {
     FlowERC721IOV1,
+    //forge-lint: disable-next-line(unused-import)
     ERC721SupplyChange,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC721_TOKEN_URI_MIN_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC721_TOKEN_URI_MAX_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC721_HANDLE_TRANSFER_MIN_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC721_HANDLE_TRANSFER_MAX_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC721_MIN_FLOW_SENTINELS
 } from "../v4/IFlowERC721V4.sol";
 //forge-lint: disable-next-line(unused-import)
@@ -28,6 +34,7 @@ SourceIndexV2 constant FLOW_ERC721_TOKEN_URI_ENTRYPOINT = SourceIndexV2.wrap(1);
 /// used to handle transfers and build token IDs for the token URI.
 /// @param flowConfig Initialization config for the `Evaluable`s that define the
 /// flow behaviours outside self mints/burns.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC721ConfigV2 {
     string name;
     string symbol;
@@ -64,6 +71,7 @@ interface IFlowERC721V5 {
 
     /// As per `IFlowV4` but returns a `FlowERC721IOV1` instead of a
     /// `FlowTransferV1`.
+    //forge-lint: disable-next-line(mixed-case-variable)
     function stackToFlow(uint256[] memory stack) external pure returns (FlowERC721IOV1 memory flowERC721IO);
 
     /// As per `IFlowV4` but returns a `FlowERC721IOV1` instead of a
@@ -77,5 +85,10 @@ interface IFlowERC721V5 {
         EvaluableV2 calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
-    ) external returns (FlowERC721IOV1 calldata flowERC721IO);
+    )
+        external
+        returns (
+            //forge-lint: disable-next-line(mixed-case-variable)
+            FlowERC721IOV1 calldata flowERC721IO
+        );
 }

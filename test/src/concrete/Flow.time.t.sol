@@ -5,8 +5,6 @@ pragma solidity =0.8.25;
 import {FlowTest} from "test/abstract/FlowTest.sol";
 import {IFlowV5} from "src/interface/IFlowV5.sol";
 import {EvaluableV2, SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
-import {InvalidSignature} from "rain.interpreter.interface/lib/caller/LibContext.sol";
-
 import {DEFAULT_STATE_NAMESPACE} from "rain.interpreter.interface/interface/IInterpreterV2.sol";
 import {IInterpreterStoreV2} from "rain.interpreter.interface/interface/IInterpreterStoreV2.sol";
 
@@ -20,10 +18,10 @@ contract FlowTimeTest is FlowTest {
 
         interpreterEval2MockCall(stack, writeToStore);
 
-        vm.mockCall(address(iStore), abi.encodeWithSelector(IInterpreterStoreV2.set.selector), abi.encode());
+        vm.mockCall(address(STORE), abi.encodeWithSelector(IInterpreterStoreV2.set.selector), abi.encode());
 
         vm.expectCall(
-            address(iStore),
+            address(STORE),
             abi.encodeWithSelector(IInterpreterStoreV2.set.selector, DEFAULT_STATE_NAMESPACE, writeToStore)
         );
 

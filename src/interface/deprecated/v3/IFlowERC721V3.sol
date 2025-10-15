@@ -2,10 +2,17 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.25;
 
-import "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
-import "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
+import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 
-import "./IFlowV3.sol";
+import {
+    SourceIndex,
+    Sentinel,
+    SENTINEL_HIGH_BITS,
+    MIN_FLOW_SENTINELS,
+    EvaluableConfig,
+    FlowTransferV1,
+    Evaluable
+} from "./IFlowV3.sol";
 
 /// @dev Entrypont of the `handleTransfer` evaluation.
 SourceIndex constant FLOW_ERC721_HANDLE_TRANSFER_ENTRYPOINT = SourceIndex.wrap(0);
@@ -45,6 +52,7 @@ uint256 constant FLOW_ERC721_MIN_FLOW_SENTINELS = MIN_FLOW_SENTINELS + 2;
 /// URI entrypoint is optional.
 /// @param flowConfig Constructor config for the `Evaluable`s that define the
 /// flow behaviours including self mints/burns.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC721Config {
     string name;
     string symbol;
@@ -57,6 +65,7 @@ struct FlowERC721Config {
 /// a mint or burn must be implied by the context.
 /// @param account The address the token is being minted/burned to/from.
 /// @param id The id of the token being minted/burned.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct ERC721SupplyChange {
     address account;
     uint256 id;
@@ -66,6 +75,7 @@ struct ERC721SupplyChange {
 /// @param mints The mints that occurred.
 /// @param burns The burns that occurred.
 /// @param flow The transfers that occured.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC721IOV1 {
     ERC721SupplyChange[] mints;
     ERC721SupplyChange[] burns;
@@ -111,7 +121,13 @@ interface IFlowERC721V3 {
         Evaluable calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
-    ) external view returns (FlowERC721IOV1 calldata flowERC721IO);
+    )
+        external
+        view
+        returns (
+            //forge-lint: disable-next-line(mixed-case-variable)
+            FlowERC721IOV1 memory flowERC721IO
+        );
 
     /// As per `IFlowV3` but returns a `FlowERC721IOV1` instead of a
     /// `FlowTransferV1` and mints/burns itself as an ERC721 accordingly.
@@ -123,5 +139,10 @@ interface IFlowERC721V3 {
         Evaluable calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
-    ) external returns (FlowERC721IOV1 calldata flowERC721IO);
+    )
+        external
+        returns (
+            //forge-lint: disable-next-line(mixed-case-variable)
+            FlowERC721IOV1 memory flowERC721IO
+        );
 }

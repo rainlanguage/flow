@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.25;
 
-import {Test, Vm} from "forge-std/Test.sol";
+import {Vm} from "forge-std/Test.sol";
 
 import {FlowTransferV1, RAIN_FLOW_SENTINEL} from "src/interface/IFlowV5.sol";
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
@@ -15,8 +15,8 @@ abstract contract FlowUtilsAbstractTest is FlowTransferOperation {
     using LibLogHelper for Vm.Log[];
 
     // A temporary solution for a smooth transition to using libraries.
-    function generateFlowStack(FlowTransferV1 memory flowTransfer) internal view returns (uint256[] memory stack) {
-        stack = sentinel.generateFlowStack(flowTransfer);
+    function generateFlowStack(FlowTransferV1 memory flowTransfer) internal pure returns (uint256[] memory stack) {
+        stack = Sentinel.unwrap(RAIN_FLOW_SENTINEL).generateFlowStack(flowTransfer);
     }
 
     // A temporary solution for a smooth transition to using libraries.
