@@ -2,16 +2,19 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.25;
 
-import "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
-import "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
-
-import "./IFlowV1.sol";
+import {
+    EvaluableConfig,
+    Evaluable,
+    SignedContext
+} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
+import {FlowTransfer} from "./IFlowV1.sol";
 
 /// Constructor config.
 /// @param Constructor config for the ERC721 token minted according to flow
 /// schedule in `flow`.
 /// @param Constructor config for the `ImmutableSource` that defines the
 /// emissions schedule for claiming.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC721Config {
     string name;
     string symbol;

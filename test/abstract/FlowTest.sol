@@ -36,7 +36,7 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
         returns (EvaluableConfigV3 memory)
     {
         expressionDeployerDeployExpression2MockCall(bytecode, constants, expression, bytes(hex"00060001"));
-        return EvaluableConfigV3(iDeployer, bytecode, constants);
+        return EvaluableConfigV3(DEPLOYER, bytecode, constants);
     }
 
     function expressionDeployer(uint256 key, address expression, uint256[] memory constants)
@@ -106,9 +106,9 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
 
     function assumeEtchable(address account, address expression) internal view {
         assumeNotPrecompile(account);
-        vm.assume(account != address(iDeployer));
-        vm.assume(account != address(iInterpreter));
-        vm.assume(account != address(iStore));
+        vm.assume(account != address(DEPLOYER));
+        vm.assume(account != address(INTERPRETER));
+        vm.assume(account != address(STORE));
         vm.assume(account != address(I_CLONE_FACTORY));
         vm.assume(account != address(this));
         vm.assume(account != address(vm));

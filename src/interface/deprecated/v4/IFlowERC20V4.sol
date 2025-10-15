@@ -29,6 +29,7 @@ import {RAIN_FLOW_SENTINEL} from "./IFlowV4.sol";
 /// `evaluable` that can be used to evaluate `handleTransfer`.
 /// @param flowConfig The `EvaluableConfigV2[]` to use to build the
 /// `evaluable`s for all the flows, including self minting and burning.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC20ConfigV2 {
     string name;
     string symbol;
@@ -60,6 +61,7 @@ interface IFlowERC20V4 {
     /// `FlowTransferV1`.
     /// @param stack The stack to convert to a `FlowERC20IOV1`.
     /// @return flowERC20IO The `FlowERC20IOV1` representation of the stack.
+    //forge-lint: disable-next-line(mixed-case-variable)
     function stackToFlow(uint256[] memory stack) external pure returns (FlowERC20IOV1 memory flowERC20IO);
 
     /// As per `IFlowV4` but returns a `FlowERC20IOV1` instead of a
@@ -73,6 +75,8 @@ interface IFlowERC20V4 {
         Evaluable calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
+    )
         //forge-lint: disable-next-line(mixed-case-variable)
-    ) external returns (FlowERC20IOV1 calldata flowERC20IO);
+        external
+        returns (FlowERC20IOV1 calldata flowERC20IO);
 }

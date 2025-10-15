@@ -9,7 +9,7 @@ import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.so
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {
     FlowERC20IOV1,
-//forge-lint: disable-next-line(unused-import)
+    //forge-lint: disable-next-line(unused-import)
     ERC20SupplyChange,
     //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_HANDLE_TRANSFER_MIN_OUTPUTS,
@@ -30,6 +30,7 @@ SourceIndexV2 constant FLOW_ERC20_HANDLE_TRANSFER_ENTRYPOINT = SourceIndexV2.wra
 /// `evaluable` that can be used to evaluate `handleTransfer`.
 /// @param flowConfig The `EvaluableConfigV2[]` to use to build the
 /// `evaluable`s for all the flows, including self minting and burning.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC20ConfigV2 {
     string name;
     string symbol;
@@ -75,6 +76,8 @@ interface IFlowERC20V5 {
         EvaluableV2 calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
+    )
         //forge-lint: disable-next-line(mixed-case-variable)
-    ) external returns (FlowERC20IOV1 calldata flowERC20IO);
+        external
+        returns (FlowERC20IOV1 calldata flowERC20IO);
 }

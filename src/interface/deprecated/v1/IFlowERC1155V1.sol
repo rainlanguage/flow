@@ -2,8 +2,11 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.25;
 
-import "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
-import "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
+import {
+    EvaluableConfig,
+    Evaluable,
+    SignedContext
+} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
 
 import {FlowTransfer} from "./IFlowV1.sol";
 

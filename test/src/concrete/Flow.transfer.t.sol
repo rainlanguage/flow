@@ -3,7 +3,15 @@
 pragma solidity =0.8.25;
 
 import {FlowTest} from "test/abstract/FlowTest.sol";
-import {IFlowV5, FlowTransferV1, ERC20Transfer, ERC721Transfer, ERC1155Transfer, RAIN_FLOW_SENTINEL, Sentinel} from "src/interface/IFlowV5.sol";
+import {
+    IFlowV5,
+    FlowTransferV1,
+    ERC20Transfer,
+    ERC721Transfer,
+    ERC1155Transfer,
+    RAIN_FLOW_SENTINEL,
+    Sentinel
+} from "src/interface/IFlowV5.sol";
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
@@ -162,10 +170,8 @@ contract FlowTransferTest is FlowTest {
 
         {
             ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](2);
-            erc20Transfers[0] =
-                ERC20Transfer({token: TOKEN_A, from: bob, to: address(flow), amount: erc20Amount});
-            erc20Transfers[1] =
-                ERC20Transfer({token: address(iTokenB), from: address(flow), to: alice, amount: erc20Amount});
+            erc20Transfers[0] = ERC20Transfer({token: TOKEN_A, from: bob, to: address(flow), amount: erc20Amount});
+            erc20Transfers[1] = ERC20Transfer({token: TOKEN_B, from: address(flow), to: alice, amount: erc20Amount});
 
             uint256[] memory stack =
                 generateFlowStack(FlowTransferV1(erc20Transfers, new ERC721Transfer[](0), new ERC1155Transfer[](0)));
@@ -180,9 +186,8 @@ contract FlowTransferTest is FlowTest {
 
         {
             ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](2);
-            erc20Transfers[0] =
-                ERC20Transfer({token: TOKEN_A, from: alice, to: address(flow), amount: erc20Amount});
-            erc20Transfers[1] = ERC20Transfer({token: address(iTokenB), from: bob, to: alice, amount: erc20Amount});
+            erc20Transfers[0] = ERC20Transfer({token: TOKEN_A, from: alice, to: address(flow), amount: erc20Amount});
+            erc20Transfers[1] = ERC20Transfer({token: TOKEN_B, from: bob, to: alice, amount: erc20Amount});
             vm.mockCall(TOKEN_A, abi.encodeWithSelector(IERC20.transferFrom.selector), abi.encode(true));
 
             uint256[] memory stack =
@@ -215,10 +220,8 @@ contract FlowTransferTest is FlowTest {
 
         {
             ERC721Transfer[] memory erc721Transfers = new ERC721Transfer[](2);
-            erc721Transfers[0] =
-                ERC721Transfer({token: TOKEN_A, from: bob, to: address(flow), id: erc721TokenId});
-            erc721Transfers[1] =
-                ERC721Transfer({token: address(iTokenB), from: address(flow), to: alice, id: erc721TokenId});
+            erc721Transfers[0] = ERC721Transfer({token: TOKEN_A, from: bob, to: address(flow), id: erc721TokenId});
+            erc721Transfers[1] = ERC721Transfer({token: TOKEN_B, from: address(flow), to: alice, id: erc721TokenId});
 
             uint256[] memory stack =
                 generateFlowStack(FlowTransferV1(new ERC20Transfer[](0), erc721Transfers, new ERC1155Transfer[](0)));
@@ -265,7 +268,7 @@ contract FlowTransferTest is FlowTest {
             });
 
             erc1155Transfers[1] = ERC1155Transfer({
-                token: address(iTokenB),
+                token: TOKEN_B,
                 from: address(flow),
                 to: alice,
                 id: erc1155InTokenId,

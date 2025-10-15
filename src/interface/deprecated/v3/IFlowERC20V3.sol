@@ -33,6 +33,7 @@ uint256 constant FLOW_ERC20_MIN_FLOW_SENTINELS = MIN_FLOW_SENTINELS + 2;
 /// a mint or burn must be implied by the context.
 /// @param account The address the token is being minted/burned to/from.
 /// @param amount The amount of the token being minted/burned.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct ERC20SupplyChange {
     address account;
     uint256 amount;
@@ -93,8 +94,11 @@ interface IFlowERC20V3 {
         Evaluable calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
+    )
         //forge-lint: disable-next-line(mixed-case-variable)
-    ) external view returns (FlowERC20IOV1 calldata flowERC20IO);
+        external
+        view
+        returns (FlowERC20IOV1 calldata flowERC20IO);
 
     /// As per `IFlowV3` but returns a `FlowERC20IOV1` instead of a
     /// `FlowTransferV1` and mints/burns itself as an ERC20 accordingly.
@@ -106,6 +110,8 @@ interface IFlowERC20V3 {
         Evaluable calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
-    //forge-lint: disable-next-line(mixed-case-variable)
-    ) external returns (FlowERC20IOV1 calldata flowERC20IO);
+    )
+        //forge-lint: disable-next-line(mixed-case-variable)
+        external
+        returns (FlowERC20IOV1 calldata flowERC20IO);
 }

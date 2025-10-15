@@ -23,10 +23,8 @@ import {MulticallUpgradeable as Multicall} from
     "openzeppelin-contracts-upgradeable/contracts/utils/MulticallUpgradeable.sol";
 import {ERC721HolderUpgradeable as ERC721Holder} from
     "openzeppelin-contracts-upgradeable/contracts/token/ERC721/utils/ERC721HolderUpgradeable.sol";
-import {
-    ERC1155HolderUpgradeable as ERC1155Holder,
-    ERC1155ReceiverUpgradeable as ERC1155Receiver
-} from "openzeppelin-contracts-upgradeable/contracts/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
+import {ERC1155HolderUpgradeable as ERC1155Holder} from
+    "openzeppelin-contracts-upgradeable/contracts/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
 import {ReentrancyGuardUpgradeable as ReentrancyGuard} from
     "openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";

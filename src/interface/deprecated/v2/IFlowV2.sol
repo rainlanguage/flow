@@ -3,8 +3,7 @@
 pragma solidity ^0.8.25;
 
 import {Evaluable, EvaluableConfig} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
-import "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
-import "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
+import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 
 struct FlowConfig {
     // https://github.com/ethereum/solidity/issues/13597

@@ -34,6 +34,7 @@ SourceIndexV2 constant FLOW_ERC721_TOKEN_URI_ENTRYPOINT = SourceIndexV2.wrap(1);
 /// used to handle transfers and build token IDs for the token URI.
 /// @param flowConfig Initialization config for the `Evaluable`s that define the
 /// flow behaviours outside self mints/burns.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC721ConfigV2 {
     string name;
     string symbol;
@@ -84,6 +85,8 @@ interface IFlowERC721V5 {
         EvaluableV2 calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
-    //forge-lint: disable-next-line(mixed-case-variable)
-    ) external returns (FlowERC721IOV1 calldata flowERC721IO);
+    )
+        //forge-lint: disable-next-line(mixed-case-variable)
+        external
+        returns (FlowERC721IOV1 calldata flowERC721IO);
 }

@@ -16,26 +16,22 @@ import {LibNamespace, StateNamespace} from "rain.interpreter.interface/lib/ns/Li
 abstract contract InterpreterMockTest is Test {
     using LibNamespace for StateNamespace;
 
-    IInterpreterV2 internal immutable iInterpreter;
-    IInterpreterStoreV2 internal immutable iStore;
-    IExpressionDeployerV3 internal immutable iDeployer;
+    IInterpreterV2 constant INTERPRETER = IInterpreterV2(address(uint160(uint256(keccak256("interpreter.rain.test")))));
+    IInterpreterStoreV2 constant STORE = IInterpreterStoreV2(address(uint160(uint256(keccak256("store.rain.test")))));
+    IExpressionDeployerV3 constant DEPLOYER =
+        IExpressionDeployerV3(address(uint160(uint256(keccak256("deployer.rain.test")))));
 
     constructor() {
         vm.pauseGasMetering();
-        iInterpreter = IInterpreterV2(address(uint160(uint256(keccak256("interpreter.rain.test")))));
-        vm.etch(address(iInterpreter), REVERTING_MOCK_BYTECODE);
-
-        iStore = IInterpreterStoreV2(address(uint160(uint256(keccak256("store.rain.test")))));
-        vm.etch(address(iStore), REVERTING_MOCK_BYTECODE);
-
-        iDeployer = IExpressionDeployerV3(address(uint160(uint256(keccak256("deployer.rain.test")))));
-        vm.etch(address(iDeployer), REVERTING_MOCK_BYTECODE);
+        vm.etch(address(INTERPRETER), REVERTING_MOCK_BYTECODE);
+        vm.etch(address(STORE), REVERTING_MOCK_BYTECODE);
+        vm.etch(address(DEPLOYER), REVERTING_MOCK_BYTECODE);
         vm.resumeGasMetering();
     }
 
     function interpreterEval2MockCall(uint256[] memory stack, uint256[] memory writes) internal {
         vm.mockCall(
-            address(iInterpreter), abi.encodeWithSelector(IInterpreterV2.eval2.selector), abi.encode(stack, writes)
+            address(INTERPRETER), abi.encodeWithSelector(IInterpreterV2.eval2.selector), abi.encode(stack, writes)
         );
     }
 
@@ -46,10 +42,10 @@ abstract contract InterpreterMockTest is Test {
         uint256[] memory writes
     ) internal {
         vm.mockCall(
-            address(iInterpreter),
+            address(INTERPRETER),
             abi.encodeWithSelector(
                 IInterpreterV2.eval2.selector,
-                iStore,
+                STORE,
                 DEFAULT_STATE_NAMESPACE.qualifyNamespace(nameSpaceSender),
                 dispatch
             ),
@@ -61,10 +57,10 @@ abstract contract InterpreterMockTest is Test {
         internal
     {
         vm.expectCall(
-            address(iInterpreter),
+            address(INTERPRETER),
             abi.encodeWithSelector(
                 IInterpreterV2.eval2.selector,
-                iStore,
+                STORE,
                 DEFAULT_STATE_NAMESPACE.qualifyNamespace(nameSpaceSender),
                 dispatch,
                 context,
@@ -77,10 +73,10 @@ abstract contract InterpreterMockTest is Test {
         internal
     {
         vm.mockCallRevert(
-            address(iInterpreter),
+            address(INTERPRETER),
             abi.encodeWithSelector(
                 IInterpreterV2.eval2.selector,
-                iStore,
+                STORE,
                 DEFAULT_STATE_NAMESPACE.qualifyNamespace(nameSpaceSender),
                 dispatch,
                 context,
@@ -92,9 +88,9 @@ abstract contract InterpreterMockTest is Test {
 
     function expressionDeployerDeployExpression2MockCall(address expression, bytes memory io) internal {
         vm.mockCall(
-            address(iDeployer),
+            address(DEPLOYER),
             abi.encodeWithSelector(IExpressionDeployerV3.deployExpression2.selector),
-            abi.encode(iInterpreter, iStore, expression, io)
+            abi.encode(INTERPRETER, STORE, expression, io)
         );
     }
 
@@ -105,9 +101,9 @@ abstract contract InterpreterMockTest is Test {
         bytes memory io
     ) internal {
         vm.mockCall(
-            address(iDeployer),
+            address(DEPLOYER),
             abi.encodeWithSelector(IExpressionDeployerV3.deployExpression2.selector, bytecode, constants),
-            abi.encode(iInterpreter, iStore, expression, io)
+            abi.encode(INTERPRETER, STORE, expression, io)
         );
     }
 }

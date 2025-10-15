@@ -5,7 +5,6 @@ pragma solidity =0.8.25;
 import {Vm} from "forge-std/Test.sol";
 
 import {EvaluableConfigV3} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
-import {CloneFactory} from "rain.factory/src/concrete/CloneFactory.sol";
 import {FlowTest} from "test/abstract/FlowTest.sol";
 
 contract FlowConstructionTest is FlowTest {
@@ -15,7 +14,7 @@ contract FlowConstructionTest is FlowTest {
         expressionDeployerDeployExpression2MockCall(expression, bytes(hex"0007"));
 
         EvaluableConfigV3[] memory flowConfig = new EvaluableConfigV3[](1);
-        flowConfig[0] = EvaluableConfigV3(iDeployer, bytecode, constants);
+        flowConfig[0] = EvaluableConfigV3(DEPLOYER, bytecode, constants);
 
         vm.recordLogs();
         I_CLONE_FACTORY.clone(deployFlowImplementation(), abi.encode(flowConfig));

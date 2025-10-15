@@ -2,7 +2,11 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.25;
 
-import "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
+import {
+    EvaluableConfig,
+    Evaluable,
+    SignedContext
+} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
 
 struct FlowConfig {
     // https://github.com/ethereum/solidity/issues/13597

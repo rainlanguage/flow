@@ -17,19 +17,14 @@ import {IERC1155} from "openzeppelin-contracts/contracts/token/ERC1155/IERC1155.
 
 abstract contract FlowTransferOperation is Test {
     address constant TOKEN_A = address(uint160(uint256(keccak256("tokenA.test"))));
-    address internal immutable iTokenB;
-    address internal immutable iTokenC;
+    address internal immutable TOKEN_B = address(uint160(uint256(keccak256("tokenB.test"))));
+    address internal immutable TOKEN_C = address(uint160(uint256(keccak256("tokenC.test"))));
 
     constructor() {
         vm.pauseGasMetering();
-
-        vm.etch(address(TOKEN_A), REVERTING_MOCK_BYTECODE);
-
-        iTokenB = address(uint160(uint256(keccak256("tokenB.test"))));
-        vm.etch(address(iTokenB), REVERTING_MOCK_BYTECODE);
-
-        iTokenC = address(uint160(uint256(keccak256("tokenC.test"))));
-        vm.etch(address(iTokenC), REVERTING_MOCK_BYTECODE);
+        vm.etch(TOKEN_A, REVERTING_MOCK_BYTECODE);
+        vm.etch(TOKEN_B, REVERTING_MOCK_BYTECODE);
+        vm.etch(TOKEN_C, REVERTING_MOCK_BYTECODE);
         vm.resumeGasMetering();
     }
 
@@ -67,12 +62,11 @@ abstract contract FlowTransferOperation is Test {
         }
 
         ERC721Transfer[] memory erc721Transfers = new ERC721Transfer[](1);
-        erc721Transfers[0] =
-            ERC721Transfer({token: address(iTokenB), from: addressA, to: addressB, id: erc721InTokenId});
+        erc721Transfers[0] = ERC721Transfer({token: TOKEN_B, from: addressA, to: addressB, id: erc721InTokenId});
 
         ERC1155Transfer[] memory erc1155Transfers = new ERC1155Transfer[](1);
         erc1155Transfers[0] = ERC1155Transfer({
-            token: address(iTokenC),
+            token: TOKEN_C,
             from: addressB,
             to: addressA,
             id: erc1155OutTokenId,
@@ -90,17 +84,17 @@ abstract contract FlowTransferOperation is Test {
         uint256 erc1155OutAmount,
         uint256 erc1155OutTokenId
     ) internal {
-        vm.mockCall(iTokenB, abi.encodeWithSelector(bytes4(keccak256("safeTransferFrom(address,address,uint256)"))), "");
+        vm.mockCall(TOKEN_B, abi.encodeWithSelector(bytes4(keccak256("safeTransferFrom(address,address,uint256)"))), "");
         vm.expectCall(
-            iTokenB,
+            TOKEN_B,
             abi.encodeWithSelector(
                 bytes4(keccak256("safeTransferFrom(address,address,uint256)")), addressA, addressB, erc721InTokenId
             )
         );
 
-        vm.mockCall(iTokenC, abi.encodeWithSelector(IERC1155.safeTransferFrom.selector), "");
+        vm.mockCall(TOKEN_C, abi.encodeWithSelector(IERC1155.safeTransferFrom.selector), "");
         vm.expectCall(
-            iTokenC,
+            TOKEN_C,
             abi.encodeWithSelector(
                 IERC1155.safeTransferFrom.selector, addressB, addressA, erc1155OutTokenId, erc1155OutAmount, ""
             )
@@ -132,11 +126,10 @@ abstract contract FlowTransferOperation is Test {
 
         {
             ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](1);
-            erc20Transfers[0] =
-                ERC20Transfer({token: TOKEN_A, from: addressA, to: addressB, amount: erc20InAmount});
+            erc20Transfers[0] = ERC20Transfer({token: TOKEN_A, from: addressA, to: addressB, amount: erc20InAmount});
 
             ERC721Transfer[] memory erc721Transfers = new ERC721Transfer[](1);
-            erc721Transfers[0] = ERC721Transfer({token: iTokenB, from: addressB, to: addressA, id: erc721OutTokenId});
+            erc721Transfers[0] = ERC721Transfer({token: TOKEN_B, from: addressB, to: addressA, id: erc721OutTokenId});
 
             transfer = FlowTransferV1(erc20Transfers, erc721Transfers, new ERC1155Transfer[](0));
         }
@@ -152,9 +145,9 @@ abstract contract FlowTransferOperation is Test {
         vm.mockCall(TOKEN_A, abi.encodeWithSelector(IERC20.transferFrom.selector), abi.encode(true));
         vm.expectCall(TOKEN_A, abi.encodeWithSelector(IERC20.transferFrom.selector, addressA, addressB, erc20InAmount));
 
-        vm.mockCall(iTokenB, abi.encodeWithSelector(bytes4(keccak256("safeTransferFrom(address,address,uint256)"))), "");
+        vm.mockCall(TOKEN_B, abi.encodeWithSelector(bytes4(keccak256("safeTransferFrom(address,address,uint256)"))), "");
         vm.expectCall(
-            iTokenB,
+            TOKEN_B,
             abi.encodeWithSelector(
                 bytes4(keccak256("safeTransferFrom(address,address,uint256)")), addressB, addressA, erc721OutTokenId
             )
@@ -188,10 +181,8 @@ abstract contract FlowTransferOperation is Test {
 
         {
             ERC721Transfer[] memory erc721Transfers = new ERC721Transfer[](2);
-            erc721Transfers[0] =
-                ERC721Transfer({token: TOKEN_A, from: addressA, to: addressB, id: erc721InTokenId});
-            erc721Transfers[1] =
-                ERC721Transfer({token: address(iTokenB), from: addressB, to: addressA, id: erc721OutTokenId});
+            erc721Transfers[0] = ERC721Transfer({token: TOKEN_A, from: addressA, to: addressB, id: erc721InTokenId});
+            erc721Transfers[1] = ERC721Transfer({token: TOKEN_B, from: addressB, to: addressA, id: erc721OutTokenId});
             transfer = FlowTransferV1(new ERC20Transfer[](0), erc721Transfers, new ERC1155Transfer[](0));
         }
     }
@@ -211,9 +202,9 @@ abstract contract FlowTransferOperation is Test {
             )
         );
 
-        vm.mockCall(iTokenB, abi.encodeWithSelector(bytes4(keccak256("safeTransferFrom(address,address,uint256)"))), "");
+        vm.mockCall(TOKEN_B, abi.encodeWithSelector(bytes4(keccak256("safeTransferFrom(address,address,uint256)"))), "");
         vm.expectCall(
-            iTokenB,
+            TOKEN_B,
             abi.encodeWithSelector(
                 bytes4(keccak256("safeTransferFrom(address,address,uint256)")), addressB, addressA, erc721OutTokenId
             )
@@ -245,10 +236,8 @@ abstract contract FlowTransferOperation is Test {
 
         {
             ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](2);
-            erc20Transfers[0] =
-                ERC20Transfer({token: TOKEN_A, from: addressA, to: addressB, amount: erc20BInAmount});
-            erc20Transfers[1] =
-                ERC20Transfer({token: address(iTokenB), from: addressB, to: addressA, amount: erc20OutAmount});
+            erc20Transfers[0] = ERC20Transfer({token: TOKEN_A, from: addressA, to: addressB, amount: erc20BInAmount});
+            erc20Transfers[1] = ERC20Transfer({token: TOKEN_B, from: addressB, to: addressA, amount: erc20OutAmount});
             transfer = FlowTransferV1(erc20Transfers, new ERC721Transfer[](0), new ERC1155Transfer[](0));
         }
     }
@@ -261,12 +250,10 @@ abstract contract FlowTransferOperation is Test {
         uint256 erc20OutAmount
     ) internal {
         vm.mockCall(TOKEN_A, abi.encodeWithSelector(IERC20.transferFrom.selector), abi.encode(true));
-        vm.expectCall(
-            TOKEN_A, abi.encodeWithSelector(IERC20.transferFrom.selector, addressA, addressB, erc20BInAmount)
-        );
+        vm.expectCall(TOKEN_A, abi.encodeWithSelector(IERC20.transferFrom.selector, addressA, addressB, erc20BInAmount));
 
-        vm.mockCall(address(iTokenB), abi.encodeWithSelector(IERC20.transfer.selector), abi.encode(true));
-        vm.expectCall(address(iTokenB), abi.encodeWithSelector(IERC20.transfer.selector, addressA, erc20OutAmount));
+        vm.mockCall(TOKEN_B, abi.encodeWithSelector(IERC20.transfer.selector), abi.encode(true));
+        vm.expectCall(TOKEN_B, abi.encodeWithSelector(IERC20.transfer.selector, addressA, erc20OutAmount));
     }
 
     //forge-lint: disable-next-line(mixed-case-function)
@@ -316,7 +303,7 @@ abstract contract FlowTransferOperation is Test {
             });
 
             erc1155Transfers[1] = ERC1155Transfer({
-                token: address(iTokenB),
+                token: TOKEN_B,
                 from: addressB,
                 to: addressA,
                 id: erc1155OutTokenId,
@@ -345,9 +332,9 @@ abstract contract FlowTransferOperation is Test {
                 )
             );
 
-            vm.mockCall(iTokenB, abi.encodeWithSelector(IERC1155.safeTransferFrom.selector), "");
+            vm.mockCall(TOKEN_B, abi.encodeWithSelector(IERC1155.safeTransferFrom.selector), "");
             vm.expectCall(
-                iTokenB,
+                TOKEN_B,
                 abi.encodeWithSelector(
                     IERC1155.safeTransferFrom.selector, addressB, addressA, erc1155OutTokenId, erc1155OutAmount, ""
                 )
@@ -372,11 +359,11 @@ abstract contract FlowTransferOperation is Test {
             erc20Transfers[0] =
                 ERC20Transfer({token: TOKEN_A, from: address(addressB), to: addressA, amount: erc20AmountA});
             erc20Transfers[1] =
-                ERC20Transfer({token: address(iTokenB), from: address(addressB), to: addressA, amount: erc20AmountB});
+                ERC20Transfer({token: TOKEN_B, from: address(addressB), to: addressA, amount: erc20AmountB});
             erc20Transfers[2] =
                 ERC20Transfer({token: TOKEN_A, from: addressA, to: address(addressB), amount: erc20AmountA});
             erc20Transfers[3] =
-                ERC20Transfer({token: address(iTokenB), from: addressA, to: address(addressB), amount: erc20AmountB});
+                ERC20Transfer({token: TOKEN_B, from: addressA, to: address(addressB), amount: erc20AmountB});
             transfer = FlowTransferV1(erc20Transfers, new ERC721Transfer[](0), new ERC1155Transfer[](0));
         }
     }
@@ -396,9 +383,9 @@ abstract contract FlowTransferOperation is Test {
         {
             ERC721Transfer[] memory erc721Transfers = new ERC721Transfer[](4);
             erc721Transfers[0] = ERC721Transfer({token: TOKEN_A, from: addressB, to: addressA, id: erc721TokenIdA});
-            erc721Transfers[1] = ERC721Transfer({token: iTokenB, from: addressB, to: addressA, id: erc721TokenIdB});
+            erc721Transfers[1] = ERC721Transfer({token: TOKEN_B, from: addressB, to: addressA, id: erc721TokenIdB});
             erc721Transfers[2] = ERC721Transfer({token: TOKEN_A, from: addressA, to: addressB, id: erc721TokenIdA});
-            erc721Transfers[3] = ERC721Transfer({token: iTokenB, from: addressA, to: addressB, id: erc721TokenIdB});
+            erc721Transfers[3] = ERC721Transfer({token: TOKEN_B, from: addressA, to: addressB, id: erc721TokenIdB});
             transfer = FlowTransferV1(new ERC20Transfer[](0), erc721Transfers, new ERC1155Transfer[](0));
         }
     }
@@ -432,7 +419,7 @@ abstract contract FlowTransferOperation is Test {
             });
 
             erc1155Transfers[1] = ERC1155Transfer({
-                token: address(iTokenB),
+                token: TOKEN_B,
                 from: addressB,
                 to: addressA,
                 id: erc1155InTokenId,
@@ -448,7 +435,7 @@ abstract contract FlowTransferOperation is Test {
             });
 
             erc1155Transfers[3] = ERC1155Transfer({
-                token: address(iTokenB),
+                token: TOKEN_B,
                 from: addressA,
                 to: addressB,
                 id: erc1155InTokenId,

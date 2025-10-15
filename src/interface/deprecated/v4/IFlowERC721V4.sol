@@ -4,7 +4,6 @@ pragma solidity ^0.8.25;
 
 import {Evaluable, EvaluableConfigV2} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
-import "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 
 import {
     FlowERC721IOV1,
@@ -41,6 +40,7 @@ error BurnerNotOwner();
 /// token URI.
 /// @param flowConfig Initialization config for the `Evaluable`s that define the
 /// flow behaviours outside self mints/burns.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC721ConfigV2 {
     string name;
     string symbol;
@@ -77,6 +77,7 @@ interface IFlowERC721V4 {
 
     /// As per `IFlowV4` but returns a `FlowERC721IOV1` instead of a
     /// `FlowTransferV1`.
+    //forge-lint: disable-next-line(mixed-case-variable)
     function stackToFlow(uint256[] memory stack) external pure returns (FlowERC721IOV1 memory flowERC721IO);
 
     /// As per `IFlowV4` but returns a `FlowERC721IOV1` instead of a
@@ -90,6 +91,8 @@ interface IFlowERC721V4 {
         Evaluable calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
-    //forge-lint: disable-next-line(mixed-case-variable)
-    ) external returns (FlowERC721IOV1 calldata flowERC721IO);
+    )
+        //forge-lint: disable-next-line(mixed-case-variable)
+        external
+        returns (FlowERC721IOV1 calldata flowERC721IO);
 }

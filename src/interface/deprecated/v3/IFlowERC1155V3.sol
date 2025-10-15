@@ -4,7 +4,15 @@ pragma solidity ^0.8.25;
 
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 
-import "./IFlowV3.sol";
+import {
+    SourceIndex,
+    MIN_FLOW_SENTINELS,
+    Sentinel,
+    SENTINEL_HIGH_BITS,
+    EvaluableConfig,
+    FlowTransferV1,
+    Evaluable
+} from "./IFlowV3.sol";
 
 /// @dev Entrypont of the `handleTransfer` evaluation.
 SourceIndex constant FLOW_ERC1155_HANDLE_TRANSFER_ENTRYPOINT = SourceIndex.wrap(0);
@@ -33,6 +41,7 @@ Sentinel constant RAIN_FLOW_ERC1155_SENTINEL =
 /// `evaluable` that can be used to handle transfers.
 /// @param flowConfig Constructor config for the `Evaluable`s that define the
 /// flow behaviours including self mints/burns.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC1155Config {
     string uri;
     EvaluableConfig evaluableConfig;
@@ -44,6 +53,7 @@ struct FlowERC1155Config {
 /// @param account The address the token is being minted/burned to/from.
 /// @param id The id of the token being minted/burned.
 /// @param amount The amount of the token being minted/burned.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct ERC1155SupplyChange {
     address account;
     uint256 id;
@@ -89,8 +99,11 @@ interface IFlowERC1155V3 {
         Evaluable calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
-    //forge-lint: disable-next-line(mixed-case-variable)
-    ) external view returns (FlowERC1155IOV1 calldata flowERC1155IO);
+    )
+        //forge-lint: disable-next-line(mixed-case-variable)
+        external
+        view
+        returns (FlowERC1155IOV1 calldata flowERC1155IO);
 
     /// As per `IFlowV3` but returns a `FlowERC1155IOV1` instead of a
     /// `FlowTransferV1` and mints/burns itself as an ERC1155 accordingly.
@@ -102,6 +115,8 @@ interface IFlowERC1155V3 {
         Evaluable calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
-    //forge-lint: disable-next-line(mixed-case-variable)
-    ) external returns (FlowERC1155IOV1 calldata flowERC1155IO);
+    )
+        //forge-lint: disable-next-line(mixed-case-variable)
+        external
+        returns (FlowERC1155IOV1 calldata flowERC1155IO);
 }

@@ -4,16 +4,24 @@ pragma solidity ^0.8.25;
 
 import {EvaluableConfigV2, Evaluable} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
+//forge-lint: disable-next-line(unused-import)
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
+//forge-lint: disable-next-line(unused-import)
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
+//forge-lint: disable-next-line(unused-import)
 import {RAIN_FLOW_SENTINEL} from "./IFlowV4.sol";
 
 import {
     FlowERC1155IOV1,
+    //forge-lint: disable-next-line(unused-import)
     ERC1155SupplyChange,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC1155_HANDLE_TRANSFER_MAX_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC1155_HANDLE_TRANSFER_ENTRYPOINT,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC1155_HANDLE_TRANSFER_MIN_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC1155_MIN_FLOW_SENTINELS
 } from "../v3/IFlowERC1155V3.sol";
 
@@ -23,6 +31,7 @@ import {
 /// `evaluable` that can be used to handle transfers.
 /// @param flowConfig Initialization config for the `Evaluable`s that define the
 /// flow behaviours outside self mints/burns.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC1155ConfigV2 {
     string uri;
     EvaluableConfigV2 evaluableConfig;
@@ -53,6 +62,7 @@ interface IFlowERC1155V4 {
     /// `FlowTransferV1`.
     /// @param stack The stack to convert to a `FlowERC1155IOV1`.
     /// @return flowERC1155IO The `FlowERC1155IOV1` representation of the stack.
+    //forge-lint: disable-next-line(mixed-case-variable)
     function stackToFlow(uint256[] memory stack) external pure returns (FlowERC1155IOV1 memory flowERC1155IO);
 
     /// As per `IFlowV4` but returns a `FlowERC1155IOV1` instead of a

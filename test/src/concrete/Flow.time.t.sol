@@ -18,10 +18,10 @@ contract FlowTimeTest is FlowTest {
 
         interpreterEval2MockCall(stack, writeToStore);
 
-        vm.mockCall(address(iStore), abi.encodeWithSelector(IInterpreterStoreV2.set.selector), abi.encode());
+        vm.mockCall(address(STORE), abi.encodeWithSelector(IInterpreterStoreV2.set.selector), abi.encode());
 
         vm.expectCall(
-            address(iStore),
+            address(STORE),
             abi.encodeWithSelector(IInterpreterStoreV2.set.selector, DEFAULT_STATE_NAMESPACE, writeToStore)
         );
 
