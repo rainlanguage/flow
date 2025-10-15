@@ -76,7 +76,9 @@ interface IFlowERC20V4 {
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
     )
-        //forge-lint: disable-next-line(mixed-case-variable)
         external
-        returns (FlowERC20IOV1 calldata flowERC20IO);
+        returns (
+            //forge-lint: disable-next-line(mixed-case-variable)
+            FlowERC20IOV1 calldata flowERC20IO
+        );
 }

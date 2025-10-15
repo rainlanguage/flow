@@ -95,10 +95,12 @@ interface IFlowERC20V3 {
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
     )
-        //forge-lint: disable-next-line(mixed-case-variable)
         external
         view
-        returns (FlowERC20IOV1 calldata flowERC20IO);
+        returns (
+            //forge-lint: disable-next-line(mixed-case-variable)
+            FlowERC20IOV1 calldata flowERC20IO
+        );
 
     /// As per `IFlowV3` but returns a `FlowERC20IOV1` instead of a
     /// `FlowTransferV1` and mints/burns itself as an ERC20 accordingly.
@@ -111,7 +113,9 @@ interface IFlowERC20V3 {
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
     )
-        //forge-lint: disable-next-line(mixed-case-variable)
         external
-        returns (FlowERC20IOV1 calldata flowERC20IO);
+        returns (
+            //forge-lint: disable-next-line(mixed-case-variable)
+            FlowERC20IOV1 calldata flowERC20IO
+        );
 }

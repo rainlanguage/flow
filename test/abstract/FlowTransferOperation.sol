@@ -446,7 +446,7 @@ abstract contract FlowTransferOperation is Test {
         }
     }
 
-    function assumeAddressNotSentinel(address inputAddress) internal view {
+    function assumeAddressNotSentinel(address inputAddress) internal pure {
         vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != uint256(uint160(inputAddress)));
     }
 }

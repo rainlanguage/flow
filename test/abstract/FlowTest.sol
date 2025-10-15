@@ -121,7 +121,7 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
 
     function burnFlowStack(address, uint256, uint256, FlowTransferV1 memory transfer)
         internal
-        view
+        pure
         returns (uint256[] memory, bytes32)
     {
         bytes32 transferHash = keccak256(abi.encode(transfer));
@@ -131,7 +131,7 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
 
     function mintFlowStack(address, uint256, uint256, FlowTransferV1 memory transfer)
         internal
-        view
+        pure
         returns (uint256[] memory, bytes32)
     {
         bytes32 transferHash = keccak256(abi.encode(transfer));
@@ -176,7 +176,7 @@ abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
 
     function mintAndBurnFlowStack(address, uint256, uint256, uint256, FlowTransferV1 memory transfer)
         internal
-        view
+        pure
         returns (uint256[] memory, bytes32)
     {
         bytes32 transferHash = keccak256(abi.encode(transfer));

@@ -122,10 +122,12 @@ interface IFlowERC721V3 {
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
     )
-        //forge-lint: disable-next-line(mixed-case-variable)
         external
         view
-        returns (FlowERC721IOV1 memory flowERC721IO);
+        returns (
+            //forge-lint: disable-next-line(mixed-case-variable)
+            FlowERC721IOV1 memory flowERC721IO
+        );
 
     /// As per `IFlowV3` but returns a `FlowERC721IOV1` instead of a
     /// `FlowTransferV1` and mints/burns itself as an ERC721 accordingly.
@@ -138,7 +140,9 @@ interface IFlowERC721V3 {
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
     )
-        //forge-lint: disable-next-line(mixed-case-variable)
         external
-        returns (FlowERC721IOV1 memory flowERC721IO);
+        returns (
+            //forge-lint: disable-next-line(mixed-case-variable)
+            FlowERC721IOV1 memory flowERC721IO
+        );
 }

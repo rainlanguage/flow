@@ -15,7 +15,7 @@ abstract contract FlowUtilsAbstractTest is FlowTransferOperation {
     using LibLogHelper for Vm.Log[];
 
     // A temporary solution for a smooth transition to using libraries.
-    function generateFlowStack(FlowTransferV1 memory flowTransfer) internal view returns (uint256[] memory stack) {
+    function generateFlowStack(FlowTransferV1 memory flowTransfer) internal pure returns (uint256[] memory stack) {
         stack = Sentinel.unwrap(RAIN_FLOW_SENTINEL).generateFlowStack(flowTransfer);
     }
 

@@ -86,7 +86,9 @@ interface IFlowERC721V5 {
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
     )
-        //forge-lint: disable-next-line(mixed-case-variable)
         external
-        returns (FlowERC721IOV1 calldata flowERC721IO);
+        returns (
+            //forge-lint: disable-next-line(mixed-case-variable)
+            FlowERC721IOV1 calldata flowERC721IO
+        );
 }
