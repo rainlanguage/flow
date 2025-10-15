@@ -100,5 +100,6 @@ interface IFlowERC1155V3 {
         Evaluable calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
+    //forge-lint: disable-next-line(mixed-case-variable)
     ) external returns (FlowERC1155IOV1 calldata flowERC1155IO);
 }

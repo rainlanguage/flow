@@ -91,6 +91,7 @@ interface IFlowERC20V3 {
         Evaluable calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
+        //forge-lint: disable-next-line(mixed-case-variable)
     ) external view returns (FlowERC20IOV1 calldata flowERC20IO);
 
     /// As per `IFlowV3` but returns a `FlowERC20IOV1` instead of a
@@ -103,5 +104,6 @@ interface IFlowERC20V3 {
         Evaluable calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
+    //forge-lint: disable-next-line(mixed-case-variable)
     ) external returns (FlowERC20IOV1 calldata flowERC20IO);
 }

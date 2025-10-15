@@ -4,15 +4,22 @@ pragma solidity ^0.8.25;
 
 import {Evaluable, EvaluableConfigV2} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
+//forge-lint: disable-next-line(unused-import)
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {
     FlowERC20IOV1,
+    //forge-lint: disable-next-line(unused-import)
     ERC20SupplyChange,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_HANDLE_TRANSFER_ENTRYPOINT,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_HANDLE_TRANSFER_MIN_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_HANDLE_TRANSFER_MAX_OUTPUTS,
+    //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_MIN_FLOW_SENTINELS
 } from "../v3/IFlowERC20V3.sol";
+//forge-lint: disable-next-line(unused-import)
 import {RAIN_FLOW_SENTINEL} from "./IFlowV4.sol";
 
 /// Initialization config.
@@ -66,5 +73,6 @@ interface IFlowERC20V4 {
         Evaluable calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
+        //forge-lint: disable-next-line(mixed-case-variable)
     ) external returns (FlowERC20IOV1 calldata flowERC20IO);
 }

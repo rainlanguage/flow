@@ -19,11 +19,9 @@ abstract contract FlowTransferOperation is Test {
     address internal immutable iTokenA;
     address internal immutable iTokenB;
     address internal immutable iTokenC;
-    uint256 internal immutable sentinel;
 
     constructor() {
         vm.pauseGasMetering();
-        sentinel = Sentinel.unwrap(RAIN_FLOW_SENTINEL);
 
         iTokenA = address(uint160(uint256(keccak256("tokenA.test"))));
         vm.etch(address(iTokenA), REVERTING_MOCK_BYTECODE);
@@ -62,9 +60,9 @@ abstract contract FlowTransferOperation is Test {
         uint256 erc1155OutTokenId
     ) internal view returns (FlowTransferV1 memory) {
         {
-            vm.assume(sentinel != erc721InTokenId);
-            vm.assume(sentinel != erc1155OutTokenId);
-            vm.assume(sentinel != erc1155OutAmount);
+            vm.assume(I_SENTINEL != erc721InTokenId);
+            vm.assume(I_SENTINEL != erc1155OutTokenId);
+            vm.assume(I_SENTINEL != erc1155OutAmount);
             assumeAddressNotSentinel(addressA);
             assumeAddressNotSentinel(addressB);
         }
@@ -127,8 +125,8 @@ abstract contract FlowTransferOperation is Test {
         uint256 erc721OutTokenId
     ) internal view returns (FlowTransferV1 memory transfer) {
         {
-            vm.assume(sentinel != erc20InAmount);
-            vm.assume(sentinel != erc721OutTokenId);
+            vm.assume(I_SENTINEL != erc20InAmount);
+            vm.assume(I_SENTINEL != erc721OutTokenId);
             assumeAddressNotSentinel(addressA);
             assumeAddressNotSentinel(addressB);
         }
@@ -183,8 +181,8 @@ abstract contract FlowTransferOperation is Test {
         uint256 erc721OutTokenId
     ) internal view returns (FlowTransferV1 memory transfer) {
         {
-            vm.assume(sentinel != erc721InTokenId);
-            vm.assume(sentinel != erc721OutTokenId);
+            vm.assume(I_SENTINEL != erc721InTokenId);
+            vm.assume(I_SENTINEL != erc721OutTokenId);
             assumeAddressNotSentinel(addressA);
             assumeAddressNotSentinel(addressB);
         }
@@ -240,8 +238,8 @@ abstract contract FlowTransferOperation is Test {
         uint256 erc20OutAmount
     ) internal view returns (FlowTransferV1 memory transfer) {
         {
-            vm.assume(sentinel != erc20BInAmount);
-            vm.assume(sentinel != erc20OutAmount);
+            vm.assume(I_SENTINEL != erc20BInAmount);
+            vm.assume(I_SENTINEL != erc20OutAmount);
             assumeAddressNotSentinel(addressA);
             assumeAddressNotSentinel(addressB);
         }
@@ -299,10 +297,10 @@ abstract contract FlowTransferOperation is Test {
         uint256 erc1155OutAmount
     ) internal view returns (FlowTransferV1 memory transfer) {
         {
-            vm.assume(sentinel != erc1155OutTokenId);
-            vm.assume(sentinel != erc1155OutAmount);
-            vm.assume(sentinel != erc1155BInTokenId);
-            vm.assume(sentinel != erc1155BInAmount);
+            vm.assume(I_SENTINEL != erc1155OutTokenId);
+            vm.assume(I_SENTINEL != erc1155OutAmount);
+            vm.assume(I_SENTINEL != erc1155BInTokenId);
+            vm.assume(I_SENTINEL != erc1155BInAmount);
             assumeAddressNotSentinel(addressA);
             assumeAddressNotSentinel(addressB);
         }
@@ -364,8 +362,8 @@ abstract contract FlowTransferOperation is Test {
         returns (FlowTransferV1 memory transfer)
     {
         {
-            vm.assume(sentinel != erc20AmountA);
-            vm.assume(sentinel != erc20AmountB);
+            vm.assume(I_SENTINEL != erc20AmountA);
+            vm.assume(I_SENTINEL != erc20AmountB);
             assumeAddressNotSentinel(addressA);
             assumeAddressNotSentinel(addressB);
         }
@@ -390,8 +388,8 @@ abstract contract FlowTransferOperation is Test {
         returns (FlowTransferV1 memory transfer)
     {
         {
-            vm.assume(sentinel != erc721TokenIdA);
-            vm.assume(sentinel != erc721TokenIdB);
+            vm.assume(I_SENTINEL != erc721TokenIdA);
+            vm.assume(I_SENTINEL != erc721TokenIdB);
             assumeAddressNotSentinel(addressA);
             assumeAddressNotSentinel(addressB);
         }
@@ -415,10 +413,10 @@ abstract contract FlowTransferOperation is Test {
         uint256 erc1155OutAmount
     ) internal view returns (FlowTransferV1 memory transfer) {
         {
-            vm.assume(sentinel != erc1155OutTokenId);
-            vm.assume(sentinel != erc1155OutAmount);
-            vm.assume(sentinel != erc1155InTokenId);
-            vm.assume(sentinel != erc1155InAmount);
+            vm.assume(I_SENTINEL != erc1155OutTokenId);
+            vm.assume(I_SENTINEL != erc1155OutAmount);
+            vm.assume(I_SENTINEL != erc1155InTokenId);
+            vm.assume(I_SENTINEL != erc1155InAmount);
             assumeAddressNotSentinel(addressA);
             assumeAddressNotSentinel(addressB);
         }
@@ -463,6 +461,6 @@ abstract contract FlowTransferOperation is Test {
     }
 
     function assumeAddressNotSentinel(address inputAddress) internal view {
-        vm.assume(sentinel != uint256(uint160(inputAddress)));
+        vm.assume(I_SENTINEL != uint256(uint160(inputAddress)));
     }
 }

@@ -12,6 +12,7 @@ struct ERC20SupplyChange {
     uint256 amount;
 }
 
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC20IO {
     ERC20SupplyChange[] mints;
     ERC20SupplyChange[] burns;
@@ -23,6 +24,7 @@ struct FlowERC20IO {
 /// schedule in `flow`.
 /// @param Constructor config for the `ImmutableSource` that defines the
 /// emissions schedule for claiming.
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC20Config {
     string name;
     string symbol;

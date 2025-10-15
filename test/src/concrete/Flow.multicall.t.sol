@@ -8,7 +8,6 @@ import {FLOW_MAX_OUTPUTS, FLOW_ENTRYPOINT} from "src/concrete/Flow.sol";
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {IERC1155} from "openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
-import {REVERTING_MOCK_BYTECODE} from "test/abstract/TestConstants.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {LibEncodedDispatch} from "rain.interpreter.interface/lib/caller/LibEncodedDispatch.sol";
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";

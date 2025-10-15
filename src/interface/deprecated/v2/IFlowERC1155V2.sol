@@ -7,18 +7,21 @@ import "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 
 import "./IFlowV2.sol";
 
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC1155Config {
     string uri;
     EvaluableConfig evaluableConfig;
     EvaluableConfig[] flowConfig;
 }
 
+//forge-lint: disable-next-line(pascal-case-struct)
 struct ERC1155SupplyChange {
     address account;
     uint256 id;
     uint256 amount;
 }
 
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC1155IO {
     ERC1155SupplyChange[] mints;
     ERC1155SupplyChange[] burns;

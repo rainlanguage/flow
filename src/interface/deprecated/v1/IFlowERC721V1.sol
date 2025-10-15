@@ -25,6 +25,7 @@ struct ERC721SupplyChange {
     uint256 id;
 }
 
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC721IO {
     ERC721SupplyChange[] mints;
     ERC721SupplyChange[] burns;

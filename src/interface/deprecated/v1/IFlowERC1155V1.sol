@@ -5,20 +5,23 @@ pragma solidity ^0.8.25;
 import "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
 import "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 
-import "./IFlowV1.sol";
+import {FlowTransfer} from "./IFlowV1.sol";
 
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC1155Config {
     string uri;
     EvaluableConfig evaluableConfig;
     EvaluableConfig[] flowConfig;
 }
 
+//forge-lint: disable-next-line(pascal-case-struct)
 struct ERC1155SupplyChange {
     address account;
     uint256 id;
     uint256 amount;
 }
 
+//forge-lint: disable-next-line(pascal-case-struct)
 struct FlowERC1155IO {
     ERC1155SupplyChange[] mints;
     ERC1155SupplyChange[] burns;
@@ -26,6 +29,7 @@ struct FlowERC1155IO {
 }
 
 /// @title IFlowERC1155V1
+//forge-lint: disable-next-line(pascal-case-struct)
 interface IFlowERC1155V1 {
     event Initialize(address sender, FlowERC1155Config config);
 

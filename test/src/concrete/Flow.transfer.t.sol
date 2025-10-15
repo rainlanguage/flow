@@ -7,7 +7,7 @@ import {IFlowV5, FlowTransferV1, ERC20Transfer, ERC721Transfer, ERC1155Transfer}
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {IERC1155} from "openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
-import {EvaluableConfigV3, SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
+import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {LibEvaluable} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {
     UnsupportedERC20Flow,

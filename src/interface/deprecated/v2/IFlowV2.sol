@@ -32,6 +32,7 @@ struct ERC721Transfer {
     uint256 id;
 }
 
+//forge-lint: disable-next-line(pascal-case-struct)
 struct ERC1155Transfer {
     address token;
     address from;
