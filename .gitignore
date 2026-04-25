@@ -2,3 +2,5 @@
 
 out
 cache
+
+.pre-commit-config.yaml
