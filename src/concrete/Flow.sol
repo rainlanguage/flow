@@ -19,14 +19,18 @@ import {
     IInterpreterStoreV2,
     DEFAULT_STATE_NAMESPACE
 } from "rain.interpreter.interface/interface/IInterpreterV2.sol";
-import {MulticallUpgradeable as Multicall} from
-    "openzeppelin-contracts-upgradeable/contracts/utils/MulticallUpgradeable.sol";
-import {ERC721HolderUpgradeable as ERC721Holder} from
-    "openzeppelin-contracts-upgradeable/contracts/token/ERC721/utils/ERC721HolderUpgradeable.sol";
-import {ERC1155HolderUpgradeable as ERC1155Holder} from
-    "openzeppelin-contracts-upgradeable/contracts/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
-import {ReentrancyGuardUpgradeable as ReentrancyGuard} from
-    "openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
+import {
+    MulticallUpgradeable as Multicall
+} from "openzeppelin-contracts-upgradeable/contracts/utils/MulticallUpgradeable.sol";
+import {
+    ERC721HolderUpgradeable as ERC721Holder
+} from "openzeppelin-contracts-upgradeable/contracts/token/ERC721/utils/ERC721HolderUpgradeable.sol";
+import {
+    ERC1155HolderUpgradeable as ERC1155Holder
+} from "openzeppelin-contracts-upgradeable/contracts/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
+import {
+    ReentrancyGuardUpgradeable as ReentrancyGuard
+} from "openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
 import {LibNamespace, StateNamespace} from "rain.interpreter.interface/lib/ns/LibNamespace.sol";
 import {UnsupportedFlowInputs, InsufficientFlowOutputs} from "../error/ErrFlow.sol";
@@ -84,15 +88,7 @@ uint256 constant FLOW_IS_NOT_REGISTERED = 0;
 /// This is a known issue with `Multicall` so in the future, we may refactor
 /// `Flow` to not use `Multicall` and instead implement flow batching
 /// directly in the flow contracts.
-contract Flow is
-    ERC721Holder,
-    ERC1155Holder,
-    Multicall,
-    ReentrancyGuard,
-    IInterpreterCallerV2,
-    ICloneableV2,
-    IFlowV5
-{
+contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInterpreterCallerV2, ICloneableV2, IFlowV5 {
     using LibUint256Array for uint256[];
     using LibUint256Matrix for uint256[];
     using LibEvaluable for EvaluableV2;
@@ -259,13 +255,14 @@ contract Flow is
             }
         }
 
-        (uint256[] memory stack, uint256[] memory kvs) = evaluable.interpreter.eval2(
-            evaluable.store,
-            DEFAULT_STATE_NAMESPACE.qualifyNamespace(address(this)),
-            LibEncodedDispatch.encode2(evaluable.expression, FLOW_ENTRYPOINT, FLOW_MAX_OUTPUTS),
-            context,
-            new uint256[](0)
-        );
+        (uint256[] memory stack, uint256[] memory kvs) = evaluable.interpreter
+            .eval2(
+                evaluable.store,
+                DEFAULT_STATE_NAMESPACE.qualifyNamespace(address(this)),
+                LibEncodedDispatch.encode2(evaluable.expression, FLOW_ENTRYPOINT, FLOW_MAX_OUTPUTS),
+                context,
+                new uint256[](0)
+            );
         return (stack.dataPointer(), stack.endPointer(), kvs);
     }
 }

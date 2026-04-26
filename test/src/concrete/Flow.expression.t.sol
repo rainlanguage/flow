@@ -47,8 +47,9 @@ contract FlowExpressionTest is FlowTest, IInterpreterCallerV2 {
         uint256[] memory fuzzedcallerContext0,
         uint256[] memory fuzzedcallerContext1
     ) public {
-        uint256[][] memory matrixCallerContext =
-            fuzzedcallerContext0.matrixFrom(fuzzedcallerContext1, fuzzedcallerContext0);
+        uint256[][] memory matrixCallerContext = fuzzedcallerContext0.matrixFrom(
+            fuzzedcallerContext1, fuzzedcallerContext0
+        );
 
         (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
 

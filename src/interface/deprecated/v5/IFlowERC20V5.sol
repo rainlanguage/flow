@@ -9,12 +9,16 @@ import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.so
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {
     FlowERC20IOV1,
+
     //forge-lint: disable-next-line(unused-import)
     ERC20SupplyChange,
+
     //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_HANDLE_TRANSFER_MIN_OUTPUTS,
+
     //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_HANDLE_TRANSFER_MAX_OUTPUTS,
+
     //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_MIN_FLOW_SENTINELS
 } from "../v4/IFlowERC20V4.sol";
