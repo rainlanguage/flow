@@ -8,14 +8,19 @@ import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreter
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {
     FlowERC20IOV1,
+
     //forge-lint: disable-next-line(unused-import)
     ERC20SupplyChange,
+
     //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_HANDLE_TRANSFER_ENTRYPOINT,
+
     //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_HANDLE_TRANSFER_MIN_OUTPUTS,
+
     //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_HANDLE_TRANSFER_MAX_OUTPUTS,
+
     //forge-lint: disable-next-line(unused-import)
     FLOW_ERC20_MIN_FLOW_SENTINELS
 } from "../v3/IFlowERC20V3.sol";

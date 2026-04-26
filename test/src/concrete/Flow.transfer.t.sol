@@ -260,19 +260,11 @@ contract FlowTransferTest is FlowTest {
         {
             ERC1155Transfer[] memory erc1155Transfers = new ERC1155Transfer[](2);
             erc1155Transfers[0] = ERC1155Transfer({
-                token: TOKEN_A,
-                from: bob,
-                to: address(flow),
-                id: erc1155OutTokenId,
-                amount: erc1155OutAmount
+                token: TOKEN_A, from: bob, to: address(flow), id: erc1155OutTokenId, amount: erc1155OutAmount
             });
 
             erc1155Transfers[1] = ERC1155Transfer({
-                token: TOKEN_B,
-                from: address(flow),
-                to: alice,
-                id: erc1155InTokenId,
-                amount: erc1155InAmount
+                token: TOKEN_B, from: address(flow), to: alice, id: erc1155InTokenId, amount: erc1155InAmount
             });
 
             uint256[] memory stack =

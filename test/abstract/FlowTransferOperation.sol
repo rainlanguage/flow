@@ -40,8 +40,9 @@ abstract contract FlowTransferOperation is Test {
         uint256 erc1155OutAmount,
         uint256 erc1155OutTokenId
     ) internal returns (FlowTransferV1 memory transfer) {
-        transfer =
-            createTransferERC721ToERC1155(addressA, addressB, erc721InTokenId, erc1155OutAmount, erc1155OutTokenId);
+        transfer = createTransferERC721ToERC1155(
+            addressA, addressB, erc721InTokenId, erc1155OutAmount, erc1155OutTokenId
+        );
         mockTransferERC721ToERC1155(addressA, addressB, erc721InTokenId, erc1155OutAmount, erc1155OutTokenId);
     }
 
@@ -66,11 +67,7 @@ abstract contract FlowTransferOperation is Test {
 
         ERC1155Transfer[] memory erc1155Transfers = new ERC1155Transfer[](1);
         erc1155Transfers[0] = ERC1155Transfer({
-            token: TOKEN_C,
-            from: addressB,
-            to: addressA,
-            id: erc1155OutTokenId,
-            amount: erc1155OutAmount
+            token: TOKEN_C, from: addressB, to: addressA, id: erc1155OutTokenId, amount: erc1155OutAmount
         });
 
         return FlowTransferV1(new ERC20Transfer[](0), erc721Transfers, erc1155Transfers);
@@ -295,19 +292,11 @@ abstract contract FlowTransferOperation is Test {
             ERC1155Transfer[] memory erc1155Transfers = new ERC1155Transfer[](2);
 
             erc1155Transfers[0] = ERC1155Transfer({
-                token: TOKEN_A,
-                from: addressA,
-                to: addressB,
-                id: erc1155BInTokenId,
-                amount: erc1155BInAmount
+                token: TOKEN_A, from: addressA, to: addressB, id: erc1155BInTokenId, amount: erc1155BInAmount
             });
 
             erc1155Transfers[1] = ERC1155Transfer({
-                token: TOKEN_B,
-                from: addressB,
-                to: addressA,
-                id: erc1155OutTokenId,
-                amount: erc1155OutAmount
+                token: TOKEN_B, from: addressB, to: addressA, id: erc1155OutTokenId, amount: erc1155OutAmount
             });
 
             transfer = FlowTransferV1(new ERC20Transfer[](0), new ERC721Transfer[](0), erc1155Transfers);
@@ -411,35 +400,19 @@ abstract contract FlowTransferOperation is Test {
             ERC1155Transfer[] memory erc1155Transfers = new ERC1155Transfer[](4);
 
             erc1155Transfers[0] = ERC1155Transfer({
-                token: TOKEN_A,
-                from: addressB,
-                to: addressA,
-                id: erc1155OutTokenId,
-                amount: erc1155OutAmount
+                token: TOKEN_A, from: addressB, to: addressA, id: erc1155OutTokenId, amount: erc1155OutAmount
             });
 
             erc1155Transfers[1] = ERC1155Transfer({
-                token: TOKEN_B,
-                from: addressB,
-                to: addressA,
-                id: erc1155InTokenId,
-                amount: erc1155InAmount
+                token: TOKEN_B, from: addressB, to: addressA, id: erc1155InTokenId, amount: erc1155InAmount
             });
 
             erc1155Transfers[2] = ERC1155Transfer({
-                token: TOKEN_A,
-                from: addressA,
-                to: addressB,
-                id: erc1155OutTokenId,
-                amount: erc1155OutAmount
+                token: TOKEN_A, from: addressA, to: addressB, id: erc1155OutTokenId, amount: erc1155OutAmount
             });
 
             erc1155Transfers[3] = ERC1155Transfer({
-                token: TOKEN_B,
-                from: addressA,
-                to: addressB,
-                id: erc1155InTokenId,
-                amount: erc1155InAmount
+                token: TOKEN_B, from: addressA, to: addressB, id: erc1155InTokenId, amount: erc1155InAmount
             });
 
             transfer = FlowTransferV1(new ERC20Transfer[](0), new ERC721Transfer[](0), erc1155Transfers);
