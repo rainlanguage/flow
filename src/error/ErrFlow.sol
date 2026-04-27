@@ -18,8 +18,6 @@ error UnsupportedERC721Flow();
 /// Thrown for unsupported erc1155 transfers.
 error UnsupportedERC1155Flow();
 
-contract ErrFLow {}
-
 /// Thrown when burner of tokens is not the owner of tokens.
 error BurnerNotOwner();
 
