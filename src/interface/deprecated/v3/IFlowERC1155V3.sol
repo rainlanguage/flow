@@ -14,6 +14,14 @@ import {
     Evaluable
 } from "./IFlowV3.sol";
 
+/// Thrown when the `handleTransfer` evaluable declares any inputs.
+/// `handleTransfer` is dispatched as a callback with no inputs.
+error UnsupportedHandleTransferInputs();
+
+/// Thrown when the `handleTransfer` evaluable declares fewer outputs than
+/// `FLOW_ERC1155_HANDLE_TRANSFER_MIN_OUTPUTS`.
+error InsufficientHandleTransferOutputs();
+
 /// @dev Entrypont of the `handleTransfer` evaluation.
 SourceIndex constant FLOW_ERC1155_HANDLE_TRANSFER_ENTRYPOINT = SourceIndex.wrap(0);
 

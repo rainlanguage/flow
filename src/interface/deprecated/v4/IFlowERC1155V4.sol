@@ -29,6 +29,8 @@ import {
     //forge-lint: disable-next-line(unused-import)
     FLOW_ERC1155_MIN_FLOW_SENTINELS
 } from "../v3/IFlowERC1155V3.sol";
+//forge-lint: disable-next-line(unused-import)
+import {UnsupportedHandleTransferInputs, InsufficientHandleTransferOutputs} from "../v3/IFlowERC1155V3.sol";
 
 /// Initialization config.
 /// @param uri As per Open Zeppelin `ERC1155Upgradeable`.

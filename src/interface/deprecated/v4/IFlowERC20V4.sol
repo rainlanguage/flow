@@ -26,6 +26,8 @@ import {
 } from "../v3/IFlowERC20V3.sol";
 //forge-lint: disable-next-line(unused-import)
 import {RAIN_FLOW_SENTINEL} from "./IFlowV4.sol";
+//forge-lint: disable-next-line(unused-import)
+import {UnsupportedHandleTransferInputs, InsufficientHandleTransferOutputs} from "../v3/IFlowERC1155V3.sol";
 
 /// Initialization config.
 /// @param name As per Open Zeppelin `ERC20Upgradeable`.

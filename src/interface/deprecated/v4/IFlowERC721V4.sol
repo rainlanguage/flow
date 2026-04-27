@@ -35,9 +35,12 @@ import {
 
 //forge-lint: disable-next-line(unused-import)
 import {RAIN_FLOW_SENTINEL} from "./IFlowV4.sol";
-
-/// Thrown when burner of tokens is not the owner of tokens.
-error BurnerNotOwner();
+//forge-lint: disable-next-line(unused-import)
+import {BurnerNotOwner} from "../v1/IFlowERC721V1.sol";
+//forge-lint: disable-next-line(unused-import)
+import {UnsupportedHandleTransferInputs, InsufficientHandleTransferOutputs} from "../v3/IFlowERC1155V3.sol";
+//forge-lint: disable-next-line(unused-import)
+import {UnsupportedTokenURIInputs, InsufficientTokenURIOutputs} from "../v3/IFlowERC721V3.sol";
 
 /// Initialization config.
 /// @param name As per Open Zeppelin `ERC721Upgradeable`.
