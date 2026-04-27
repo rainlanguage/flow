@@ -149,7 +149,7 @@ interface IFlowV5 {
     /// gating that would exclude the caller, etc.
     /// @param stack The stack of values to convert to a flow transfer.
     /// @return flowTransfer The resulting flow transfer.
-    function stackToFlow(uint256[] memory stack) external pure returns (FlowTransferV1 calldata flowTransfer);
+    function stackToFlow(uint256[] memory stack) external pure returns (FlowTransferV1 memory flowTransfer);
 
     /// Given an evaluable, caller context, and signed contexts, evaluate the
     /// evaluable and return the resulting flow transfer. MUST process the
@@ -168,5 +168,5 @@ interface IFlowV5 {
         EvaluableV2 calldata evaluable,
         uint256[] calldata callerContext,
         SignedContextV1[] calldata signedContexts
-    ) external returns (FlowTransferV1 calldata flowTransfer);
+    ) external returns (FlowTransferV1 memory flowTransfer);
 }
