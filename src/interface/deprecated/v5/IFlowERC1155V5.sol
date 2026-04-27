@@ -25,6 +25,8 @@ import {
     //forge-lint: disable-next-line(unused-import)
     FLOW_ERC1155_MIN_FLOW_SENTINELS
 } from "../v4/IFlowERC1155V4.sol";
+//forge-lint: disable-next-line(unused-import)
+import {UnsupportedHandleTransferInputs, InsufficientHandleTransferOutputs} from "../v3/IFlowERC1155V3.sol";
 
 SourceIndexV2 constant FLOW_ERC1155_HANDLE_TRANSFER_ENTRYPOINT = SourceIndexV2.wrap(0);
 

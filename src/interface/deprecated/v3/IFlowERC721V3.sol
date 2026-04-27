@@ -13,6 +13,15 @@ import {
     FlowTransferV1,
     Evaluable
 } from "./IFlowV3.sol";
+import {UnsupportedHandleTransferInputs, InsufficientHandleTransferOutputs} from "./IFlowERC1155V3.sol";
+
+/// Thrown when the `tokenURI` evaluable declares any inputs.
+/// `tokenURI` is dispatched with no inputs.
+error UnsupportedTokenURIInputs();
+
+/// Thrown when the `tokenURI` evaluable declares fewer outputs than
+/// `FLOW_ERC721_TOKEN_URI_MIN_OUTPUTS`.
+error InsufficientTokenURIOutputs();
 
 /// @dev Entrypont of the `handleTransfer` evaluation.
 SourceIndex constant FLOW_ERC721_HANDLE_TRANSFER_ENTRYPOINT = SourceIndex.wrap(0);

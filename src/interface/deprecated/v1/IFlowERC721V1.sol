@@ -9,6 +9,9 @@ import {
 } from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
 import {FlowTransfer} from "./IFlowV1.sol";
 
+/// Thrown when burner of tokens is not the owner of tokens.
+error BurnerNotOwner();
+
 /// Constructor config.
 /// @param Constructor config for the ERC721 token minted according to flow
 /// schedule in `flow`.

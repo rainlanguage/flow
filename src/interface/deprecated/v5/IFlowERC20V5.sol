@@ -24,6 +24,8 @@ import {
 } from "../v4/IFlowERC20V4.sol";
 //forge-lint: disable-next-line(unused-import)
 import {RAIN_FLOW_SENTINEL} from "../../IFlowV5.sol";
+//forge-lint: disable-next-line(unused-import)
+import {UnsupportedHandleTransferInputs, InsufficientHandleTransferOutputs} from "../v3/IFlowERC1155V3.sol";
 
 SourceIndexV2 constant FLOW_ERC20_HANDLE_TRANSFER_ENTRYPOINT = SourceIndexV2.wrap(0);
 

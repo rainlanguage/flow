@@ -7,6 +7,7 @@ import {EvaluableConfig, Evaluable} from "rain.interpreter.interface/interface/d
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {MIN_FLOW_SENTINELS, SENTINEL_HIGH_BITS, FlowTransferV1} from "./IFlowV3.sol";
+import {UnsupportedHandleTransferInputs, InsufficientHandleTransferOutputs} from "./IFlowERC1155V3.sol";
 
 /// @dev v3 of `FlowERC20` expected a sentinel different to
 /// `RAIN_FLOW_SENTINEL`, but this was generally more confusing than helpful.

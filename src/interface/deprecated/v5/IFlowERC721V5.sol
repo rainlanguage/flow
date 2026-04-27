@@ -28,6 +28,10 @@ import {
 } from "../v4/IFlowERC721V4.sol";
 //forge-lint: disable-next-line(unused-import)
 import {RAIN_FLOW_SENTINEL} from "../v4/IFlowV4.sol";
+//forge-lint: disable-next-line(unused-import)
+import {UnsupportedHandleTransferInputs, InsufficientHandleTransferOutputs} from "../v3/IFlowERC1155V3.sol";
+//forge-lint: disable-next-line(unused-import)
+import {UnsupportedTokenURIInputs, InsufficientTokenURIOutputs} from "../v3/IFlowERC721V3.sol";
 
 SourceIndexV2 constant FLOW_ERC721_HANDLE_TRANSFER_ENTRYPOINT = SourceIndexV2.wrap(0);
 SourceIndexV2 constant FLOW_ERC721_TOKEN_URI_ENTRYPOINT = SourceIndexV2.wrap(1);

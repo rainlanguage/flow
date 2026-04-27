@@ -6,9 +6,6 @@ pragma solidity ^0.8.25;
 /// @param unregisteredHash Hash of the unregistered flow.
 error UnregisteredFlow(bytes32 unregisteredHash);
 
-/// Thrown for unsupported native transfers.
-error UnsupportedNativeFlow();
-
 /// Thrown for unsupported erc20 transfers.
 error UnsupportedERC20Flow();
 
@@ -18,12 +15,10 @@ error UnsupportedERC721Flow();
 /// Thrown for unsupported erc1155 transfers.
 error UnsupportedERC1155Flow();
 
-/// Thrown when burner of tokens is not the owner of tokens.
-error BurnerNotOwner();
-
-error UnsupportedHandleTransferInputs();
-error InsufficientHandleTransferOutputs();
-error UnsupportedTokenURIInputs();
-error InsufficientTokenURIOutputs();
+/// Thrown when a flow's `evaluable` declares any inputs.
+/// `flow` evaluables are dispatched without inputs.
 error UnsupportedFlowInputs();
+
+/// Thrown when a flow's `evaluable` declares fewer outputs than the flow's
+/// minimum (`MIN_FLOW_SENTINELS`).
 error InsufficientFlowOutputs();

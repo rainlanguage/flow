@@ -4,6 +4,8 @@ pragma solidity ^0.8.25;
 
 import {Evaluable, EvaluableConfig} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
+//forge-lint: disable-next-line(unused-import)
+import {UnsupportedNativeFlow} from "../v1/IFlowV1.sol";
 
 struct FlowConfig {
     // https://github.com/ethereum/solidity/issues/13597

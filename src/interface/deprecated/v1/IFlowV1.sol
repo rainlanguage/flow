@@ -8,6 +8,9 @@ import {
     SignedContext
 } from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
 
+/// Thrown for unsupported native transfers.
+error UnsupportedNativeFlow();
+
 struct FlowConfig {
     // https://github.com/ethereum/solidity/issues/13597
     EvaluableConfig dummyConfig;
