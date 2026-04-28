@@ -24,7 +24,7 @@ contract FlowExpressionTest is FlowTest, IInterpreterCallerV2 {
      */
     /// forge-config: default.fuzz.runs = 100
     function testFlowBasicShouldDeployExpression(address[] memory expressions) public {
-        uint256 length = bound(expressions.length, 0, 10);
+        uint256 length = bound(expressions.length, 1, 10);
         assembly ("memory-safe") {
             mstore(expressions, length)
         }

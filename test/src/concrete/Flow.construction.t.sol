@@ -6,8 +6,16 @@ import {Vm} from "forge-std/Test.sol";
 
 import {EvaluableConfigV3} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {FlowTest} from "test/abstract/FlowTest.sol";
+import {EmptyFlowConfig} from "src/error/ErrFlow.sol";
 
 contract FlowConstructionTest is FlowTest {
+    function testFlowConstructionEmptyConfigReverts() external {
+        EvaluableConfigV3[] memory emptyConfig = new EvaluableConfigV3[](0);
+        address impl = deployFlowImplementation();
+        vm.expectRevert(EmptyFlowConfig.selector);
+        I_CLONE_FACTORY.clone(impl, abi.encode(emptyConfig));
+    }
+
     function testFlowConstructionInitialize(address expression, bytes memory bytecode, uint256[] memory constants)
         external
     {

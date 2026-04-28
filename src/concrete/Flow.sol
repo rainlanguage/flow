@@ -33,7 +33,7 @@ import {
 } from "openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
 import {LibNamespace, StateNamespace} from "rain.interpreter.interface/lib/ns/LibNamespace.sol";
-import {UnsupportedFlowInputs, InsufficientFlowOutputs} from "../error/ErrFlow.sol";
+import {UnsupportedFlowInputs, InsufficientFlowOutputs, EmptyFlowConfig} from "../error/ErrFlow.sol";
 import {IFlowV5, MIN_FLOW_SENTINELS, FlowTransferV1} from "../interface/IFlowV5.sol";
 import {ICloneableV2, ICLONEABLE_V2_SUCCESS} from "rain.factory/src/interface/ICloneableV2.sol";
 import {LibFlow} from "../lib/LibFlow.sol";
@@ -168,6 +168,13 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
             __ERC1155Holder_init();
             __Multicall_init();
             __ReentrancyGuard_init();
+
+            // Reject empty configs at init time — an empty config would
+            // produce a permanently inert clone where every `flow()` call
+            // reverts with `UnregisteredFlow`.
+            if (evaluableConfigs.length == 0) {
+                revert EmptyFlowConfig();
+            }
 
             // This should never fail because the min outputs should always be
             // at least the number of sentinels, and is compile time constant.
