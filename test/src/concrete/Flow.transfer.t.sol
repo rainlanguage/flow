@@ -26,6 +26,19 @@ import {
 import {FLOW_ENTRYPOINT, FLOW_MAX_OUTPUTS} from "src/concrete/Flow.sol";
 import {LibEncodedDispatch} from "rain.interpreter.interface/lib/caller/LibEncodedDispatch.sol";
 import {LibContextWrapper} from "test/lib/LibContextWrapper.sol";
+import {IERC721} from "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
+import {IERC1155} from "openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
+import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
+
+/// `IERC721.safeTransferFrom` is overloaded (3-arg + 4-arg). Pin the 3-arg
+/// selector via a single-overload wrapper interface so the disambiguation
+/// is done by the compiler rather than by hand-hashing the signature.
+interface IERC721SafeTransferFromV3 {
+    //forge-lint: disable-next-line(mixed-case-function)
+    function safeTransferFrom(address from, address to, uint256 tokenId) external;
+}
+
+bytes4 constant ERC721_SAFE_TRANSFER_FROM_3 = IERC721SafeTransferFromV3.safeTransferFrom.selector;
 
 contract FlowTransferTest is FlowTest {
     using LibEvaluable for EvaluableV2;
@@ -325,5 +338,94 @@ contract FlowTransferTest is FlowTest {
 
         vm.expectRevert("REVERT_EVAL2_CALL");
         flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+    }
+
+    /// Pins the execution order ERC20 → ERC721 → ERC1155 against the upstream
+    /// invariant in `IFlowV5` and `LibFlow.flow`. If ERC20 reverts, neither
+    /// ERC721 nor ERC1155 must be called — this proves ERC20 is processed
+    /// before the other two types.
+    /// forge-config: default.fuzz.runs = 100
+    function testFlowProcessesERC20BeforeERC721AndERC1155(
+        address alice,
+        uint256 erc20Amount,
+        uint256 erc721Id,
+        uint256 erc1155Id,
+        uint256 erc1155Amount
+    ) external {
+        vm.assume(alice != address(0));
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc20Amount);
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc721Id);
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc1155Id);
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc1155Amount);
+        vm.label(alice, "Alice");
+
+        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        assumeEtchable(alice, address(flow));
+
+        ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](1);
+        erc20Transfers[0] = ERC20Transfer({token: TOKEN_A, from: alice, to: address(flow), amount: erc20Amount});
+        ERC721Transfer[] memory erc721Transfers = new ERC721Transfer[](1);
+        erc721Transfers[0] = ERC721Transfer({token: TOKEN_B, from: alice, to: address(flow), id: erc721Id});
+        ERC1155Transfer[] memory erc1155Transfers = new ERC1155Transfer[](1);
+        erc1155Transfers[0] =
+            ERC1155Transfer({token: TOKEN_C, from: alice, to: address(flow), id: erc1155Id, amount: erc1155Amount});
+        FlowTransferV1 memory transfer = FlowTransferV1(erc20Transfers, erc721Transfers, erc1155Transfers);
+
+        uint256[] memory stack = LibStackGeneration.generateFlowStack(Sentinel.unwrap(RAIN_FLOW_SENTINEL), transfer);
+        interpreterEval2MockCall(stack, new uint256[](0));
+
+        // ERC20 reverts. ERC721 and ERC1155 mocks must NEVER fire because the
+        // ERC20 revert propagates and stops the flow before reaching them.
+        vm.mockCallRevert(TOKEN_A, abi.encodeWithSelector(IERC20.transferFrom.selector), abi.encode("erc20-fail"));
+        vm.expectCall(TOKEN_B, abi.encodeWithSelector(ERC721_SAFE_TRANSFER_FROM_3), 0);
+        vm.expectCall(TOKEN_C, abi.encodeWithSelector(IERC1155.safeTransferFrom.selector), 0);
+
+        vm.startPrank(alice);
+        vm.expectRevert();
+        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        vm.stopPrank();
+    }
+
+    /// Pins the execution order ERC721 → ERC1155. With ERC20 mocked OK and
+    /// ERC721 reverting, ERC1155 must never be reached.
+    /// forge-config: default.fuzz.runs = 100
+    function testFlowProcessesERC721BeforeERC1155(
+        address alice,
+        uint256 erc20Amount,
+        uint256 erc721Id,
+        uint256 erc1155Id,
+        uint256 erc1155Amount
+    ) external {
+        vm.assume(alice != address(0));
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc20Amount);
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc721Id);
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc1155Id);
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc1155Amount);
+        vm.label(alice, "Alice");
+
+        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        assumeEtchable(alice, address(flow));
+
+        ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](1);
+        erc20Transfers[0] = ERC20Transfer({token: TOKEN_A, from: alice, to: address(flow), amount: erc20Amount});
+        ERC721Transfer[] memory erc721Transfers = new ERC721Transfer[](1);
+        erc721Transfers[0] = ERC721Transfer({token: TOKEN_B, from: alice, to: address(flow), id: erc721Id});
+        ERC1155Transfer[] memory erc1155Transfers = new ERC1155Transfer[](1);
+        erc1155Transfers[0] =
+            ERC1155Transfer({token: TOKEN_C, from: alice, to: address(flow), id: erc1155Id, amount: erc1155Amount});
+        FlowTransferV1 memory transfer = FlowTransferV1(erc20Transfers, erc721Transfers, erc1155Transfers);
+
+        uint256[] memory stack = LibStackGeneration.generateFlowStack(Sentinel.unwrap(RAIN_FLOW_SENTINEL), transfer);
+        interpreterEval2MockCall(stack, new uint256[](0));
+
+        vm.mockCall(TOKEN_A, abi.encodeWithSelector(IERC20.transferFrom.selector), abi.encode(true));
+        vm.mockCallRevert(TOKEN_B, abi.encodeWithSelector(ERC721_SAFE_TRANSFER_FROM_3), abi.encode("erc721-fail"));
+        // ERC1155 must never be reached.
+        vm.expectCall(TOKEN_C, abi.encodeWithSelector(IERC1155.safeTransferFrom.selector), 0);
+
+        vm.startPrank(alice);
+        vm.expectRevert();
+        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        vm.stopPrank();
     }
 }
