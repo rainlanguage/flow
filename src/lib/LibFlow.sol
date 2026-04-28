@@ -78,14 +78,18 @@ library LibFlow {
             ERC20Transfer memory transfer;
             for (uint256 i = 0; i < flowTransfer.erc20.length; i++) {
                 transfer = flowTransfer.erc20[i];
+                // We don't support `from` as anyone other than `you` or `me`
+                // as this would allow for all kinds of issues re: approvals.
+                if (transfer.from != msg.sender && transfer.from != address(this)) {
+                    revert UnsupportedERC20Flow();
+                }
+                // OZ ERC20 `transferFrom` consumes allowance even when
+                // `from == msg.sender`, so the self-flow branch must use
+                // `safeTransfer` instead.
                 if (transfer.from == msg.sender) {
                     IERC20(transfer.token).safeTransferFrom(msg.sender, transfer.to, transfer.amount);
-                } else if (transfer.from == address(this)) {
-                    IERC20(transfer.token).safeTransfer(transfer.to, transfer.amount);
                 } else {
-                    // We don't support `from` as anyone other than `you` or `me`
-                    // as this would allow for all kinds of issues re: approvals.
-                    revert UnsupportedERC20Flow();
+                    IERC20(transfer.token).safeTransfer(transfer.to, transfer.amount);
                 }
             }
         }
