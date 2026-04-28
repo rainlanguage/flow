@@ -11,7 +11,7 @@ import {
 } from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {LibEncodedDispatch} from "rain.interpreter.interface/lib/caller/LibEncodedDispatch.sol";
 import {LibContext} from "rain.interpreter.interface/lib/caller/LibContext.sol";
-import {UnregisteredFlow, MIN_FLOW_SENTINELS} from "../interface/IFlowV5.sol";
+import {UnregisteredFlow} from "../interface/IFlowV5.sol";
 import {LibEvaluable, EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {
     SourceIndexV2,
