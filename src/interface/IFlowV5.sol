@@ -59,8 +59,11 @@ import {UnregisteredFlow} from "../error/ErrFlow.sol";
 ///   state of the tokens unchanged.
 ///
 /// The structure of the stack can be thought of as a simple list of transfers.
-/// All the erc20 tokens are moved first, then the erc721 tokens, then the
-/// erc1155 tokens. Each token type is separated in the stack by a sentinel
+/// In execution order, all the erc20 tokens are moved first, then the erc721
+/// tokens, then the erc1155 tokens. The stack is consumed top-down, so the
+/// erc20 tuples sit at the top of the stack (consumed first), the erc721
+/// tuples sit in the middle, and the erc1155 tuples sit at the bottom
+/// (consumed last). Each token type is separated in the stack by a sentinel
 /// value. The sentinel is a constant, `RAIN_FLOW_SENTINEL`, that is guaranteed
 /// to not collide with any token amounts or addresses. The sentinel is also
 /// guaranteed to not collide with any other sentinels from other contexts, to
@@ -98,8 +101,9 @@ import {UnregisteredFlow} from "../error/ErrFlow.sol";
 ///   - token id to transfer
 ///   - amount of tokens to transfer
 ///
-/// The final stack is processed from the bottom up, so the first token transfer
-/// in the stack is the last one to be processed.
+/// The stack is processed top-down: the topmost tuple (erc20) is consumed
+/// first by `stackToFlow` and executed first. Items written first in
+/// rainlang source land at the bottom of the stack and are consumed last.
 ///
 /// For example, a rainlang expression that transfers 1e18 erc20 token 0xf00baa
 /// from the flow contract to the address 0xdeadbeef, and 1 erc721 token address
@@ -109,11 +113,13 @@ import {UnregisteredFlow} from "../error/ErrFlow.sol";
 /// ```
 /// /* sentinel is always the same. */
 /// sentinel: 0xfea74d0c9bf4a3c28f0dd0674db22a3d7f8bf259c56af19f4ac1e735b156974f,
-/// /* erc1155 transfers are first, just a sentinel as there's nothing to do */
+/// /* erc1155 group sits at the bottom of the stack — written first in
+///    rainlang, consumed last. Just a sentinel here as there's nothing to do. */
 /// _: sentinel,
-/// /* erc721 transfers are next, with the token id as the last value */
+/// /* erc721 group sits in the middle, with the token id as the last value */
 /// _: 0x1234 0xdeadbeef context<0 1>() 5678,
-/// /* erc20 transfers are last, with the amount as the last value */
+/// /* erc20 group sits at the top of the stack — written last in rainlang,
+///    consumed first. The amount is the last value of the tuple. */
 /// _: 0xf00baa context<0 1>() 0xdeadbeef 1e18;
 /// ```
 ///
