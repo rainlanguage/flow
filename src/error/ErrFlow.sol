@@ -22,3 +22,8 @@ error UnsupportedFlowInputs();
 /// Thrown when a flow's `evaluable` declares fewer outputs than the flow's
 /// minimum (`MIN_FLOW_SENTINELS`).
 error InsufficientFlowOutputs();
+
+/// Thrown when a flow contract is initialized with no evaluable configs,
+/// which would produce a permanently inert clone (every `flow()` call
+/// would revert with `UnregisteredFlow`).
+error EmptyFlowConfig();
