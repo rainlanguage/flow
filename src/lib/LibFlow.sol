@@ -128,8 +128,6 @@ library LibFlow {
                 if (transfer.from != msg.sender && transfer.from != address(this)) {
                     revert UnsupportedERC1155Flow();
                 }
-                // @todo safeBatchTransferFrom support.
-                // @todo data support.
                 IERC1155(transfer.token).safeTransferFrom(transfer.from, transfer.to, transfer.id, transfer.amount, "");
             }
         }
