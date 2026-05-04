@@ -142,7 +142,18 @@ library LibFlow {
     /// Processes a flow transfer. Firstly sets state for the interpreter on the
     /// interpreter store. Then processes the ERC20, ERC721 and ERC1155 transfers
     /// in the flow. Guarantees ordering of the transfers but DOES NOT prevent
-    /// reentrancy attacks. This is the responsibility of the caller.
+    /// reentrancy attacks. The caller MUST apply a reentrancy guard around any
+    /// entrypoint that reaches this function. The reentrancy surface is:
+    /// 1. `interpreterStore.set` — external call to an arbitrary store contract
+    ///    chosen by the flow deployer.
+    /// 2. ERC721 `safeTransferFrom` — invokes `onERC721Received` on a contract
+    ///    recipient.
+    /// 3. ERC1155 `safeTransferFrom` — invokes `onERC1155Received` on a contract
+    ///    recipient.
+    /// 4. ERC20 `safeTransfer` / `safeTransferFrom` — non-reentrant for
+    ///    compliant ERC20s, but ERC777 (which presents an ERC20 interface)
+    ///    invokes `tokensToSend` on the sender and `tokensReceived` on the
+    ///    recipient via the ERC1820 registry.
     /// `set` is skipped entirely when `kvs.length == 0`. Stores that need to
     /// observe every flow invocation (e.g. for audit logging) cannot rely on
     /// `set` being called for empty kvs.
