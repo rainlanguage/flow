@@ -137,6 +137,9 @@ library LibFlow {
     /// interpreter store. Then processes the ERC20, ERC721 and ERC1155 transfers
     /// in the flow. Guarantees ordering of the transfers but DOES NOT prevent
     /// reentrancy attacks. This is the responsibility of the caller.
+    /// `set` is skipped entirely when `kvs.length == 0`. Stores that need to
+    /// observe every flow invocation (e.g. for audit logging) cannot rely on
+    /// `set` being called for empty kvs.
     /// @param flowTransfer The `FlowTransferV1` to process.
     /// @param interpreterStore The `IInterpreterStoreV1` to set state on.
     /// @param kvs The key value pairs to set on the interpreter store.
