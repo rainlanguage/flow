@@ -48,17 +48,23 @@ library LibFlow {
             ERC721Transfer[] memory erc721;
             ERC1155Transfer[] memory erc1155;
             Pointer tuplesPointer;
-            // erc20
+            // erc20: each tuple is 4 stack words read top-down as
+            // (token, from, to, amount). The cast below reinterprets the
+            // tuple memory as `ERC20Transfer[]`; this is only correct so
+            // long as `ERC20Transfer` declares fields in exactly that order.
             (stackTop, tuplesPointer) = stackBottom.consumeSentinelTuples(stackTop, RAIN_FLOW_SENTINEL, 4);
             assembly ("memory-safe") {
                 erc20 := tuplesPointer
             }
-            // erc721
+            // erc721: each tuple is 4 stack words read top-down as
+            // (token, from, to, id). `ERC721Transfer` field order must match.
             (stackTop, tuplesPointer) = stackBottom.consumeSentinelTuples(stackTop, RAIN_FLOW_SENTINEL, 4);
             assembly ("memory-safe") {
                 erc721 := tuplesPointer
             }
-            // erc1155
+            // erc1155: each tuple is 5 stack words read top-down as
+            // (token, from, to, id, amount). `ERC1155Transfer` field order
+            // must match.
             (stackTop, tuplesPointer) = stackBottom.consumeSentinelTuples(stackTop, RAIN_FLOW_SENTINEL, 5);
             assembly ("memory-safe") {
                 erc1155 := tuplesPointer
