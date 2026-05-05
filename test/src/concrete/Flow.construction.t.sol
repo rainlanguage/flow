@@ -6,7 +6,7 @@ import {Vm} from "forge-std/Test.sol";
 
 import {EvaluableConfigV3} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {FlowTest} from "test/abstract/FlowTest.sol";
-import {EmptyFlowConfig} from "src/error/ErrFlow.sol";
+import {EmptyFlowConfig} from "../../../src/error/ErrFlow.sol";
 
 contract FlowConstructionTest is FlowTest {
     function testFlowConstructionEmptyConfigReverts() external {

@@ -11,7 +11,7 @@ import {
     ERC1155Transfer,
     RAIN_FLOW_SENTINEL,
     Sentinel
-} from "src/interface/IFlowV5.sol";
+} from "../../../src/interface/IFlowV5.sol";
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
@@ -21,9 +21,9 @@ import {
     UnsupportedERC721Flow,
     UnsupportedERC1155Flow,
     UnregisteredFlow
-} from "src/error/ErrFlow.sol";
+} from "../../../src/error/ErrFlow.sol";
 
-import {FLOW_ENTRYPOINT, FLOW_MAX_OUTPUTS} from "src/concrete/Flow.sol";
+import {FLOW_ENTRYPOINT, FLOW_MAX_OUTPUTS} from "../../../src/concrete/Flow.sol";
 import {LibEncodedDispatch} from "rain.interpreter.interface/lib/caller/LibEncodedDispatch.sol";
 import {LibContextWrapper} from "test/lib/LibContextWrapper.sol";
 import {IERC721} from "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";

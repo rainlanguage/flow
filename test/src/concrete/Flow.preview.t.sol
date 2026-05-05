@@ -11,7 +11,7 @@ import {
     ERC1155Transfer,
     RAIN_FLOW_SENTINEL,
     Sentinel
-} from "src/interface/IFlowV5.sol";
+} from "../../../src/interface/IFlowV5.sol";
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {LibEvaluable} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 

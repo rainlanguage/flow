@@ -3,7 +3,7 @@
 pragma solidity =0.8.25;
 
 import {FlowTest} from "test/abstract/FlowTest.sol";
-import {IFlowV5} from "src/interface/IFlowV5.sol";
+import {IFlowV5} from "../../../src/interface/IFlowV5.sol";
 import {EvaluableV2, SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {DEFAULT_STATE_NAMESPACE} from "rain.interpreter.interface/interface/IInterpreterV2.sol";
 import {IInterpreterStoreV2} from "rain.interpreter.interface/interface/IInterpreterStoreV2.sol";
