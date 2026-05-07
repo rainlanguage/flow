@@ -9,7 +9,10 @@ import {DEFAULT_STATE_NAMESPACE} from "rain.interpreter.interface/interface/IInt
 import {IInterpreterStoreV2} from "rain.interpreter.interface/interface/IInterpreterStoreV2.sol";
 
 contract FlowTimeTest is FlowTest {
-    function testFlowBasicFlowTime(uint256[] memory writeToStore) public {
+    /// `flow()` writes the eval2 `writes` array to the interpreter store
+    /// under `DEFAULT_STATE_NAMESPACE`. (No time semantics — see file
+    /// note above the contract.)
+    function testFlowBasicWritesKvsToStore(uint256[] memory writeToStore) public {
         vm.assume(writeToStore.length != 0);
 
         (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
