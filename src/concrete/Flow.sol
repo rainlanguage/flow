@@ -109,13 +109,11 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
     /// provide the same evaluable when they evaluate the flow.
     event FlowInitialized(address sender, EvaluableV2 evaluable);
 
-    /// Forwards config to `DeployerDiscoverableMetaV2` and disables
-    /// initializers. The initializers are disabled because inheriting contracts
-    /// are expected to implement some kind of initialization logic that is
-    /// compatible with cloning via. proxy/factory. Disabling initializers
-    /// in the implementation contract forces that the only way to initialize
-    /// the contract is via. a proxy, which should also strongly encourage
-    /// patterns that _atomically_ clone and initialize via. some factory.
+    /// Disables initializers on the implementation contract so that any
+    /// usable instance is a proxy / clone that runs `initialize` exactly
+    /// once. Forcing this through a factory encourages the
+    /// atomically-clone-then-initialize pattern; a directly-deployed
+    /// implementation is unusable.
     constructor() {
         _disableInitializers();
     }
