@@ -141,8 +141,12 @@ library LibFlow {
 
     /// Processes a flow transfer. Firstly sets state for the interpreter on the
     /// interpreter store. Then processes the ERC20, ERC721 and ERC1155 transfers
-    /// in the flow. Guarantees ordering of the transfers but DOES NOT prevent
-    /// reentrancy attacks. This is the responsibility of the caller.
+    /// in this order: all ERC20 transfers in `flowTransfer.erc20` array
+    /// index order, then all ERC721 transfers in `flowTransfer.erc721`
+    /// array index order, then all ERC1155 transfers in
+    /// `flowTransfer.erc1155` array index order.
+    /// DOES NOT prevent reentrancy attacks. This is the responsibility of
+    /// the caller.
     /// `set` is skipped entirely when `kvs.length == 0`. Stores that need to
     /// observe every flow invocation (e.g. for audit logging) cannot rely on
     /// `set` being called for empty kvs.
