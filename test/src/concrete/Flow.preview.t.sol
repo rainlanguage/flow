@@ -3,6 +3,7 @@
 pragma solidity =0.8.25;
 
 import {FlowTest} from "test/abstract/FlowTest.sol";
+import {MissingSentinel, Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {
     IFlowV5,
     FlowTransferV1,
@@ -235,5 +236,33 @@ contract FlowPreviewTest is FlowTest {
         assertEq(result.erc1155[0].to, address(uint160(0xC2)), "erc1155 to");
         assertEq(result.erc1155[0].id, 0xC3C3, "erc1155 id");
         assertEq(result.erc1155[0].amount, 0xC4C4, "erc1155 amount");
+    }
+
+    /// `IFlowV5.stackToFlow` MAY revert if the stack is malformed. The
+    /// observable revert is `MissingSentinel(RAIN_FLOW_SENTINEL)` from
+    /// `LibStackSentinel.consumeSentinelTuples` when any of the three
+    /// required sentinels is absent.
+    function testStackToFlowRevertsOnEmptyStack() external {
+        (IFlowV5 flow,) = deployFlow();
+        uint256[] memory stack = new uint256[](0);
+        vm.expectRevert(abi.encodeWithSelector(MissingSentinel.selector, RAIN_FLOW_SENTINEL));
+        flow.stackToFlow(stack);
+    }
+
+    function testStackToFlowRevertsOnOneSentinelOnly() external {
+        (IFlowV5 flow,) = deployFlow();
+        uint256[] memory stack = new uint256[](1);
+        stack[0] = Sentinel.unwrap(RAIN_FLOW_SENTINEL);
+        vm.expectRevert(abi.encodeWithSelector(MissingSentinel.selector, RAIN_FLOW_SENTINEL));
+        flow.stackToFlow(stack);
+    }
+
+    function testStackToFlowRevertsOnTwoSentinelsOnly() external {
+        (IFlowV5 flow,) = deployFlow();
+        uint256[] memory stack = new uint256[](2);
+        stack[0] = Sentinel.unwrap(RAIN_FLOW_SENTINEL);
+        stack[1] = Sentinel.unwrap(RAIN_FLOW_SENTINEL);
+        vm.expectRevert(abi.encodeWithSelector(MissingSentinel.selector, RAIN_FLOW_SENTINEL));
+        flow.stackToFlow(stack);
     }
 }
