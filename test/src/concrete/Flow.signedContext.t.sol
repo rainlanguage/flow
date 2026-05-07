@@ -23,9 +23,8 @@ contract FlowSignedContextTest is FlowTest {
         vm.assume(fuzzedKeyBob != fuzzedKeyAlice);
         (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
 
-        // Ensure the fuzzed key is within the valid range for secp256k1
-        uint256 aliceKey = (fuzzedKeyAlice % (SECP256K1_ORDER - 1)) + 1;
-        uint256 bobKey = (fuzzedKeyBob % (SECP256K1_ORDER - 1)) + 1;
+        uint256 aliceKey = boundPrivateKey(fuzzedKeyAlice);
+        uint256 bobKey = boundPrivateKey(fuzzedKeyBob);
 
         SignedContextV1[] memory signedContexts = new SignedContextV1[](2);
 
@@ -56,9 +55,8 @@ contract FlowSignedContextTest is FlowTest {
         vm.assume(fuzzedKeyBob != fuzzedKeyAlice);
         (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
 
-        // Ensure the fuzzed key is within the valid range for secp256k1
-        uint256 aliceKey = (fuzzedKeyAlice % (SECP256K1_ORDER - 1)) + 1;
-        uint256 bobKey = (fuzzedKeyBob % (SECP256K1_ORDER - 1)) + 1;
+        uint256 aliceKey = boundPrivateKey(fuzzedKeyAlice);
+        uint256 bobKey = boundPrivateKey(fuzzedKeyBob);
 
         SignedContextV1[] memory signedContext = new SignedContextV1[](1);
         signedContext[0] = vm.signContext(aliceKey, aliceKey, context0);
