@@ -182,13 +182,7 @@ contract FlowTransferTest is FlowTest {
         assumeEtchable(bob, address(flow));
 
         {
-            ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](2);
-            erc20Transfers[0] = ERC20Transfer({token: TOKEN_A, from: bob, to: address(flow), amount: erc20Amount});
-            erc20Transfers[1] = ERC20Transfer({token: TOKEN_B, from: address(flow), to: alice, amount: erc20Amount});
-
-            uint256[] memory stack =
-                generateFlowStack(FlowTransferV1(erc20Transfers, new ERC721Transfer[](0), new ERC1155Transfer[](0)));
-
+            uint256[] memory stack = generateFlowStack(unauthorizedERC20Flow(bob, alice, address(flow), erc20Amount));
             interpreterEval2MockCall(stack, new uint256[](0));
         }
 
@@ -232,13 +226,8 @@ contract FlowTransferTest is FlowTest {
         assumeEtchable(bob, address(flow));
 
         {
-            ERC721Transfer[] memory erc721Transfers = new ERC721Transfer[](2);
-            erc721Transfers[0] = ERC721Transfer({token: TOKEN_A, from: bob, to: address(flow), id: erc721TokenId});
-            erc721Transfers[1] = ERC721Transfer({token: TOKEN_B, from: address(flow), to: alice, id: erc721TokenId});
-
             uint256[] memory stack =
-                generateFlowStack(FlowTransferV1(new ERC20Transfer[](0), erc721Transfers, new ERC1155Transfer[](0)));
-
+                generateFlowStack(unauthorizedERC721Flow(bob, alice, address(flow), erc721TokenId));
             interpreterEval2MockCall(stack, new uint256[](0));
         }
 
@@ -271,18 +260,11 @@ contract FlowTransferTest is FlowTest {
         assumeEtchable(bob, address(flow));
 
         {
-            ERC1155Transfer[] memory erc1155Transfers = new ERC1155Transfer[](2);
-            erc1155Transfers[0] = ERC1155Transfer({
-                token: TOKEN_A, from: bob, to: address(flow), id: erc1155OutTokenId, amount: erc1155OutAmount
-            });
-
-            erc1155Transfers[1] = ERC1155Transfer({
-                token: TOKEN_B, from: address(flow), to: alice, id: erc1155InTokenId, amount: erc1155InAmount
-            });
-
-            uint256[] memory stack =
-                generateFlowStack(FlowTransferV1(new ERC20Transfer[](0), new ERC721Transfer[](0), erc1155Transfers));
-
+            uint256[] memory stack = generateFlowStack(
+                unauthorizedERC1155Flow(
+                    bob, alice, address(flow), erc1155OutTokenId, erc1155OutAmount, erc1155InTokenId, erc1155InAmount
+                )
+            );
             interpreterEval2MockCall(stack, new uint256[](0));
         }
 
