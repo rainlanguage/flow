@@ -6,8 +6,6 @@ import {SignedContextV1, EvaluableConfigV3} from "rain.interpreter.interface/int
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 //forge-lint: disable-next-line(unused-import)
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
-//forge-lint: disable-next-line(unused-import)
-import {Pointer} from "rain.solmem/lib/LibPointer.sol";
 import {
     FlowTransferV1,
 
