@@ -147,7 +147,7 @@ library LibFlow {
     /// observe every flow invocation (e.g. for audit logging) cannot rely on
     /// `set` being called for empty kvs.
     /// @param flowTransfer The `FlowTransferV1` to process.
-    /// @param interpreterStore The `IInterpreterStoreV1` to set state on.
+    /// @param interpreterStore The `IInterpreterStoreV2` to set state on.
     /// @param kvs The key value pairs to set on the interpreter store.
     function flow(FlowTransferV1 memory flowTransfer, IInterpreterStoreV2 interpreterStore, uint256[] memory kvs)
         internal
