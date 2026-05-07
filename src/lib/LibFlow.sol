@@ -75,8 +75,11 @@ library LibFlow {
 
     /// Processes the ERC20 transfers in the flow.
     /// Reverts if the `from` address is not either the `msg.sender` or the
-    /// flow contract. Uses `IERC20.safeTransferFrom` to transfer the tokens to
-    /// ensure that reverts from the token are respected.
+    /// flow contract. Uses `IERC20.safeTransferFrom(from, to, amount)` when
+    /// `from == msg.sender` and `IERC20.safeTransfer(to, amount)` when
+    /// `from == address(this)` — the self-flow branch must use
+    /// `safeTransfer` because OZ `transferFrom` consumes allowance even
+    /// when `from == msg.sender`. Both branches surface token reverts.
     /// @param flowTransfer The `FlowTransferV1` to process. Tokens other than
     /// ERC20 tokens are ignored.
     function flowERC20(FlowTransferV1 memory flowTransfer) internal {
