@@ -29,6 +29,7 @@ import {LibContextWrapper} from "test/lib/LibContextWrapper.sol";
 import {IERC721} from "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import {IERC1155} from "openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
 import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
+import {MissingSentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 
 /// `IERC721.safeTransferFrom` is overloaded (3-arg + 4-arg). Pin the 3-arg
 /// selector via a single-overload wrapper interface so the disambiguation
@@ -474,6 +475,44 @@ contract FlowTransferTest is FlowTest {
 
         vm.startPrank(alice);
         vm.expectRevert(UnsupportedERC1155Flow.selector);
+        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        vm.stopPrank();
+    }
+
+    /// `IFlowV5.flow()` MUST revert if the evaluable returns a malformed
+    /// stack. The observable revert is `MissingSentinel(RAIN_FLOW_SENTINEL)`
+    /// from `LibStackSentinel.consumeSentinelTuples`.
+    /// forge-config: default.fuzz.runs = 100
+    function testFlowRevertsOnEmptyEvaluatedStack(address alice) external {
+        vm.assume(alice != address(0));
+        vm.label(alice, "Alice");
+
+        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        assumeEtchable(alice, address(flow));
+
+        uint256[] memory stack = new uint256[](0);
+        interpreterEval2MockCall(stack, new uint256[](0));
+
+        vm.startPrank(alice);
+        vm.expectRevert(abi.encodeWithSelector(MissingSentinel.selector, RAIN_FLOW_SENTINEL));
+        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        vm.stopPrank();
+    }
+
+    /// forge-config: default.fuzz.runs = 100
+    function testFlowRevertsOnOneSentinelOnlyEvaluatedStack(address alice) external {
+        vm.assume(alice != address(0));
+        vm.label(alice, "Alice");
+
+        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        assumeEtchable(alice, address(flow));
+
+        uint256[] memory stack = new uint256[](1);
+        stack[0] = Sentinel.unwrap(RAIN_FLOW_SENTINEL);
+        interpreterEval2MockCall(stack, new uint256[](0));
+
+        vm.startPrank(alice);
+        vm.expectRevert(abi.encodeWithSelector(MissingSentinel.selector, RAIN_FLOW_SENTINEL));
         flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
