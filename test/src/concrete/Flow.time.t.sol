@@ -57,10 +57,10 @@ contract FlowTimeTest is FlowTest {
         interpreterEval2MockCall(stack, writeToStore);
 
         vm.mockCallRevert(
-            address(STORE), abi.encodeWithSelector(IInterpreterStoreV2.set.selector), abi.encode("STORE_SET_FAILED")
+            address(STORE), abi.encodeWithSelector(IInterpreterStoreV2.set.selector), "STORE_SET_FAILED"
         );
 
-        vm.expectRevert(abi.encode("STORE_SET_FAILED"));
+        vm.expectRevert("STORE_SET_FAILED");
         flow.flow(evaluable, writeToStore, new SignedContextV1[](0));
     }
 }
