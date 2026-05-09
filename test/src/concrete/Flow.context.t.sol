@@ -3,10 +3,10 @@
 pragma solidity =0.8.25;
 
 import {FlowTest} from "test/abstract/FlowTest.sol";
-import {IFlowV5, RAIN_FLOW_SENTINEL} from "src/interface/IFlowV5.sol";
+import {IFlowV5, RAIN_FLOW_SENTINEL} from "../../../src/interface/IFlowV5.sol";
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
-import {FLOW_MAX_OUTPUTS, FLOW_ENTRYPOINT} from "src/concrete/Flow.sol";
+import {FLOW_MAX_OUTPUTS, FLOW_ENTRYPOINT} from "../../../src/concrete/Flow.sol";
 import {LibEncodedDispatch} from "rain.interpreter.interface/lib/caller/LibEncodedDispatch.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {LibContextWrapper} from "test/lib/LibContextWrapper.sol";

@@ -11,8 +11,8 @@ import {CloneFactory} from "rain.factory/src/concrete/CloneFactory.sol";
 import {LibLogHelper} from "test/lib/LibLogHelper.sol";
 import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
 import {Address} from "openzeppelin-contracts/contracts/utils/Address.sol";
-import {FlowTransferV1, IFlowV5, RAIN_FLOW_SENTINEL, Sentinel} from "src/interface/IFlowV5.sol";
-import {Flow} from "src/concrete/Flow.sol";
+import {FlowTransferV1, IFlowV5, RAIN_FLOW_SENTINEL, Sentinel} from "../../src/interface/IFlowV5.sol";
+import {Flow} from "../../src/concrete/Flow.sol";
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
 import {LibUint256Array} from "rain.solmem/lib/LibUint256Array.sol";
 
