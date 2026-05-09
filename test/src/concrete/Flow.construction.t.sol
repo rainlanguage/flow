@@ -80,7 +80,6 @@ contract FlowConstructionTest is FlowTest {
         I_CLONE_FACTORY.clone(impl, abi.encode(flowConfig));
     }
 
-
     function testFlowConstructionInitialize(address expression, bytes memory bytecode, uint256[] memory constants)
         external
     {
