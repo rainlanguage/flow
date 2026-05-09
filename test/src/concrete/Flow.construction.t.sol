@@ -7,6 +7,7 @@ import {Vm} from "forge-std/Test.sol";
 import {EvaluableConfigV3} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {FlowTest} from "test/abstract/FlowTest.sol";
 import {EmptyFlowConfig} from "src/error/ErrFlow.sol";
+import {LibLogHelper} from "test/lib/LibLogHelper.sol";
 
 contract FlowConstructionTest is FlowTest {
     function testFlowConstructionEmptyConfigReverts() external {
@@ -30,7 +31,7 @@ contract FlowConstructionTest is FlowTest {
         Vm.Log[] memory logs = vm.getRecordedLogs();
         bytes32 eventSignature = keccak256("Initialize(address,(address,bytes,uint256[])[])");
 
-        Vm.Log memory concreteEvent = findEvent(logs, eventSignature);
+        Vm.Log memory concreteEvent = LibLogHelper.findEvent(logs, eventSignature);
         (address sender, EvaluableConfigV3[] memory config) =
             abi.decode(concreteEvent.data, (address, EvaluableConfigV3[]));
 
