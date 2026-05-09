@@ -187,8 +187,10 @@ contract FlowTransferTest is FlowTest {
             erc20Transfers[0] = ERC20Transfer({token: TOKEN_A, from: bob, to: address(flow), amount: erc20Amount});
             erc20Transfers[1] = ERC20Transfer({token: TOKEN_B, from: address(flow), to: alice, amount: erc20Amount});
 
-            uint256[] memory stack =
-                generateFlowStack(FlowTransferV1(erc20Transfers, new ERC721Transfer[](0), new ERC1155Transfer[](0)));
+            uint256[] memory stack = LibStackGeneration.generateFlowStack(
+                Sentinel.unwrap(RAIN_FLOW_SENTINEL),
+                FlowTransferV1(erc20Transfers, new ERC721Transfer[](0), new ERC1155Transfer[](0))
+            );
 
             interpreterEval2MockCall(stack, new uint256[](0));
         }
@@ -204,8 +206,10 @@ contract FlowTransferTest is FlowTest {
             erc20Transfers[1] = ERC20Transfer({token: TOKEN_B, from: bob, to: alice, amount: erc20Amount});
             vm.mockCall(TOKEN_A, abi.encodeWithSelector(IERC20.transferFrom.selector), abi.encode(true));
 
-            uint256[] memory stack =
-                generateFlowStack(FlowTransferV1(erc20Transfers, new ERC721Transfer[](0), new ERC1155Transfer[](0)));
+            uint256[] memory stack = LibStackGeneration.generateFlowStack(
+                Sentinel.unwrap(RAIN_FLOW_SENTINEL),
+                FlowTransferV1(erc20Transfers, new ERC721Transfer[](0), new ERC1155Transfer[](0))
+            );
 
             interpreterEval2MockCall(stack, new uint256[](0));
         }
@@ -237,8 +241,10 @@ contract FlowTransferTest is FlowTest {
             erc721Transfers[0] = ERC721Transfer({token: TOKEN_A, from: bob, to: address(flow), id: erc721TokenId});
             erc721Transfers[1] = ERC721Transfer({token: TOKEN_B, from: address(flow), to: alice, id: erc721TokenId});
 
-            uint256[] memory stack =
-                generateFlowStack(FlowTransferV1(new ERC20Transfer[](0), erc721Transfers, new ERC1155Transfer[](0)));
+            uint256[] memory stack = LibStackGeneration.generateFlowStack(
+                Sentinel.unwrap(RAIN_FLOW_SENTINEL),
+                FlowTransferV1(new ERC20Transfer[](0), erc721Transfers, new ERC1155Transfer[](0))
+            );
 
             interpreterEval2MockCall(stack, new uint256[](0));
         }
@@ -281,8 +287,10 @@ contract FlowTransferTest is FlowTest {
                 token: TOKEN_B, from: address(flow), to: alice, id: erc1155InTokenId, amount: erc1155InAmount
             });
 
-            uint256[] memory stack =
-                generateFlowStack(FlowTransferV1(new ERC20Transfer[](0), new ERC721Transfer[](0), erc1155Transfers));
+            uint256[] memory stack = LibStackGeneration.generateFlowStack(
+                Sentinel.unwrap(RAIN_FLOW_SENTINEL),
+                FlowTransferV1(new ERC20Transfer[](0), new ERC721Transfer[](0), erc1155Transfers)
+            );
 
             interpreterEval2MockCall(stack, new uint256[](0));
         }
