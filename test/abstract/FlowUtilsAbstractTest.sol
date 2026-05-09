@@ -10,10 +10,6 @@ import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
 import {LibLogHelper} from "test/lib/LibLogHelper.sol";
 import {FlowTransferOperation} from "test/abstract/FlowTransferOperation.sol";
 
-/// Convenience wrappers around `LibStackGeneration` and `LibLogHelper` so
-/// test contracts inheriting this base can call `generateFlowStack` /
-/// `findEvent` / `findEvents` directly without re-importing the libraries
-/// or re-declaring `using` clauses.
 abstract contract FlowUtilsAbstractTest is FlowTransferOperation {
     using LibStackGeneration for uint256;
     using LibLogHelper for Vm.Log[];
