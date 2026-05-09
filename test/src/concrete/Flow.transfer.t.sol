@@ -430,6 +430,91 @@ contract FlowTransferTest is FlowTest {
         vm.stopPrank();
     }
 
+    /// A token revert during ERC20 `transferFrom` MUST bubble up out of
+    /// `flow()`. Pins that `SafeERC20` does not silently swallow the
+    /// underlying token revert.
+    /// forge-config: default.fuzz.runs = 100
+    function testFlowERC20TokenRevertBubblesUp(address alice, uint256 amount) external {
+        vm.assume(alice != address(0));
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != amount);
+        vm.label(alice, "Alice");
+
+        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        assumeEtchable(alice, address(flow));
+
+        ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](1);
+        erc20Transfers[0] = ERC20Transfer({token: TOKEN_A, from: alice, to: address(flow), amount: amount});
+
+        uint256[] memory stack = LibStackGeneration.generateFlowStack(
+            Sentinel.unwrap(RAIN_FLOW_SENTINEL),
+            FlowTransferV1(erc20Transfers, new ERC721Transfer[](0), new ERC1155Transfer[](0))
+        );
+        interpreterEval2MockCall(stack, new uint256[](0));
+
+        vm.mockCallRevert(TOKEN_A, abi.encodeWithSelector(IERC20.transferFrom.selector), bytes("TOKEN_REVERT"));
+
+        vm.startPrank(alice);
+        vm.expectRevert(bytes("TOKEN_REVERT"));
+        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        vm.stopPrank();
+    }
+
+    /// A token revert during ERC721 `safeTransferFrom` MUST bubble up.
+    /// forge-config: default.fuzz.runs = 100
+    function testFlowERC721TokenRevertBubblesUp(address alice, uint256 tokenId) external {
+        vm.assume(alice != address(0));
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != tokenId);
+        vm.label(alice, "Alice");
+
+        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        assumeEtchable(alice, address(flow));
+
+        ERC721Transfer[] memory erc721Transfers = new ERC721Transfer[](1);
+        erc721Transfers[0] = ERC721Transfer({token: TOKEN_B, from: alice, to: address(flow), id: tokenId});
+
+        uint256[] memory stack = LibStackGeneration.generateFlowStack(
+            Sentinel.unwrap(RAIN_FLOW_SENTINEL),
+            FlowTransferV1(new ERC20Transfer[](0), erc721Transfers, new ERC1155Transfer[](0))
+        );
+        interpreterEval2MockCall(stack, new uint256[](0));
+
+        vm.mockCallRevert(TOKEN_B, abi.encodeWithSelector(ERC721_SAFE_TRANSFER_FROM_3), bytes("ERC721_REVERT"));
+
+        vm.startPrank(alice);
+        vm.expectRevert(bytes("ERC721_REVERT"));
+        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        vm.stopPrank();
+    }
+
+    /// A token revert during ERC1155 `safeTransferFrom` MUST bubble up.
+    /// forge-config: default.fuzz.runs = 100
+    function testFlowERC1155TokenRevertBubblesUp(address alice, uint256 tokenId, uint256 amount) external {
+        vm.assume(alice != address(0));
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != tokenId);
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != amount);
+        vm.label(alice, "Alice");
+
+        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        assumeEtchable(alice, address(flow));
+
+        ERC1155Transfer[] memory erc1155Transfers = new ERC1155Transfer[](1);
+        erc1155Transfers[0] =
+            ERC1155Transfer({token: TOKEN_C, from: alice, to: address(flow), id: tokenId, amount: amount});
+
+        uint256[] memory stack = LibStackGeneration.generateFlowStack(
+            Sentinel.unwrap(RAIN_FLOW_SENTINEL),
+            FlowTransferV1(new ERC20Transfer[](0), new ERC721Transfer[](0), erc1155Transfers)
+        );
+        interpreterEval2MockCall(stack, new uint256[](0));
+
+        vm.mockCallRevert(TOKEN_C, abi.encodeWithSelector(IERC1155.safeTransferFrom.selector), bytes("ERC1155_REVERT"));
+
+        vm.startPrank(alice);
+        vm.expectRevert(bytes("ERC1155_REVERT"));
+        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        vm.stopPrank();
+    }
+
     /// `IFlowV5.flow()` MUST process the flow atomically. When a later
     /// transfer fails, the entire flow MUST revert and earlier transfers
     /// must NOT have observable side effects. With mocks, we observe this
