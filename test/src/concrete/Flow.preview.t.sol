@@ -14,6 +14,7 @@ import {
 } from "src/interface/IFlowV5.sol";
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {LibEvaluable} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
+import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
 
 contract FlowPreviewTest is FlowTest {
     using LibEvaluable for EvaluableV2;
@@ -178,7 +179,7 @@ contract FlowPreviewTest is FlowTest {
 
         FlowTransferV1 memory flowTransfer =
             FlowTransferV1(new ERC20Transfer[](0), new ERC721Transfer[](0), new ERC1155Transfer[](0));
-        uint256[] memory stack = generateFlowStack(flowTransfer);
+        uint256[] memory stack = LibStackGeneration.generateFlowStack(Sentinel.unwrap(RAIN_FLOW_SENTINEL), flowTransfer);
         assertEq(
             keccak256(abi.encode(flowTransfer)), keccak256(abi.encode(flow.stackToFlow(stack))), "wrong compare Structs"
         );
