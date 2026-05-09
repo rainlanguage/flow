@@ -3,12 +3,10 @@
 pragma solidity =0.8.25;
 
 import {FlowTest} from "test/abstract/FlowTest.sol";
-import {IFlowV5, RAIN_FLOW_SENTINEL} from "src/interface/IFlowV5.sol";
-import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
+import {IFlowV5} from "src/interface/IFlowV5.sol";
 import {EvaluableV2, SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {DEFAULT_STATE_NAMESPACE} from "rain.interpreter.interface/interface/IInterpreterV2.sol";
 import {IInterpreterStoreV2} from "rain.interpreter.interface/interface/IInterpreterStoreV2.sol";
-import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
 
 contract FlowTimeTest is FlowTest {
     function testFlowBasicFlowTime(uint256[] memory writeToStore) public {
@@ -16,8 +14,7 @@ contract FlowTimeTest is FlowTest {
 
         (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
 
-        uint256[] memory stack =
-            LibStackGeneration.generateFlowStack(Sentinel.unwrap(RAIN_FLOW_SENTINEL), transferEmpty());
+        uint256[] memory stack = generateFlowStack(transferEmpty());
 
         interpreterEval2MockCall(stack, writeToStore);
 

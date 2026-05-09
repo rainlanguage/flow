@@ -3,7 +3,7 @@
 pragma solidity ^0.8.25;
 
 import {Vm} from "forge-std/Test.sol";
-import {FlowTransferOperation} from "test/abstract/FlowTransferOperation.sol";
+import {FlowUtilsAbstractTest} from "test/abstract/FlowUtilsAbstractTest.sol";
 import {InterpreterMockTest} from "test/abstract/InterpreterMockTest.sol";
 import {EvaluableConfigV3} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
@@ -16,7 +16,7 @@ import {Flow} from "src/concrete/Flow.sol";
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
 import {LibUint256Array} from "rain.solmem/lib/LibUint256Array.sol";
 
-abstract contract FlowTest is FlowTransferOperation, InterpreterMockTest {
+abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
     using LibLogHelper for Vm.Log[];
     using LibStackGeneration for uint256;
     using Address for address;
