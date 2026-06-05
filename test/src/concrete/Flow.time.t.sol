@@ -37,7 +37,8 @@ contract FlowTimeTest is FlowTest {
     function testFlowBasicFlowTimeNoStoreSetWhenKvsEmpty() public {
         (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
 
-        uint256[] memory stack = generateFlowStack(transferEmpty());
+        uint256[] memory stack =
+            LibStackGeneration.generateFlowStack(Sentinel.unwrap(RAIN_FLOW_SENTINEL), transferEmpty());
         interpreterEval2MockCall(stack, new uint256[](0));
 
         // Mock set to a no-op so the existing REVERTING_MOCK_BYTECODE on
@@ -56,7 +57,8 @@ contract FlowTimeTest is FlowTest {
 
         (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
 
-        uint256[] memory stack = generateFlowStack(transferEmpty());
+        uint256[] memory stack =
+            LibStackGeneration.generateFlowStack(Sentinel.unwrap(RAIN_FLOW_SENTINEL), transferEmpty());
         interpreterEval2MockCall(stack, writeToStore);
 
         vm.mockCallRevert(address(STORE), abi.encodeWithSelector(IInterpreterStoreV2.set.selector), "STORE_SET_FAILED");
