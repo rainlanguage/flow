@@ -3,9 +3,9 @@
 pragma solidity ^0.8.25;
 
 //forge-lint: disable-next-line(unused-import)
-import {SourceIndex} from "rain.interpreter.interface/interface/deprecated/IInterpreterV1.sol";
-import {Evaluable, EvaluableConfig} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
-import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
+import {SourceIndex} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterV1.sol";
+import {Evaluable, EvaluableConfig} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV1.sol";
+import {SignedContextV1} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV2.sol";
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 
 /// @dev The number of sentinels required by `FlowCommon`. An evaluable can never

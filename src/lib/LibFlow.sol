@@ -11,11 +11,11 @@ import {
     RAIN_FLOW_SENTINEL,
 
     //forge-lint: disable-next-line(unused-import)
-    IFlowV5
-} from "../interface/IFlowV5.sol";
-import {IInterpreterStoreV2} from "rain.interpreter.interface/interface/IInterpreterStoreV2.sol";
+    IFlowV6
+} from "../interface/IFlowV6.sol";
+import {IInterpreterStoreV3} from "rain.interpreter.interface/interface/IInterpreterStoreV3.sol";
 import {LibStackSentinel} from "rain.solmem/lib/LibStackSentinel.sol";
-import {DEFAULT_STATE_NAMESPACE} from "rain.interpreter.interface/interface/IInterpreterV2.sol";
+import {DEFAULT_STATE_NAMESPACE} from "rain.interpreter.interface/interface/IInterpreterV4.sol";
 
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -149,7 +149,7 @@ library LibFlow {
     /// @param flowTransfer The `FlowTransferV1` to process.
     /// @param interpreterStore The `IInterpreterStoreV1` to set state on.
     /// @param kvs The key value pairs to set on the interpreter store.
-    function flow(FlowTransferV1 memory flowTransfer, IInterpreterStoreV2 interpreterStore, uint256[] memory kvs)
+    function flow(FlowTransferV1 memory flowTransfer, IInterpreterStoreV3 interpreterStore, bytes32[] memory kvs)
         internal
     {
         if (kvs.length > 0) {

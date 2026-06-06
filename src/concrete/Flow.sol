@@ -5,20 +5,21 @@ pragma solidity =0.8.25;
 import {LibUint256Array} from "rain.solmem/lib/LibUint256Array.sol";
 import {Pointer} from "rain.solmem/lib/LibPointer.sol";
 import {
-    IInterpreterCallerV2,
+    IInterpreterCallerV4,
     SignedContextV1,
-    EvaluableConfigV3
-} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
-import {LibEncodedDispatch} from "rain.interpreter.interface/lib/caller/LibEncodedDispatch.sol";
+    EvaluableV4
+} from "rain.interpreter.interface/interface/IInterpreterCallerV4.sol";
 import {LibContext} from "rain.interpreter.interface/lib/caller/LibContext.sol";
-import {UnregisteredFlow} from "../interface/IFlowV5.sol";
-import {LibEvaluable, EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
+import {UnregisteredFlow} from "../interface/IFlowV6.sol";
+import {LibEvaluable} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {
+    IInterpreterV4,
+    EvalV4,
+    StackItem,
     SourceIndexV2,
-    IInterpreterV2,
-    IInterpreterStoreV2,
     DEFAULT_STATE_NAMESPACE
-} from "rain.interpreter.interface/interface/IInterpreterV2.sol";
+} from "rain.interpreter.interface/interface/IInterpreterV4.sol";
+import {IInterpreterStoreV3} from "rain.interpreter.interface/interface/IInterpreterStoreV3.sol";
 import {
     MulticallUpgradeable as Multicall
 } from "openzeppelin-contracts-upgradeable/contracts/utils/MulticallUpgradeable.sol";
@@ -31,10 +32,10 @@ import {
 import {
     ReentrancyGuardUpgradeable as ReentrancyGuard
 } from "openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
-import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
+import {LibBytes32Matrix} from "rain.solmem/lib/LibBytes32Matrix.sol";
 import {LibNamespace, StateNamespace} from "rain.interpreter.interface/lib/ns/LibNamespace.sol";
-import {UnsupportedFlowInputs, InsufficientFlowOutputs, EmptyFlowConfig} from "../error/ErrFlow.sol";
-import {IFlowV5, MIN_FLOW_SENTINELS, FlowTransferV1} from "../interface/IFlowV5.sol";
+import {EmptyFlowConfig} from "../error/ErrFlow.sol";
+import {IFlowV6, MIN_FLOW_SENTINELS, FlowTransferV1} from "../interface/IFlowV6.sol";
 import {ICloneableV2, ICLONEABLE_V2_SUCCESS} from "rain.factory/src/interface/ICloneableV2.sol";
 import {LibFlow} from "../lib/LibFlow.sol";
 
@@ -88,10 +89,10 @@ uint256 constant FLOW_IS_NOT_REGISTERED = 0;
 /// This is a known issue with `Multicall` so in the future, we may refactor
 /// `Flow` to not use `Multicall` and instead implement flow batching
 /// directly in the flow contracts.
-contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInterpreterCallerV2, ICloneableV2, IFlowV5 {
+contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInterpreterCallerV4, ICloneableV2, IFlowV6 {
     using LibUint256Array for uint256[];
-    using LibUint256Matrix for uint256[];
-    using LibEvaluable for EvaluableV2;
+    using LibBytes32Matrix for bytes32[];
+    using LibEvaluable for EvaluableV4;
     using LibNamespace for StateNamespace;
 
     /// @dev This mapping tracks all flows that are registered at initialization.
@@ -107,7 +108,7 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
     /// @param evaluable The evaluable of the flow that was registered. The hash
     /// of this evaluable is used as the key in `registeredFlows` so users MUST
     /// provide the same evaluable when they evaluate the flow.
-    event FlowInitialized(address sender, EvaluableV2 evaluable);
+    event FlowInitialized(address sender, EvaluableV4 evaluable);
 
     /// Forwards config to `DeployerDiscoverableMetaV2` and disables
     /// initializers. The initializers are disabled because inheriting contracts
@@ -122,13 +123,13 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
 
     /// Overloaded typed initialize function MUST revert with this error.
     /// As per `ICloneableV2` interface.
-    function initialize(EvaluableConfigV3[] memory) external pure {
+    function initialize(EvaluableV4[] memory) external pure {
         revert InitializeSignatureFn();
     }
 
     /// @inheritdoc ICloneableV2
     function initialize(bytes calldata data) external initializer returns (bytes32) {
-        EvaluableConfigV3[] memory flowConfig = abi.decode(data, (EvaluableConfigV3[]));
+        EvaluableV4[] memory flowConfig = abi.decode(data, (EvaluableV4[]));
         emit Initialize(msg.sender, flowConfig);
 
         flowInit(flowConfig, MIN_FLOW_SENTINELS);
@@ -136,18 +137,22 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
     }
 
     /// @inheritdoc IFlowV5
-    function stackToFlow(uint256[] memory stack) external pure virtual override returns (FlowTransferV1 memory) {
-        return LibFlow.stackToFlow(stack.dataPointer(), stack.endPointer());
+    function stackToFlow(StackItem[] memory stack) external pure virtual override returns (FlowTransferV1 memory) {
+        uint256[] memory stackU;
+        assembly ("memory-safe") {
+            stackU := stack
+        }
+        return LibFlow.stackToFlow(stackU.dataPointer(), stackU.endPointer());
     }
 
     /// @inheritdoc IFlowV5
-    function flow(EvaluableV2 memory evaluable, uint256[] memory callerContext, SignedContextV1[] memory signedContexts)
+    function flow(EvaluableV4 memory evaluable, bytes32[] memory callerContext, SignedContextV1[] memory signedContexts)
         external
         virtual
         nonReentrant
         returns (FlowTransferV1 memory)
     {
-        (Pointer stackBottom, Pointer stackTop, uint256[] memory kvs) =
+        (Pointer stackBottom, Pointer stackTop, bytes32[] memory kvs) =
             _flowStack(evaluable, callerContext, signedContexts);
         FlowTransferV1 memory flowTransfer = LibFlow.stackToFlow(stackBottom, stackTop);
         LibFlow.flow(flowTransfer, evaluable.store, kvs);
@@ -161,7 +166,7 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
     /// movements at runtime for the inheriting contract.
     /// @param flowMinOutputs The minimum number of outputs for each flow. All
     /// flows share the same minimum number of outputs for simplicity.
-    function flowInit(EvaluableConfigV3[] memory evaluableConfigs, uint256 flowMinOutputs) internal onlyInitializing {
+    function flowInit(EvaluableV4[] memory evaluables, uint256 flowMinOutputs) internal onlyInitializing {
         unchecked {
             // First dispatch all the Open Zeppelin initializers.
             __ERC721Holder_init();
@@ -172,7 +177,7 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
             // Reject empty configs at init time — an empty config would
             // produce a permanently inert clone where every `flow()` call
             // reverts with `UnregisteredFlow`.
-            if (evaluableConfigs.length == 0) {
+            if (evaluables.length == 0) {
                 revert EmptyFlowConfig();
             }
 
@@ -183,39 +188,14 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
                 revert BadMinStackLength(flowMinOutputs);
             }
 
-            EvaluableConfigV3 memory config;
-            EvaluableV2 memory evaluable;
-            // Every evaluable MUST deploy cleanly (e.g. pass integrity checks)
-            // otherwise the entire initialization will fail.
-            for (uint256 i = 0; i < evaluableConfigs.length; ++i) {
-                config = evaluableConfigs[i];
-                // Well behaved deployers SHOULD NOT be reentrant into the flow
-                // contract. It is up to the EOA that is initializing this
-                // flow contract to select a deployer that is trustworthy.
-                // Reentrancy is just one of many ways that a malicious deployer
-                // can cause problems, and it's probably the least of your
-                // worries if you're using a malicious deployer.
-                //slither-disable-next-line calls-loop
-                (IInterpreterV2 interpreter, IInterpreterStoreV2 store, address expression, bytes memory io) =
-                    config.deployer.deployExpression2(config.bytecode, config.constants);
-
-                {
-                    uint256 flowInputs;
-                    uint256 flowOutputs;
-                    assembly ("memory-safe") {
-                        let ioWord := mload(add(io, 0x20))
-                        flowInputs := byte(0, ioWord)
-                        flowOutputs := byte(1, ioWord)
-                    }
-                    if (flowInputs != 0) {
-                        revert UnsupportedFlowInputs();
-                    }
-                    if (flowOutputs < flowMinOutputs) {
-                        revert InsufficientFlowOutputs();
-                    }
-                }
-
-                evaluable = EvaluableV2(interpreter, store, expression);
+            EvaluableV4 memory evaluable;
+            // In V4 the caller provides already-compiled evaluables
+            // (interpreter, store, bytecode) directly; there is no deploy-time
+            // integrity check. Flow validity is enforced at eval time by
+            // sentinel consumption against MIN_FLOW_SENTINELS, matching the
+            // upstream RaindexV6 caller model.
+            for (uint256 i = 0; i < evaluables.length; ++i) {
+                evaluable = evaluables[i];
                 // There's no way to set this mapping before the external
                 // contract call because the output of the external contract
                 // call is used to build the evaluable that we're registering.
@@ -247,12 +227,12 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
     /// @return The top of the stack after evaluation.
     /// @return The key-value pairs that were emitted during evaluation.
     function _flowStack(
-        EvaluableV2 memory evaluable,
-        uint256[] memory callerContext,
+        EvaluableV4 memory evaluable,
+        bytes32[] memory callerContext,
         SignedContextV1[] memory signedContexts
-    ) internal returns (Pointer, Pointer, uint256[] memory) {
-        uint256[][] memory context = LibContext.build(callerContext.matrixFrom(), signedContexts);
-        emit Context(msg.sender, context);
+    ) internal returns (Pointer, Pointer, bytes32[] memory) {
+        bytes32[][] memory context = LibContext.build(callerContext.matrixFrom(), signedContexts);
+        emit ContextV2(msg.sender, context);
 
         // Refuse to evaluate unregistered flows.
         {
@@ -262,14 +242,21 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
             }
         }
 
-        (uint256[] memory stack, uint256[] memory kvs) = evaluable.interpreter
-            .eval2(
-                evaluable.store,
-                DEFAULT_STATE_NAMESPACE.qualifyNamespace(address(this)),
-                LibEncodedDispatch.encode2(evaluable.expression, FLOW_ENTRYPOINT, FLOW_MAX_OUTPUTS),
-                context,
-                new uint256[](0)
-            );
-        return (stack.dataPointer(), stack.endPointer(), kvs);
+        (StackItem[] memory stack, bytes32[] memory kvs) = evaluable.interpreter.eval4(
+            EvalV4({
+                store: evaluable.store,
+                namespace: DEFAULT_STATE_NAMESPACE.qualifyNamespace(address(this)),
+                bytecode: evaluable.bytecode,
+                sourceIndex: FLOW_ENTRYPOINT,
+                context: context,
+                inputs: new StackItem[](0),
+                stateOverlay: new bytes32[](0)
+            })
+        );
+        uint256[] memory stackU;
+        assembly ("memory-safe") {
+            stackU := stack
+        }
+        return (stackU.dataPointer(), stackU.endPointer(), kvs);
     }
 }

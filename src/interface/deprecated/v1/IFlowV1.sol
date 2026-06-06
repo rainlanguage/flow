@@ -6,7 +6,7 @@ import {
     EvaluableConfig,
     Evaluable,
     SignedContext
-} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
+} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV1.sol";
 
 /// Thrown for unsupported native transfers.
 error UnsupportedNativeFlow();
