@@ -4,7 +4,7 @@ pragma solidity =0.8.25;
 
 import {Vm} from "forge-std/Test.sol";
 
-import {EvaluableConfigV3} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
+import {EvaluableConfigV3} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV2.sol";
 import {FlowTest} from "test/abstract/FlowTest.sol";
 import {EmptyFlowConfig, InsufficientFlowOutputs, UnsupportedFlowInputs} from "../../../src/error/ErrFlow.sol";
 import {MIN_FLOW_SENTINELS} from "../../../src/interface/IFlowV5.sol";

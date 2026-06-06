@@ -4,13 +4,13 @@ pragma solidity =0.8.25;
 
 import {Test} from "forge-std/Test.sol";
 import {REVERTING_MOCK_BYTECODE} from "./TestConstants.sol";
-import {IInterpreterStoreV2} from "rain.interpreter.interface/interface/IInterpreterStoreV2.sol";
+import {IInterpreterStoreV2} from "rain.interpreter.interface/interface/deprecated/v2/IInterpreterStoreV2.sol";
 import {
     IInterpreterV2,
     EncodedDispatch,
     DEFAULT_STATE_NAMESPACE
-} from "rain.interpreter.interface/interface/IInterpreterV2.sol";
-import {IExpressionDeployerV3} from "rain.interpreter.interface/interface/IExpressionDeployerV3.sol";
+} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterV2.sol";
+import {IExpressionDeployerV3} from "rain.interpreter.interface/interface/deprecated/v1/IExpressionDeployerV3.sol";
 import {LibNamespace, StateNamespace} from "rain.interpreter.interface/lib/ns/LibNamespace.sol";
 
 abstract contract InterpreterMockTest is Test {

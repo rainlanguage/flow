@@ -26,6 +26,8 @@ remappings = [
     "openzeppelin-contracts-upgradeable/contracts/=dependencies/@openzeppelin-contracts-upgradeable-5.6.1/",
     "openzeppelin-contracts/contracts/=dependencies/@openzeppelin-contracts-5.6.1/",
     "openzeppelin/=dependencies/@openzeppelin-contracts-upgradeable-5.6.1/",
+    "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.6.1/",
+    "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.6.1/",
 ]
 
 [fuzz]

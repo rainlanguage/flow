@@ -3,7 +3,7 @@
 pragma solidity ^0.8.25;
 
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
-import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
+import {SignedContextV1} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV2.sol";
 import {LibContext} from "rain.interpreter.interface/lib/caller/LibContext.sol";
 
 /**

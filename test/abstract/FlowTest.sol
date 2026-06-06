@@ -5,7 +5,7 @@ pragma solidity ^0.8.25;
 import {Vm} from "forge-std/Test.sol";
 import {FlowTransferOperation} from "test/abstract/FlowTransferOperation.sol";
 import {InterpreterMockTest} from "test/abstract/InterpreterMockTest.sol";
-import {EvaluableConfigV3} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
+import {EvaluableConfigV3} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV2.sol";
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {CloneFactory} from "rain.factory/src/concrete/CloneFactory.sol";
 import {LibLogHelper} from "test/lib/LibLogHelper.sol";

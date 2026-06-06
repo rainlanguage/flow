@@ -3,7 +3,7 @@
 pragma solidity ^0.8.25;
 
 import {SignedContextV1, EvaluableConfigV3} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV2.sol";
-import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
+import {EvaluableV2} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV2.sol";
 import {SourceIndexV2} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterV2.sol";
 import {
     FlowERC721IOV1,

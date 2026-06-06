@@ -7,7 +7,7 @@ import {FlowTest} from "test/abstract/FlowTest.sol";
 import {SignContextLib} from "test/lib/SignContextLib.sol";
 import {IFlowV5, RAIN_FLOW_SENTINEL} from "../../../src/interface/IFlowV5.sol";
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
-import {EvaluableV2, SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
+import {EvaluableV2, SignedContextV1} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV2.sol";
 import {InvalidSignature} from "rain.interpreter.interface/lib/caller/LibContext.sol";
 import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
 

@@ -23,15 +23,9 @@ import {IInterpreterStoreV3} from "rain.interpreter.interface/interface/IInterpr
 import {
     MulticallUpgradeable as Multicall
 } from "openzeppelin-contracts-upgradeable/contracts/utils/MulticallUpgradeable.sol";
-import {
-    ERC721HolderUpgradeable as ERC721Holder
-} from "openzeppelin-contracts-upgradeable/contracts/token/ERC721/utils/ERC721HolderUpgradeable.sol";
-import {
-    ERC1155HolderUpgradeable as ERC1155Holder
-} from "openzeppelin-contracts-upgradeable/contracts/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
-import {
-    ReentrancyGuardUpgradeable as ReentrancyGuard
-} from "openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
+import {ERC721Holder} from "openzeppelin-contracts/contracts/token/ERC721/utils/ERC721Holder.sol";
+import {ERC1155Holder} from "openzeppelin-contracts/contracts/token/ERC1155/utils/ERC1155Holder.sol";
+import {ReentrancyGuard} from "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
 import {LibBytes32Matrix} from "rain.solmem/lib/LibBytes32Matrix.sol";
 import {LibNamespace, StateNamespace} from "rain.interpreter.interface/lib/ns/LibNamespace.sol";
 import {EmptyFlowConfig} from "../error/ErrFlow.sol";
@@ -169,10 +163,7 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
     function flowInit(EvaluableV4[] memory evaluables, uint256 flowMinOutputs) internal onlyInitializing {
         unchecked {
             // First dispatch all the Open Zeppelin initializers.
-            __ERC721Holder_init();
-            __ERC1155Holder_init();
             __Multicall_init();
-            __ReentrancyGuard_init();
 
             // Reject empty configs at init time — an empty config would
             // produce a permanently inert clone where every `flow()` call
