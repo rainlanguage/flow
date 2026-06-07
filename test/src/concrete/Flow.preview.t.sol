@@ -5,20 +5,20 @@ pragma solidity =0.8.25;
 import {FlowTest} from "test/abstract/FlowTest.sol";
 import {MissingSentinel, Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {
-    IFlowV5,
+    IFlowV6,
     FlowTransferV1,
     ERC20Transfer,
     ERC721Transfer,
     ERC1155Transfer,
     RAIN_FLOW_SENTINEL,
     Sentinel
-} from "../../../src/interface/IFlowV5.sol";
-import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
+} from "../../../src/interface/IFlowV6.sol";
+import {EvaluableV4} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {LibEvaluable} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
 
 contract FlowPreviewTest is FlowTest {
-    using LibEvaluable for EvaluableV2;
+    using LibEvaluable for EvaluableV4;
 
     /**
      * @dev Tests the preview of defined Flow IO for ERC1155
@@ -32,7 +32,7 @@ contract FlowPreviewTest is FlowTest {
     ) external {
         vm.label(alice, "alice");
 
-        (IFlowV5 flow,) = deployFlow();
+        (IFlowV6 flow,) = deployFlow();
         assumeEtchable(alice, address(flow));
         {
             (uint256[] memory stack, bytes32 transferHash) = mintAndBurnFlowStack(
@@ -43,7 +43,9 @@ contract FlowPreviewTest is FlowTest {
                 multiTransferERC1155(alice, address(flow), erc1155TokenId, erc1155Amount, erc1155TokenId, erc1155Amount)
             );
 
-            assertEq(transferHash, keccak256(abi.encode(flow.stackToFlow(stack))), "wrong compare Structs");
+            assertEq(
+                transferHash, keccak256(abi.encode(flow.stackToFlow(asStackItems(stack)))), "wrong compare Structs"
+            );
         }
     }
 
@@ -59,14 +61,14 @@ contract FlowPreviewTest is FlowTest {
     ) external {
         vm.label(alice, "alice");
 
-        (IFlowV5 flow,) = deployFlow();
+        (IFlowV6 flow,) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         (uint256[] memory stack, bytes32 transferHash) = mintAndBurnFlowStack(
             alice, 20 ether, 10 ether, 5, multiTransferERC721(alice, address(flow), erc721TokenIdA, erc721TokenIdB)
         );
 
-        assertEq(transferHash, keccak256(abi.encode(flow.stackToFlow(stack))), "wrong compare Structs");
+        assertEq(transferHash, keccak256(abi.encode(flow.stackToFlow(asStackItems(stack)))), "wrong compare Structs");
     }
 
     /**
@@ -81,14 +83,14 @@ contract FlowPreviewTest is FlowTest {
     ) external {
         vm.label(alice, "alice");
 
-        (IFlowV5 flow,) = deployFlow();
+        (IFlowV6 flow,) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         (uint256[] memory stack, bytes32 transferHash) = mintAndBurnFlowStack(
             alice, 20 ether, 10 ether, 5, multiTransfersERC20(alice, address(flow), erc20AmountA, erc20AmountB)
         );
 
-        assertEq(transferHash, keccak256(abi.encode(flow.stackToFlow(stack))), "wrong compare Structs");
+        assertEq(transferHash, keccak256(abi.encode(flow.stackToFlow(asStackItems(stack)))), "wrong compare Structs");
     }
 
     /**
@@ -103,7 +105,7 @@ contract FlowPreviewTest is FlowTest {
     ) external {
         vm.label(alice, "alice");
 
-        (IFlowV5 flow,) = deployFlow();
+        (IFlowV6 flow,) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         (uint256[] memory stack, bytes32 transferHash) = mintAndBurnFlowStack(
@@ -116,7 +118,7 @@ contract FlowPreviewTest is FlowTest {
             )
         );
 
-        assertEq(transferHash, keccak256(abi.encode(flow.stackToFlow(stack))), "wrong compare Structs");
+        assertEq(transferHash, keccak256(abi.encode(flow.stackToFlow(asStackItems(stack)))), "wrong compare Structs");
     }
 
     /**
@@ -131,7 +133,7 @@ contract FlowPreviewTest is FlowTest {
     ) external {
         vm.label(alice, "alice");
 
-        (IFlowV5 flow,) = deployFlow();
+        (IFlowV6 flow,) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         (uint256[] memory stack, bytes32 transferHash) = mintAndBurnFlowStack(
@@ -142,7 +144,7 @@ contract FlowPreviewTest is FlowTest {
             createTransferERC721ToERC721(alice, address(flow), erc721TokenInId, erc721TokenOutId)
         );
 
-        assertEq(transferHash, keccak256(abi.encode(flow.stackToFlow(stack))), "wrong compare Structs");
+        assertEq(transferHash, keccak256(abi.encode(flow.stackToFlow(asStackItems(stack)))), "wrong compare Structs");
     }
 
     /**
@@ -157,7 +159,7 @@ contract FlowPreviewTest is FlowTest {
     ) external {
         vm.label(alice, "alice");
 
-        (IFlowV5 flow,) = deployFlow();
+        (IFlowV6 flow,) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         (uint256[] memory stack, bytes32 transferHash) = mintAndBurnFlowStack(
@@ -168,7 +170,7 @@ contract FlowPreviewTest is FlowTest {
             createTransfersERC20toERC20(alice, address(flow), erc20AmountIn, erc20AmountOut)
         );
 
-        assertEq(transferHash, keccak256(abi.encode(flow.stackToFlow(stack))), "wrong compare Structs");
+        assertEq(transferHash, keccak256(abi.encode(flow.stackToFlow(asStackItems(stack)))), "wrong compare Structs");
     }
 
     /**
@@ -176,13 +178,15 @@ contract FlowPreviewTest is FlowTest {
      */
     /// forge-config: default.fuzz.runs = 100
     function testFlowBasePreviewEmptyFlowIO() public {
-        (IFlowV5 flow,) = deployFlow();
+        (IFlowV6 flow,) = deployFlow();
 
         FlowTransferV1 memory flowTransfer =
             FlowTransferV1(new ERC20Transfer[](0), new ERC721Transfer[](0), new ERC1155Transfer[](0));
         uint256[] memory stack = LibStackGeneration.generateFlowStack(Sentinel.unwrap(RAIN_FLOW_SENTINEL), flowTransfer);
         assertEq(
-            keccak256(abi.encode(flowTransfer)), keccak256(abi.encode(flow.stackToFlow(stack))), "wrong compare Structs"
+            keccak256(abi.encode(flowTransfer)),
+            keccak256(abi.encode(flow.stackToFlow(asStackItems(stack)))),
+            "wrong compare Structs"
         );
     }
 
@@ -192,7 +196,7 @@ contract FlowPreviewTest is FlowTest {
     /// rainlang author writes — so that any future reorder of the struct
     /// fields produces field-named assertions that fail.
     function testFlowStackToFlowFieldOrderPinned() external {
-        (IFlowV5 flow,) = deployFlow();
+        (IFlowV6 flow,) = deployFlow();
 
         // Stack layout (low index = bottom of stack, high index = top; top is
         // consumed first by stackToFlow):
@@ -217,7 +221,7 @@ contract FlowPreviewTest is FlowTest {
         stack[14] = uint256(uint160(0xA2)); // erc20 to
         stack[15] = 0xA3A3; // erc20 amount
 
-        FlowTransferV1 memory result = flow.stackToFlow(stack);
+        FlowTransferV1 memory result = flow.stackToFlow(asStackItems(stack));
 
         assertEq(result.erc20.length, 1, "erc20 length");
         assertEq(result.erc20[0].token, address(uint160(0xA0)), "erc20 token");
@@ -239,31 +243,31 @@ contract FlowPreviewTest is FlowTest {
         assertEq(result.erc1155[0].amount, 0xC4C4, "erc1155 amount");
     }
 
-    /// `IFlowV5.stackToFlow` MAY revert if the stack is malformed. The
+    /// `IFlowV6.stackToFlow` MAY revert if the stack is malformed. The
     /// observable revert is `MissingSentinel(RAIN_FLOW_SENTINEL)` from
     /// `LibStackSentinel.consumeSentinelTuples` when any of the three
     /// required sentinels is absent.
     function testStackToFlowRevertsOnEmptyStack() external {
-        (IFlowV5 flow,) = deployFlow();
+        (IFlowV6 flow,) = deployFlow();
         uint256[] memory stack = new uint256[](0);
         vm.expectRevert(abi.encodeWithSelector(MissingSentinel.selector, RAIN_FLOW_SENTINEL));
-        flow.stackToFlow(stack);
+        flow.stackToFlow(asStackItems(stack));
     }
 
     function testStackToFlowRevertsOnOneSentinelOnly() external {
-        (IFlowV5 flow,) = deployFlow();
+        (IFlowV6 flow,) = deployFlow();
         uint256[] memory stack = new uint256[](1);
         stack[0] = Sentinel.unwrap(RAIN_FLOW_SENTINEL);
         vm.expectRevert(abi.encodeWithSelector(MissingSentinel.selector, RAIN_FLOW_SENTINEL));
-        flow.stackToFlow(stack);
+        flow.stackToFlow(asStackItems(stack));
     }
 
     function testStackToFlowRevertsOnTwoSentinelsOnly() external {
-        (IFlowV5 flow,) = deployFlow();
+        (IFlowV6 flow,) = deployFlow();
         uint256[] memory stack = new uint256[](2);
         stack[0] = Sentinel.unwrap(RAIN_FLOW_SENTINEL);
         stack[1] = Sentinel.unwrap(RAIN_FLOW_SENTINEL);
         vm.expectRevert(abi.encodeWithSelector(MissingSentinel.selector, RAIN_FLOW_SENTINEL));
-        flow.stackToFlow(stack);
+        flow.stackToFlow(asStackItems(stack));
     }
 }

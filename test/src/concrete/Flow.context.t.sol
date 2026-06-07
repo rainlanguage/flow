@@ -3,11 +3,10 @@
 pragma solidity =0.8.25;
 
 import {FlowTest} from "test/abstract/FlowTest.sol";
-import {IFlowV5, RAIN_FLOW_SENTINEL} from "../../../src/interface/IFlowV5.sol";
+import {IFlowV6, RAIN_FLOW_SENTINEL} from "../../../src/interface/IFlowV6.sol";
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
-import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
+import {EvaluableV4} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {FLOW_MAX_OUTPUTS, FLOW_ENTRYPOINT} from "../../../src/concrete/Flow.sol";
-import {LibEncodedDispatch} from "rain.interpreter.interface/lib/caller/LibEncodedDispatch.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV2.sol";
 import {LibContextWrapper} from "test/lib/LibContextWrapper.sol";
 import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
@@ -22,7 +21,7 @@ contract FlowContextTest is FlowTest {
         SignedContextV1[] memory signedContext = new SignedContextV1[](0);
         vm.label(alice, "Alice");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
 
         uint256[][] memory context =
             LibContextWrapper.buildAndSetContext(callerContext, signedContext, address(alice), address(flow));
@@ -33,14 +32,10 @@ contract FlowContextTest is FlowTest {
 
             interpreterEval2MockCall(stack, new uint256[](0));
 
-            interpreterEval2ExpectCall(
-                address(flow),
-                LibEncodedDispatch.encode2(evaluable.expression, FLOW_ENTRYPOINT, FLOW_MAX_OUTPUTS),
-                context
-            );
+            interpreterEval2ExpectCall(address(flow), context);
         }
         vm.startPrank(alice);
-        flow.flow(evaluable, callerContext, signedContext);
+        flow.flow(evaluable, asBytes32(callerContext), signedContext);
         vm.stopPrank();
     }
 }

@@ -2,7 +2,10 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.25;
 
-import {Evaluable, EvaluableConfigV2} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV1.sol";
+import {
+    Evaluable,
+    EvaluableConfigV2
+} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV1.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV2.sol";
 //forge-lint: disable-next-line(unused-import)
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";

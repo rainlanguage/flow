@@ -4,15 +4,15 @@ pragma solidity =0.8.25;
 
 import {FlowTest} from "test/abstract/FlowTest.sol";
 import {
-    IFlowV5,
+    IFlowV6,
     FlowTransferV1,
     ERC20Transfer,
     ERC721Transfer,
     ERC1155Transfer,
     RAIN_FLOW_SENTINEL,
     Sentinel
-} from "../../../src/interface/IFlowV5.sol";
-import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
+} from "../../../src/interface/IFlowV6.sol";
+import {EvaluableV4} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV2.sol";
 import {LibEvaluable} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
@@ -24,7 +24,6 @@ import {
 } from "../../../src/error/ErrFlow.sol";
 
 import {FLOW_ENTRYPOINT, FLOW_MAX_OUTPUTS} from "../../../src/concrete/Flow.sol";
-import {LibEncodedDispatch} from "rain.interpreter.interface/lib/caller/LibEncodedDispatch.sol";
 import {LibContextWrapper} from "test/lib/LibContextWrapper.sol";
 import {IERC721} from "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import {IERC1155} from "openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
@@ -42,7 +41,7 @@ interface IERC721SafeTransferFromV3 {
 bytes4 constant ERC721_SAFE_TRANSFER_FROM_3 = IERC721SafeTransferFromV3.safeTransferFrom.selector;
 
 contract FlowTransferTest is FlowTest {
-    using LibEvaluable for EvaluableV2;
+    using LibEvaluable for EvaluableV4;
 
     /// forge-config: default.fuzz.runs = 100
     function testFlowERC721ToERC1155(
@@ -54,7 +53,7 @@ contract FlowTransferTest is FlowTest {
         vm.assume(address(0) != alice);
         vm.label(alice, "Alice");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         {
@@ -70,7 +69,7 @@ contract FlowTransferTest is FlowTest {
 
         {
             vm.startPrank(alice);
-            flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+            flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
             vm.stopPrank();
         }
     }
@@ -79,7 +78,7 @@ contract FlowTransferTest is FlowTest {
     function testFlowERC20ToERC721(address alice, uint256 erc20InAmount, uint256 erc721OutTokenId) external {
         vm.label(alice, "Alice");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         {
@@ -94,7 +93,7 @@ contract FlowTransferTest is FlowTest {
         }
 
         vm.startPrank(alice);
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
 
@@ -102,7 +101,7 @@ contract FlowTransferTest is FlowTest {
     function testFlowERC1155ToERC1155(address alice, uint256 erc1155TokenId, uint256 erc1155Amount) external {
         vm.label(alice, "Alice");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         {
@@ -119,7 +118,7 @@ contract FlowTransferTest is FlowTest {
         }
 
         vm.startPrank(alice);
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
 
@@ -129,7 +128,7 @@ contract FlowTransferTest is FlowTest {
         vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc721InTokenId);
         vm.label(alice, "Alice");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         {
@@ -144,7 +143,7 @@ contract FlowTransferTest is FlowTest {
         }
 
         vm.startPrank(alice);
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
 
@@ -152,7 +151,7 @@ contract FlowTransferTest is FlowTest {
     function testFlowERC20ToERC20(address alice, uint256 erc20OutAmount, uint256 erc20InAmount) external {
         vm.label(alice, "Alice");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         {
@@ -163,7 +162,7 @@ contract FlowTransferTest is FlowTest {
         }
 
         vm.startPrank(alice);
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
 
@@ -178,7 +177,7 @@ contract FlowTransferTest is FlowTest {
         vm.label(alice, "Alice");
         vm.label(bob, "Bob");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(alice, address(flow));
         assumeEtchable(bob, address(flow));
 
@@ -197,7 +196,7 @@ contract FlowTransferTest is FlowTest {
 
         vm.startPrank(alice);
         vm.expectRevert(abi.encodeWithSelector(UnsupportedERC20Flow.selector));
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
 
         {
@@ -216,7 +215,7 @@ contract FlowTransferTest is FlowTest {
 
         vm.startPrank(alice);
         vm.expectRevert(abi.encodeWithSelector(UnsupportedERC20Flow.selector));
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
 
@@ -232,7 +231,7 @@ contract FlowTransferTest is FlowTest {
         vm.label(alice, "Alice");
         vm.label(bob, "Bob");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(alice, address(flow));
         assumeEtchable(bob, address(flow));
 
@@ -251,7 +250,7 @@ contract FlowTransferTest is FlowTest {
 
         vm.startPrank(alice);
         vm.expectRevert(abi.encodeWithSelector(UnsupportedERC721Flow.selector));
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
 
@@ -272,7 +271,7 @@ contract FlowTransferTest is FlowTest {
         vm.label(alice, "Alice");
         vm.label(bob, "Bob");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
 
         assumeEtchable(alice, address(flow));
         assumeEtchable(bob, address(flow));
@@ -297,7 +296,7 @@ contract FlowTransferTest is FlowTest {
 
         vm.startPrank(alice);
         vm.expectRevert(abi.encodeWithSelector(UnsupportedERC1155Flow.selector));
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
 
@@ -314,15 +313,15 @@ contract FlowTransferTest is FlowTest {
         address[] memory expressionsA = new address[](1);
         expressionsA[0] = expressionA;
 
-        (, EvaluableV2[] memory evaluables) = deployFlow(expressionsA, new uint256[][](1));
+        (, EvaluableV4[] memory evaluables) = deployFlow(expressionsA, new uint256[][](1));
 
         address[] memory expressionsB = new address[](1);
         expressionsB[0] = expressionB;
 
-        (IFlowV5 flowB,) = deployFlow(expressionsB, new uint256[][](1));
+        (IFlowV6 flowB,) = deployFlow(expressionsB, new uint256[][](1));
         vm.startPrank(alice);
         vm.expectRevert(abi.encodeWithSelector(UnregisteredFlow.selector, evaluables[0].hash()));
-        flowB.flow(evaluables[0], new uint256[](0), new SignedContextV1[](0));
+        flowB.flow(evaluables[0], new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
 
@@ -331,7 +330,7 @@ contract FlowTransferTest is FlowTest {
      */
     /// forge-config: default.fuzz.runs = 100
     function testFlowHaltIfEnsureRequirementNotMet() external {
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(address(0), address(flow));
 
         (uint256[] memory stack,) = mintAndBurnFlowStack(address(this), 20 ether, 10 ether, 5, transferEmpty());
@@ -341,16 +340,14 @@ contract FlowTransferTest is FlowTest {
             new uint256[](0), new SignedContextV1[](0), address(this), address(flow)
         );
 
-        interpreterEval2RevertCall(
-            address(flow), LibEncodedDispatch.encode2(evaluable.expression, FLOW_ENTRYPOINT, FLOW_MAX_OUTPUTS), context
-        );
+        interpreterEval2RevertCall(address(flow), context);
 
-        vm.expectRevert("REVERT_EVAL2_CALL");
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        vm.expectRevert("REVERT_EVAL4_CALL");
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
     }
 
     /// Pins the execution order ERC20 → ERC721 → ERC1155 against the upstream
-    /// invariant in `IFlowV5` and `LibFlow.flow`. If ERC20 reverts, neither
+    /// invariant in `IFlowV6` and `LibFlow.flow`. If ERC20 reverts, neither
     /// ERC721 nor ERC1155 must be called — this proves ERC20 is processed
     /// before the other two types.
     /// forge-config: default.fuzz.runs = 100
@@ -368,7 +365,7 @@ contract FlowTransferTest is FlowTest {
         vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc1155Amount);
         vm.label(alice, "Alice");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](1);
@@ -391,7 +388,7 @@ contract FlowTransferTest is FlowTest {
 
         vm.startPrank(alice);
         vm.expectRevert();
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
 
@@ -412,7 +409,7 @@ contract FlowTransferTest is FlowTest {
         vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != erc1155Amount);
         vm.label(alice, "Alice");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](1);
@@ -434,7 +431,7 @@ contract FlowTransferTest is FlowTest {
 
         vm.startPrank(alice);
         vm.expectRevert();
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
 
@@ -447,7 +444,7 @@ contract FlowTransferTest is FlowTest {
         vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != amount);
         vm.label(alice, "Alice");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](1);
@@ -463,7 +460,7 @@ contract FlowTransferTest is FlowTest {
 
         vm.startPrank(alice);
         vm.expectRevert(bytes("TOKEN_REVERT"));
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
 
@@ -474,7 +471,7 @@ contract FlowTransferTest is FlowTest {
         vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != tokenId);
         vm.label(alice, "Alice");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         ERC721Transfer[] memory erc721Transfers = new ERC721Transfer[](1);
@@ -490,7 +487,7 @@ contract FlowTransferTest is FlowTest {
 
         vm.startPrank(alice);
         vm.expectRevert(bytes("ERC721_REVERT"));
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
 
@@ -502,7 +499,7 @@ contract FlowTransferTest is FlowTest {
         vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != amount);
         vm.label(alice, "Alice");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         ERC1155Transfer[] memory erc1155Transfers = new ERC1155Transfer[](1);
@@ -519,11 +516,11 @@ contract FlowTransferTest is FlowTest {
 
         vm.startPrank(alice);
         vm.expectRevert(bytes("ERC1155_REVERT"));
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
 
-    /// `IFlowV5.flow()` MUST process the flow atomically. When a later
+    /// `IFlowV6.flow()` MUST process the flow atomically. When a later
     /// transfer fails, the entire flow MUST revert and earlier transfers
     /// must NOT have observable side effects. With mocks, we observe this
     /// by asserting the outer revert (transaction revert rolls back any
@@ -545,7 +542,7 @@ contract FlowTransferTest is FlowTest {
         vm.label(alice, "Alice");
         vm.label(bob, "Bob");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(alice, address(flow));
         assumeEtchable(bob, address(flow));
 
@@ -568,11 +565,11 @@ contract FlowTransferTest is FlowTest {
 
         vm.startPrank(alice);
         vm.expectRevert(UnsupportedERC1155Flow.selector);
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
 
-    /// `IFlowV5.flow()` MUST revert if the evaluable returns a malformed
+    /// `IFlowV6.flow()` MUST revert if the evaluable returns a malformed
     /// stack. The observable revert is `MissingSentinel(RAIN_FLOW_SENTINEL)`
     /// from `LibStackSentinel.consumeSentinelTuples`.
     /// forge-config: default.fuzz.runs = 100
@@ -580,7 +577,7 @@ contract FlowTransferTest is FlowTest {
         vm.assume(alice != address(0));
         vm.label(alice, "Alice");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         uint256[] memory stack = new uint256[](0);
@@ -588,7 +585,7 @@ contract FlowTransferTest is FlowTest {
 
         vm.startPrank(alice);
         vm.expectRevert(abi.encodeWithSelector(MissingSentinel.selector, RAIN_FLOW_SENTINEL));
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
 
@@ -597,7 +594,7 @@ contract FlowTransferTest is FlowTest {
         vm.assume(alice != address(0));
         vm.label(alice, "Alice");
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(alice, address(flow));
 
         uint256[] memory stack = new uint256[](1);
@@ -606,7 +603,7 @@ contract FlowTransferTest is FlowTest {
 
         vm.startPrank(alice);
         vm.expectRevert(abi.encodeWithSelector(MissingSentinel.selector, RAIN_FLOW_SENTINEL));
-        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
 }

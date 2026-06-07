@@ -10,14 +10,19 @@ import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {Pointer} from "rain.solmem/lib/LibPointer.sol";
 import {
     FlowTransferV1,
+
     //forge-lint: disable-next-line(unused-import)
     ERC20Transfer,
+
     //forge-lint: disable-next-line(unused-import)
     ERC721Transfer,
+
     //forge-lint: disable-next-line(unused-import)
     ERC1155Transfer,
+
     //forge-lint: disable-next-line(unused-import)
     RAIN_FLOW_SENTINEL,
+
     //forge-lint: disable-next-line(unused-import)
     MIN_FLOW_SENTINELS
 } from "./deprecated/v4/IFlowV4.sol";
@@ -28,6 +33,11 @@ import {UnregisteredFlow} from "../error/ErrFlow.sol";
 /// @notice V4-interpreter flow: evaluables carry bytecode directly (no expression
 /// deployment), context + stack are bytes32-based.
 interface IFlowV6 {
+    /// Emitted when a flow contract is initialized with its evaluables.
+    /// @param sender The `msg.sender` that initialized the flow.
+    /// @param config The evaluables registered at initialization.
+    event Initialize(address sender, EvaluableV4[] config);
+
     function stackToFlow(StackItem[] memory stack) external pure returns (FlowTransferV1 memory flowTransfer);
     function flow(
         EvaluableV4 calldata evaluable,

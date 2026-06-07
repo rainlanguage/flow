@@ -130,7 +130,7 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
         return ICLONEABLE_V2_SUCCESS;
     }
 
-    /// @inheritdoc IFlowV5
+    /// @inheritdoc IFlowV6
     function stackToFlow(StackItem[] memory stack) external pure virtual override returns (FlowTransferV1 memory) {
         uint256[] memory stackU;
         assembly ("memory-safe") {
@@ -139,7 +139,7 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
         return LibFlow.stackToFlow(stackU.dataPointer(), stackU.endPointer());
     }
 
-    /// @inheritdoc IFlowV5
+    /// @inheritdoc IFlowV6
     function flow(EvaluableV4 memory evaluable, bytes32[] memory callerContext, SignedContextV1[] memory signedContexts)
         external
         virtual
@@ -155,7 +155,7 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
 
     /// Common initialization logic for inheriting contracts. This MUST be
     /// called by inheriting contracts in their initialization logic (and only).
-    /// @param evaluableConfigs The evaluable configs to register at
+    /// @param evaluables The evaluable configs to register at
     /// initialization. Each of these represents a flow that defines valid token
     /// movements at runtime for the inheriting contract.
     /// @param flowMinOutputs The minimum number of outputs for each flow. All
@@ -233,17 +233,18 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
             }
         }
 
-        (StackItem[] memory stack, bytes32[] memory kvs) = evaluable.interpreter.eval4(
-            EvalV4({
-                store: evaluable.store,
-                namespace: DEFAULT_STATE_NAMESPACE.qualifyNamespace(address(this)),
-                bytecode: evaluable.bytecode,
-                sourceIndex: FLOW_ENTRYPOINT,
-                context: context,
-                inputs: new StackItem[](0),
-                stateOverlay: new bytes32[](0)
-            })
-        );
+        (StackItem[] memory stack, bytes32[] memory kvs) = evaluable.interpreter
+            .eval4(
+                EvalV4({
+                    store: evaluable.store,
+                    namespace: DEFAULT_STATE_NAMESPACE.qualifyNamespace(address(this)),
+                    bytecode: evaluable.bytecode,
+                    sourceIndex: FLOW_ENTRYPOINT,
+                    context: context,
+                    inputs: new StackItem[](0),
+                    stateOverlay: new bytes32[](0)
+                })
+            );
         uint256[] memory stackU;
         assembly ("memory-safe") {
             stackU := stack

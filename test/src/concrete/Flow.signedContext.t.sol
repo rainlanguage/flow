@@ -5,9 +5,9 @@ pragma solidity =0.8.25;
 import {Vm} from "forge-std/Test.sol";
 import {FlowTest} from "test/abstract/FlowTest.sol";
 import {SignContextLib} from "test/lib/SignContextLib.sol";
-import {IFlowV5, RAIN_FLOW_SENTINEL} from "../../../src/interface/IFlowV5.sol";
+import {IFlowV6, RAIN_FLOW_SENTINEL} from "../../../src/interface/IFlowV6.sol";
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
-import {EvaluableV2, SignedContextV1} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV2.sol";
+import {EvaluableV4, SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV4.sol";
 import {InvalidSignature} from "rain.interpreter.interface/lib/caller/LibContext.sol";
 import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
 
@@ -23,7 +23,7 @@ contract FlowSignedContextTest is FlowTest {
         uint256 fuzzedKeyBob
     ) public {
         vm.assume(fuzzedKeyBob != fuzzedKeyAlice);
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
 
         // Ensure the fuzzed key is within the valid range for secp256k1
         uint256 aliceKey = (fuzzedKeyAlice % (SECP256K1_ORDER - 1)) + 1;
@@ -38,7 +38,7 @@ contract FlowSignedContextTest is FlowTest {
             LibStackGeneration.generateFlowStack(Sentinel.unwrap(RAIN_FLOW_SENTINEL), transferEmpty());
 
         interpreterEval2MockCall(stack, new uint256[](0));
-        flow.flow(evaluable, new uint256[](0), signedContexts);
+        flow.flow(evaluable, new bytes32[](0), signedContexts);
 
         // With bad signature in second signed context
         SignedContextV1[] memory signedContexts1 = new SignedContextV1[](2);
@@ -46,7 +46,7 @@ contract FlowSignedContextTest is FlowTest {
         signedContexts1[1] = vm.signContext(aliceKey, bobKey, context1);
 
         vm.expectRevert(abi.encodeWithSelector(InvalidSignature.selector, 1));
-        flow.flow(evaluable, new uint256[](0), signedContexts1);
+        flow.flow(evaluable, new bytes32[](0), signedContexts1);
     }
 
     /// Should validate a signed context
@@ -57,7 +57,7 @@ contract FlowSignedContextTest is FlowTest {
         uint256 fuzzedKeyBob
     ) public {
         vm.assume(fuzzedKeyBob != fuzzedKeyAlice);
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
 
         // Ensure the fuzzed key is within the valid range for secp256k1
         uint256 aliceKey = (fuzzedKeyAlice % (SECP256K1_ORDER - 1)) + 1;
@@ -69,13 +69,13 @@ contract FlowSignedContextTest is FlowTest {
         uint256[] memory stack =
             LibStackGeneration.generateFlowStack(Sentinel.unwrap(RAIN_FLOW_SENTINEL), transferEmpty());
         interpreterEval2MockCall(stack, new uint256[](0));
-        flow.flow(evaluable, new uint256[](0), signedContext);
+        flow.flow(evaluable, new bytes32[](0), signedContext);
 
         // With bad signature in second signed context
         SignedContextV1[] memory signedContext1 = new SignedContextV1[](1);
         signedContext1[0] = vm.signContext(aliceKey, bobKey, context0);
 
         vm.expectRevert(abi.encodeWithSelector(InvalidSignature.selector, 0));
-        flow.flow(evaluable, new uint256[](0), signedContext1);
+        flow.flow(evaluable, new bytes32[](0), signedContext1);
     }
 }
