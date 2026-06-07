@@ -18,6 +18,7 @@ optimizer_runs = 1000000
 
 bytecode_hash = "none"
 cbor_metadata = false
+fs_permissions = [{ access = "read-write", path = "./src/generated"}]
 remappings = [
     "forge-std/=dependencies/forge-std-1.16.1/src/",
     "rain.factory/=dependencies/rain-factory-0.1.1/",
@@ -46,6 +47,22 @@ rain-lib-hash = "0.1.0"
 rain-math-float = "0.1.1"
 rain-metadata = "0.1.0"
 rain-lib-typecast = "0.1.0"
+rain-deploy = "0.1.2"
+rain-sol-codegen = "0.1.0"
 
 [soldeer]
 recursive_deps = false
+
+[rpc_endpoints]
+arbitrum = "${ARBITRUM_RPC_URL}"
+base = "${BASE_RPC_URL}"
+base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
+flare = "${FLARE_RPC_URL}"
+polygon = "${POLYGON_RPC_URL}"
+
+[etherscan]
+arbitrum = { key = "${CI_DEPLOY_ARBITRUM_ETHERSCAN_API_KEY}" }
+base = { key = "${CI_DEPLOY_BASE_ETHERSCAN_API_KEY}" }
+base_sepolia = { key = "${CI_DEPLOY_BASE_SEPOLIA_ETHERSCAN_API_KEY}" }
+flare = { key = "${CI_DEPLOY_FLARE_ETHERSCAN_API_KEY}" }
+polygon = { key = "${CI_DEPLOY_POLYGON_ETHERSCAN_API_KEY}" }
