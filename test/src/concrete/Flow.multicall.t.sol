@@ -21,8 +21,9 @@ contract FlowMulticallTest is FlowTest {
     function mockBothFlows(address flow, address bob, uint256 tokenId, uint256 amount) internal {
         (uint256[] memory stackA,) =
             mintAndBurnFlowStack(bob, 20 ether, 10 ether, 5, transfersERC20toERC20(bob, flow, amount, amount));
-        (uint256[] memory stackB,) =
-            mintAndBurnFlowStack(bob, 20 ether, 10 ether, 5, transferERC721ToERC1155(flow, bob, tokenId, amount, tokenId));
+        (uint256[] memory stackB,) = mintAndBurnFlowStack(
+            bob, 20 ether, 10 ether, 5, transferERC721ToERC1155(flow, bob, tokenId, amount, tokenId)
+        );
         StackItem[] memory sA;
         StackItem[] memory sB;
         assembly ("memory-safe") {
