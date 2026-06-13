@@ -5,13 +5,14 @@ pragma solidity =0.8.25;
 import {Vm} from "forge-std/Test.sol";
 
 import {FlowTest} from "test/abstract/FlowTest.sol";
-import {IFlowV5} from "src/interface/IFlowV5.sol";
+import {IFlowV5} from "../../../src/interface/IFlowV5.sol";
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
 import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
 import {LibContextWrapper} from "test/lib/LibContextWrapper.sol";
 import {IInterpreterCallerV2} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {SignContextLib} from "test/lib/SignContextLib.sol";
+import {LibLogHelper} from "test/lib/LibLogHelper.sol";
 
 contract FlowExpressionTest is FlowTest, IInterpreterCallerV2 {
     using SignContextLib for Vm;
@@ -74,7 +75,7 @@ contract FlowExpressionTest is FlowTest, IInterpreterCallerV2 {
             );
 
             Vm.Log[] memory logs = vm.getRecordedLogs();
-            Vm.Log memory log = findEvent(logs, keccak256("Context(address,uint256[][])"));
+            Vm.Log memory log = LibLogHelper.findEvent(logs, keccak256("Context(address,uint256[][])"));
             (address sender, uint256[][] memory buildContextOutput) = abi.decode(log.data, (address, uint256[][]));
 
             assertEq(sender, address(this), "wrong sender");
