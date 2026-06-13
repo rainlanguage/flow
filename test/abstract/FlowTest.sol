@@ -3,7 +3,7 @@
 pragma solidity ^0.8.25;
 
 import {Vm} from "forge-std/Test.sol";
-import {FlowUtilsAbstractTest} from "test/abstract/FlowUtilsAbstractTest.sol";
+import {FlowTransferOperation} from "test/abstract/FlowTransferOperation.sol";
 import {InterpreterMockTest} from "test/abstract/InterpreterMockTest.sol";
 import {EvaluableConfigV3} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
@@ -11,12 +11,12 @@ import {CloneFactory} from "rain.factory/src/concrete/CloneFactory.sol";
 import {LibLogHelper} from "test/lib/LibLogHelper.sol";
 import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
 import {Address} from "openzeppelin-contracts/contracts/utils/Address.sol";
-import {FlowTransferV1, IFlowV5, RAIN_FLOW_SENTINEL, Sentinel} from "src/interface/IFlowV5.sol";
-import {Flow} from "src/concrete/Flow.sol";
+import {FlowTransferV1, IFlowV5, RAIN_FLOW_SENTINEL, Sentinel} from "../../src/interface/IFlowV5.sol";
+import {Flow} from "../../src/concrete/Flow.sol";
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
 import {LibUint256Array} from "rain.solmem/lib/LibUint256Array.sol";
 
-abstract contract FlowTest is FlowUtilsAbstractTest, InterpreterMockTest {
+abstract contract FlowTest is FlowTransferOperation, InterpreterMockTest {
     using LibLogHelper for Vm.Log[];
     using LibStackGeneration for uint256;
     using Address for address;
