@@ -4,7 +4,7 @@ pragma solidity ^0.8.25;
 
 import {Vm} from "forge-std/Test.sol";
 
-import {FlowTransferV1, RAIN_FLOW_SENTINEL} from "src/interface/IFlowV5.sol";
+import {FlowTransferV1, RAIN_FLOW_SENTINEL} from "../../src/interface/IFlowV5.sol";
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
 import {LibLogHelper} from "test/lib/LibLogHelper.sol";
