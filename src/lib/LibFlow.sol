@@ -82,7 +82,7 @@ library LibFlow {
     function flowERC20(FlowTransferV1 memory flowTransfer) internal {
         unchecked {
             ERC20Transfer memory transfer;
-            for (uint256 i = 0; i < flowTransfer.erc20.length; i++) {
+            for (uint256 i = 0; i < flowTransfer.erc20.length; ++i) {
                 transfer = flowTransfer.erc20[i];
                 // We don't support `from` as anyone other than `you` or `me`
                 // as this would allow for all kinds of issues re: approvals.
@@ -129,7 +129,7 @@ library LibFlow {
     function flowERC1155(FlowTransferV1 memory flowTransfer) internal {
         unchecked {
             ERC1155Transfer memory transfer;
-            for (uint256 i = 0; i < flowTransfer.erc1155.length; i++) {
+            for (uint256 i = 0; i < flowTransfer.erc1155.length; ++i) {
                 transfer = flowTransfer.erc1155[i];
                 if (transfer.from != msg.sender && transfer.from != address(this)) {
                     revert UnsupportedERC1155Flow();
