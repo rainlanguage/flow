@@ -1,47 +1,51 @@
 # rain.flow
 
-Docs at https://rainprotocol.github.io/rain.flow
+Solidity contracts for "flows" — token movement primitives (ERC20/721/1155)
+driven by rainlang expressions. A registered evaluable produces a stack; the
+contract parses that stack into transfers and executes them atomically.
 
-# Current version
+## Current version
 
-## V3
+### V5
 
-V3 compatible contracts are still found in the monorepo at
+V5 is the live interface (`src/interface/IFlowV5.sol`), implemented by
+`src/concrete/Flow.sol`. V5 consolidated to non-mint flows: the V4 ERC20 /
+ERC721 / ERC1155 mint-burn variants were dropped, leaving a single flow contract
+that moves third-party tokens. V5 re-exports `RAIN_FLOW_SENTINEL`,
+`MIN_FLOW_SENTINELS`, `FlowTransferV1`, and the per-token transfer structs from
+the V4 declarations so that integrators on V4 transfer types can move to V5
+without re-deriving them.
 
-https://github.com/rainprotocol/rain-protocol
+## Deprecated versions
 
-The contracts in this repo are targetting V4 (see below).
+All deprecated interfaces live under `src/interface/deprecated/`. They retain
+their original ABI for historical deployments — their function signatures, event
+topics, and struct field layouts will not change.
 
-# Unstable versions
+### V4
 
-## V4
+V4 introduced `stackToFlow` (replacing V3's `previewFlow`), allowing any caller
+to simulate a flow against an arbitrary stack rather than against a registered
+evaluable. V4 also targeted a newer interpreter interface than V3 — native
+parsing that works off a single `bytes` for the rain bytecode rather than the
+`bytes[]` older interpreters expected. V5 superseded V4 by removing the ERC
+mint-burn variants.
 
-The main changes in V4 replace `previewFlow` with `stackToFlow` which is a more
-generalised version of the same basic idea. By allowing any stack to be passed
-to the flow contract, the reader can simulate flows based on differen callers,
-state, time, etc.
+### V3
 
-V4 also targets a newer interpreter interface than V3, notably the native parsing
-functionality that works off a single `bytes` for the Rain bytecode rather than
-the `bytes[]` that older interpreters expected.
+V3 introduced `handleTransfer` and `tokenURI` evaluables on the ERC variants.
+Superseded by V4's `stackToFlow` generalisation.
 
-# Deprecated versions
+### V2
 
-## V2
+V2 was deprecated to remove native flows entirely from V3+. Flow implementations
+are likely to want `Multicall`-like batching, and `Multicall` based on
+`delegatecall` preserves `msg.sender` (good for EOA self-flow) but reuses
+`msg.value` across loop iterations — a critical issue for any contract that
+reads `msg.value`. See
+[samczsun, "two rights might make a wrong"](https://samczsun.com/two-rights-might-make-a-wrong/).
 
-V2 was deprecated to remove native flows entirely from the V3+ interface.
+### V1
 
-This is because flow implementations are likely to want to implement `Multicall`
-like functionality, such as that provided by Open Zeppelin.
-
-`Multicall` based on delegate call preserves the `msg.sender` which is great for
-allowing EOA wallets like Metamask to flow under their own identity, but is a
-critical security issue when reading `msg.value` (e.g. to allow native flows).
-
-https://samczsun.com/two-rights-might-make-a-wrong/
-
-## V1
-
-V1 was deprecated because the `SignedContext` struct that it relies on was
-deprecated upstream. `SignedContext` was replaced with `SignedContextV1` which
-was a minor change, reordering fields only for more efficient processing.
+V1 was deprecated because the upstream `SignedContext` struct it relied on was
+replaced by `SignedContextV1`, a minor reordering for more efficient processing.
