@@ -9,7 +9,7 @@ import {
     ERC721Transfer,
     ERC1155Transfer,
     RAIN_FLOW_SENTINEL
-} from "src/interface/IFlowV5.sol";
+} from "../../src/interface/IFlowV5.sol";
 import {REVERTING_MOCK_BYTECODE} from "./TestConstants.sol";
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
@@ -75,8 +75,7 @@ abstract contract FlowTransferOperation is Test {
         ERC1155Transfer[] memory erc1155Transfers = new ERC1155Transfer[](2);
         erc1155Transfers[0] =
             ERC1155Transfer({token: TOKEN_A, from: unauthorized, to: flow, id: outId, amount: outAmount});
-        erc1155Transfers[1] =
-            ERC1155Transfer({token: TOKEN_B, from: flow, to: authorized, id: inId, amount: inAmount});
+        erc1155Transfers[1] = ERC1155Transfer({token: TOKEN_B, from: flow, to: authorized, id: inId, amount: inAmount});
         return FlowTransferV1(new ERC20Transfer[](0), new ERC721Transfer[](0), erc1155Transfers);
     }
 
