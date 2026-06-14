@@ -331,11 +331,14 @@ contract FlowTransferTest is FlowTest {
         vm.stopPrank();
     }
 
-    /**
-     * @notice Tests that the flow halts if it does not meet the 'ensure' requirement.
-     */
+    /// Generic interpreter-revert propagation. The interpreter mock is set
+    /// to revert on `eval2`; the test asserts the revert payload bubbles
+    /// out of `flow()`. This covers any path that produces an interpreter
+    /// revert (out-of-gas, stack underflow, runtime opcode error, failed
+    /// `ensure(...)`, etc.) — not the specific `ensure` opcode in
+    /// isolation.
     /// forge-config: default.fuzz.runs = 100
-    function testFlowHaltIfEnsureRequirementNotMet() external {
+    function testFlowRevertPropagatesFromInterpreter() external {
         (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
         assumeEtchable(address(0), address(flow));
 
