@@ -59,35 +59,28 @@ uint256 constant FLOW_IS_REGISTERED = 1;
 uint256 constant FLOW_IS_NOT_REGISTERED = 0;
 
 /// @title Flow
-/// @notice Common functionality for flows. Largely handles the evaluable
-/// registration and dispatch. Also implementes the necessary interfaces for
-/// a smart contract to receive ERC721 and ERC1155 tokens.
+/// @notice The concrete `IFlowV5` implementation. Handles evaluable
+/// registration at init time, dispatches `flow` calls against registered
+/// evaluables, and implements the `stackToFlow` preview entrypoint
+/// directly. Also satisfies the receiver interfaces needed to hold ERC721
+/// and ERC1155 tokens.
 ///
-/// Flow contracts are expected to be deployed via. a proxy/factory as clones
-/// of an implementation contract. This makes flows cheap to deploy and every
-/// flow contract can be initialized with a different set of flows. This gives
-/// strong guarantees that the flow contract is only capable of evaluating
-/// registered flows, and that individual flow contracts cannot collide state
-/// with each other, given a correctly implemented interpreter store. Combining
-/// proxies with rainlang gives us a very powerful and flexible system for
-/// composing flows without significant gas overhead. Typically a flow contract
-/// deployment will cost well under 1M gas, which is very cheap for bespoke
-/// logic, without significant runtime overheads. This allows for new UX patterns
-/// where users can cheaply create many different tools such as NFT mints,
-/// auctions, escrows, etc. and aim to horizontally scale rather than design
-/// monolithic protocols.
+/// `Flow` is deployed as a reference implementation and cloned via a
+/// factory; the constructor disables initializers so the implementation
+/// itself is unusable. Every clone is initialized with its own set of
+/// evaluable configs, giving per-clone isolation: a clone can only
+/// evaluate flows it was registered with, and individual clones cannot
+/// collide state with each other given a correctly implemented
+/// interpreter store. Clone deployments cost well under 1M gas, so the
+/// pattern scales horizontally — many cheap bespoke flow contracts
+/// rather than one monolithic protocol.
 ///
-/// This does NOT implement the preview and flow logic directly because each
-/// flow implementation has different requirements for the mint and burn logic
-/// of the flow tokens. In the future, this may be refactored so that a single
-/// flow contract can handle all flows.
-///
-/// `Flow` is `Multicall` so it is NOT compatible with receiving ETH. This
-/// is because `Multicall` uses `delegatecall` in a loop which reuses `msg.value`
-/// for each loop iteration, effectively "double spending" the ETH it receives.
-/// This is a known issue with `Multicall` so in the future, we may refactor
-/// `Flow` to not use `Multicall` and instead implement flow batching
-/// directly in the flow contracts.
+/// `Flow` inherits `Multicall` and is therefore NOT compatible with
+/// receiving ETH. `Multicall` uses `delegatecall` in a loop which reuses
+/// `msg.value` for each iteration, "double-spending" any ETH received.
+/// Native flows were removed in V2 for this reason; reintroducing them
+/// would require replacing the batching primitive (samczsun, "two
+/// rights might make a wrong").
 contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInterpreterCallerV2, ICloneableV2, IFlowV5 {
     using LibUint256Array for uint256[];
     using LibUint256Matrix for uint256[];
