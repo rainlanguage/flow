@@ -75,14 +75,17 @@ library LibFlow {
 
     /// Processes the ERC20 transfers in the flow.
     /// Reverts if the `from` address is not either the `msg.sender` or the
-    /// flow contract. Uses `IERC20.safeTransferFrom` to transfer the tokens to
-    /// ensure that reverts from the token are respected.
+    /// flow contract. Uses `IERC20.safeTransferFrom(from, to, amount)` when
+    /// `from == msg.sender` and `IERC20.safeTransfer(to, amount)` when
+    /// `from == address(this)` — the self-flow branch must use
+    /// `safeTransfer` because OZ `transferFrom` consumes allowance even
+    /// when `from == msg.sender`. Both branches surface token reverts.
     /// @param flowTransfer The `FlowTransferV1` to process. Tokens other than
     /// ERC20 tokens are ignored.
     function flowERC20(FlowTransferV1 memory flowTransfer) internal {
         unchecked {
             ERC20Transfer memory transfer;
-            for (uint256 i = 0; i < flowTransfer.erc20.length; i++) {
+            for (uint256 i = 0; i < flowTransfer.erc20.length; ++i) {
                 transfer = flowTransfer.erc20[i];
                 // We don't support `from` as anyone other than `you` or `me`
                 // as this would allow for all kinds of issues re: approvals.
@@ -129,7 +132,7 @@ library LibFlow {
     function flowERC1155(FlowTransferV1 memory flowTransfer) internal {
         unchecked {
             ERC1155Transfer memory transfer;
-            for (uint256 i = 0; i < flowTransfer.erc1155.length; i++) {
+            for (uint256 i = 0; i < flowTransfer.erc1155.length; ++i) {
                 transfer = flowTransfer.erc1155[i];
                 if (transfer.from != msg.sender && transfer.from != address(this)) {
                     revert UnsupportedERC1155Flow();
@@ -147,7 +150,7 @@ library LibFlow {
     /// observe every flow invocation (e.g. for audit logging) cannot rely on
     /// `set` being called for empty kvs.
     /// @param flowTransfer The `FlowTransferV1` to process.
-    /// @param interpreterStore The `IInterpreterStoreV1` to set state on.
+    /// @param interpreterStore The `IInterpreterStoreV2` to set state on.
     /// @param kvs The key value pairs to set on the interpreter store.
     function flow(FlowTransferV1 memory flowTransfer, IInterpreterStoreV2 interpreterStore, uint256[] memory kvs)
         internal
