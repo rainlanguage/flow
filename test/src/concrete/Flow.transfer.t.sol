@@ -29,6 +29,7 @@ import {LibContextWrapper} from "test/lib/LibContextWrapper.sol";
 import {IERC721} from "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import {IERC1155} from "openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
 import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
+import {MaliciousReenteringToken} from "test/concrete/MaliciousReenteringToken.sol";
 import {MaliciousReenteringStore} from "test/concrete/MaliciousReenteringStore.sol";
 import {MaliciousReenteringRecipient} from "test/concrete/MaliciousReenteringRecipient.sol";
 import {StubERC721WithReceiverHook} from "test/concrete/StubERC721WithReceiverHook.sol";
@@ -438,6 +439,37 @@ contract FlowTransferTest is FlowTest {
 
         vm.startPrank(alice);
         vm.expectRevert();
+        flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
+        vm.stopPrank();
+    }
+
+    /// `Flow.flow` carries `nonReentrant`. A malicious ERC20 token whose
+    /// `transferFrom` re-enters `flow.flow(...)` MUST cause the inner call
+    /// to revert with the OZ ReentrancyGuardUpgradeable v4 string. This
+    /// pins the guard against a future change that drops `nonReentrant`.
+    /// forge-config: default.fuzz.runs = 100
+    function testFlowReentrancyGuardFiresOnTokenCallback(address alice, uint256 amount) external {
+        vm.assume(alice != address(0));
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != amount);
+        vm.label(alice, "Alice");
+
+        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        assumeEtchable(alice, address(flow));
+
+        MaliciousReenteringToken malToken = new MaliciousReenteringToken(flow);
+        malToken.setEvaluable(evaluable);
+
+        ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](1);
+        erc20Transfers[0] = ERC20Transfer({token: address(malToken), from: alice, to: address(flow), amount: amount});
+
+        uint256[] memory stack = LibStackGeneration.generateFlowStack(
+            Sentinel.unwrap(RAIN_FLOW_SENTINEL),
+            FlowTransferV1(erc20Transfers, new ERC721Transfer[](0), new ERC1155Transfer[](0))
+        );
+        interpreterEval2MockCall(stack, new uint256[](0));
+
+        vm.startPrank(alice);
+        vm.expectRevert(bytes("ReentrancyGuard: reentrant call"));
         flow.flow(evaluable, new uint256[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }
