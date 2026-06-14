@@ -196,6 +196,13 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
                     config.deployer.deployExpression2(config.bytecode, config.constants);
 
                 {
+                    // `io` is a `bytes` array. The deployer encodes per-
+                    // source `(inputs, outputs)` pairs as consecutive
+                    // bytes, with source 0 first. Flow only uses one
+                    // source (`FLOW_ENTRYPOINT == 0`), so byte 0 is
+                    // `flowInputs` and byte 1 is `flowOutputs`.
+                    // `add(io, 0x20)` skips the bytes-length word to
+                    // land on the first data word.
                     uint256 flowInputs;
                     uint256 flowOutputs;
                     assembly ("memory-safe") {
