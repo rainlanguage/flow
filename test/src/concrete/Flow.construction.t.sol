@@ -174,6 +174,37 @@ contract FlowConstructionTest is FlowTest {
         assertEq(keccak256(abi.encode(flowConfig)), keccak256(abi.encode(config)), "wrong compare Structs");
     }
 
+    /// `flowInit` does not de-duplicate identical evaluable configs: two
+    /// configs that produce the same `(interpreter, store, expression)`
+    /// triple emit two `FlowInitialized` events and write the same
+    /// `registeredFlows` slot twice. The registration is idempotent so
+    /// the resulting clone is still functional with that evaluable.
+    /// forge-config: default.fuzz.runs = 100
+    function testFlowConstructionDuplicateEvaluablesEmitTwiceIdempotently(
+        address expression,
+        bytes memory bytecode,
+        uint256[] memory constants
+    ) external {
+        expressionDeployerDeployExpression2MockCall(bytecode, constants, expression, bytes(hex"0007"));
+
+        EvaluableConfigV3[] memory flowConfig = new EvaluableConfigV3[](2);
+        flowConfig[0] = EvaluableConfigV3(DEPLOYER, bytecode, constants);
+        flowConfig[1] = EvaluableConfigV3(DEPLOYER, bytecode, constants);
+
+        vm.recordLogs();
+        I_CLONE_FACTORY.clone(deployFlowImplementation(), abi.encode(flowConfig));
+
+        Vm.Log[] memory init =
+            vm.getRecordedLogs().findEvents(keccak256("FlowInitialized(address,(address,address,address))"));
+        assertEq(init.length, 2, "duplicate configs MUST emit two FlowInitialized events");
+
+        (, EvaluableV2 memory ev0) = abi.decode(init[0].data, (address, EvaluableV2));
+        (, EvaluableV2 memory ev1) = abi.decode(init[1].data, (address, EvaluableV2));
+        assertEq(
+            keccak256(abi.encode(ev0)), keccak256(abi.encode(ev1)), "duplicate events MUST carry identical evaluable"
+        );
+    }
+
     /// `flowInit` MUST emit one `FlowInitialized(sender, evaluable)` per
     /// registered config, with `sender` equal to the clone-factory caller
     /// and `evaluable` equal to the deployer-returned `(interpreter, store,
