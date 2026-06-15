@@ -32,3 +32,9 @@ error InsufficientFlowOutputs();
 /// which would produce a permanently inert clone (every `flow()` call
 /// would revert with `UnregisteredFlow`).
 error EmptyFlowConfig();
+
+/// Thrown when the min outputs for a flow is fewer than the sentinels. This
+/// is always an implementation bug as the min outputs and sentinel count
+/// should both be compile time constants.
+/// @param flowMinOutputs The min outputs for the flow.
+error BadMinStackLength(uint256 flowMinOutputs);

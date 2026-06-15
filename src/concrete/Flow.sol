@@ -33,16 +33,10 @@ import {
 } from "openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
 import {LibNamespace, StateNamespace} from "rain.interpreter.interface/lib/ns/LibNamespace.sol";
-import {UnsupportedFlowInputs, InsufficientFlowOutputs, EmptyFlowConfig} from "../error/ErrFlow.sol";
+import {UnsupportedFlowInputs, InsufficientFlowOutputs, EmptyFlowConfig, BadMinStackLength} from "../error/ErrFlow.sol";
 import {IFlowV5, MIN_FLOW_SENTINELS, FlowTransferV1} from "../interface/IFlowV5.sol";
 import {ICloneableV2, ICLONEABLE_V2_SUCCESS} from "rain.factory/src/interface/ICloneableV2.sol";
 import {LibFlow} from "../lib/LibFlow.sol";
-
-/// Thrown when the min outputs for a flow is fewer than the sentinels.
-/// This is always an implementation bug as the min outputs and sentinel count
-/// should both be compile time constants.
-/// @param flowMinOutputs The min outputs for the flow.
-error BadMinStackLength(uint256 flowMinOutputs);
 
 /// @dev The entrypoint for a flow is always `0` because each flow has its own
 /// evaluable with its own entrypoint. Running multiple flows involves evaluating
