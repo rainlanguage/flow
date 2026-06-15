@@ -33,12 +33,7 @@ import {
 } from "openzeppelin-contracts-upgradeable/contracts/security/ReentrancyGuardUpgradeable.sol";
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
 import {LibNamespace, StateNamespace} from "rain.interpreter.interface/lib/ns/LibNamespace.sol";
-import {
-    UnsupportedFlowInputs,
-    InsufficientFlowOutputs,
-    EmptyFlowConfig,
-    BadMinStackLength
-} from "../error/ErrFlow.sol";
+import {UnsupportedFlowInputs, InsufficientFlowOutputs, EmptyFlowConfig, BadMinStackLength} from "../error/ErrFlow.sol";
 import {IFlowV5, MIN_FLOW_SENTINELS, FlowTransferV1} from "../interface/IFlowV5.sol";
 import {ICloneableV2, ICLONEABLE_V2_SUCCESS} from "rain.factory/src/interface/ICloneableV2.sol";
 import {LibFlow} from "../lib/LibFlow.sol";
