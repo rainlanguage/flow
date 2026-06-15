@@ -5,9 +5,11 @@ pragma solidity =0.8.25;
 import {Vm} from "forge-std/Test.sol";
 import {FlowTest} from "test/abstract/FlowTest.sol";
 import {SignContextLib} from "test/lib/SignContextLib.sol";
-import {IFlowV5} from "src/interface/IFlowV5.sol";
+import {IFlowV5, RAIN_FLOW_SENTINEL} from "../../../src/interface/IFlowV5.sol";
+import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {EvaluableV2, SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
 import {InvalidSignature} from "rain.interpreter.interface/lib/caller/LibContext.sol";
+import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
 
 contract FlowSignedContextTest is FlowTest {
     using SignContextLib for Vm;
@@ -20,19 +22,23 @@ contract FlowSignedContextTest is FlowTest {
         uint256 fuzzedKeyAlice,
         uint256 fuzzedKeyBob
     ) public {
-        vm.assume(fuzzedKeyBob != fuzzedKeyAlice);
         (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
 
-        // Ensure the fuzzed key is within the valid range for secp256k1
-        uint256 aliceKey = (fuzzedKeyAlice % (SECP256K1_ORDER - 1)) + 1;
-        uint256 bobKey = (fuzzedKeyBob % (SECP256K1_ORDER - 1)) + 1;
+        uint256 aliceKey = boundPrivateKey(fuzzedKeyAlice);
+        uint256 bobKey = boundPrivateKey(fuzzedKeyBob);
+        // `boundPrivateKey` is not injective over the full uint256 domain, so
+        // distinct fuzz inputs can fold onto the same key. The bad-signature
+        // assertion below only holds when the two keys actually differ, so
+        // constrain the bounded keys (not the raw inputs).
+        vm.assume(aliceKey != bobKey);
 
         SignedContextV1[] memory signedContexts = new SignedContextV1[](2);
 
         signedContexts[0] = vm.signContext(aliceKey, aliceKey, context0);
         signedContexts[1] = vm.signContext(aliceKey, aliceKey, context1);
 
-        uint256[] memory stack = generateFlowStack(transferEmpty());
+        uint256[] memory stack =
+            LibStackGeneration.generateFlowStack(Sentinel.unwrap(RAIN_FLOW_SENTINEL), transferEmpty());
 
         interpreterEval2MockCall(stack, new uint256[](0));
         flow.flow(evaluable, new uint256[](0), signedContexts);
@@ -53,17 +59,21 @@ contract FlowSignedContextTest is FlowTest {
         uint256 fuzzedKeyAlice,
         uint256 fuzzedKeyBob
     ) public {
-        vm.assume(fuzzedKeyBob != fuzzedKeyAlice);
         (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
 
-        // Ensure the fuzzed key is within the valid range for secp256k1
-        uint256 aliceKey = (fuzzedKeyAlice % (SECP256K1_ORDER - 1)) + 1;
-        uint256 bobKey = (fuzzedKeyBob % (SECP256K1_ORDER - 1)) + 1;
+        uint256 aliceKey = boundPrivateKey(fuzzedKeyAlice);
+        uint256 bobKey = boundPrivateKey(fuzzedKeyBob);
+        // `boundPrivateKey` is not injective over the full uint256 domain, so
+        // distinct fuzz inputs can fold onto the same key. The bad-signature
+        // assertion below only holds when the two keys actually differ, so
+        // constrain the bounded keys (not the raw inputs).
+        vm.assume(aliceKey != bobKey);
 
         SignedContextV1[] memory signedContext = new SignedContextV1[](1);
         signedContext[0] = vm.signContext(aliceKey, aliceKey, context0);
 
-        uint256[] memory stack = generateFlowStack(transferEmpty());
+        uint256[] memory stack =
+            LibStackGeneration.generateFlowStack(Sentinel.unwrap(RAIN_FLOW_SENTINEL), transferEmpty());
         interpreterEval2MockCall(stack, new uint256[](0));
         flow.flow(evaluable, new uint256[](0), signedContext);
 
