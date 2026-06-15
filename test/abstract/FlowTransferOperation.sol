@@ -9,7 +9,7 @@ import {
     ERC721Transfer,
     ERC1155Transfer,
     RAIN_FLOW_SENTINEL
-} from "src/interface/IFlowV5.sol";
+} from "../../src/interface/IFlowV5.sol";
 import {REVERTING_MOCK_BYTECODE} from "./TestConstants.sol";
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";

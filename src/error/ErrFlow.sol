@@ -3,7 +3,12 @@
 pragma solidity ^0.8.25;
 
 /// Thrown when the flow being evaluated is unregistered.
-/// @param unregisteredHash Hash of the unregistered flow.
+/// @param unregisteredHash keccak256 of the `EvaluableV2` struct
+/// (`interpreter`, `store`, `expression`) as produced by
+/// `LibEvaluable.hash`. This is the same key used in the
+/// `registeredFlows` mapping; an integrator catching this error can
+/// hash any locally-known evaluable triple to identify which one was
+/// rejected.
 error UnregisteredFlow(bytes32 unregisteredHash);
 
 /// Thrown for unsupported erc20 transfers.
