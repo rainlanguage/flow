@@ -114,11 +114,9 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
     /// The typed `initialize(EvaluableConfigV3[])` overload exists only to
     /// surface the parameter shape in the ABI for tooling. It MUST always
     /// revert with `InitializeSignatureFn` per the `ICloneableV2`
-    /// contract; the canonical entrypoint is `initialize(bytes)`.
-    /// @param evaluableConfigs Ignored — the function reverts before
-    /// reading it. Named for ABI clarity only.
-    function initialize(EvaluableConfigV3[] memory evaluableConfigs) external pure {
-        evaluableConfigs;
+    /// contract; the canonical entrypoint is `initialize(bytes)`. The
+    /// parameter is unnamed because the function reverts before reading it.
+    function initialize(EvaluableConfigV3[] memory) external pure {
         revert InitializeSignatureFn();
     }
 
