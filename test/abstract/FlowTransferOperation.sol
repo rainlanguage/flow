@@ -32,6 +32,53 @@ abstract contract FlowTransferOperation is Test {
         return FlowTransferV1(new ERC20Transfer[](0), new ERC721Transfer[](0), new ERC1155Transfer[](0));
     }
 
+    /// Builds a `FlowTransferV1` whose first ERC20 transfer has an
+    /// unauthorized `from` (neither the flow contract nor the caller) and
+    /// whose second is a valid self-flow. Used to test the
+    /// `UnsupportedERC20Flow` revert path on a multi-transfer batch.
+    //forge-lint: disable-next-line(mixed-case-function)
+    function unauthorizedERC20Flow(address unauthorized, address authorized, address flow, uint256 amount)
+        internal
+        view
+        returns (FlowTransferV1 memory)
+    {
+        ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](2);
+        erc20Transfers[0] = ERC20Transfer({token: TOKEN_A, from: unauthorized, to: flow, amount: amount});
+        erc20Transfers[1] = ERC20Transfer({token: TOKEN_B, from: flow, to: authorized, amount: amount});
+        return FlowTransferV1(erc20Transfers, new ERC721Transfer[](0), new ERC1155Transfer[](0));
+    }
+
+    /// Same shape as `unauthorizedERC20Flow` but for ERC721.
+    //forge-lint: disable-next-line(mixed-case-function)
+    function unauthorizedERC721Flow(address unauthorized, address authorized, address flow, uint256 tokenId)
+        internal
+        view
+        returns (FlowTransferV1 memory)
+    {
+        ERC721Transfer[] memory erc721Transfers = new ERC721Transfer[](2);
+        erc721Transfers[0] = ERC721Transfer({token: TOKEN_A, from: unauthorized, to: flow, id: tokenId});
+        erc721Transfers[1] = ERC721Transfer({token: TOKEN_B, from: flow, to: authorized, id: tokenId});
+        return FlowTransferV1(new ERC20Transfer[](0), erc721Transfers, new ERC1155Transfer[](0));
+    }
+
+    /// Same shape as `unauthorizedERC20Flow` but for ERC1155.
+    //forge-lint: disable-next-line(mixed-case-function)
+    function unauthorizedERC1155Flow(
+        address unauthorized,
+        address authorized,
+        address flow,
+        uint256 outId,
+        uint256 outAmount,
+        uint256 inId,
+        uint256 inAmount
+    ) internal view returns (FlowTransferV1 memory) {
+        ERC1155Transfer[] memory erc1155Transfers = new ERC1155Transfer[](2);
+        erc1155Transfers[0] =
+            ERC1155Transfer({token: TOKEN_A, from: unauthorized, to: flow, id: outId, amount: outAmount});
+        erc1155Transfers[1] = ERC1155Transfer({token: TOKEN_B, from: flow, to: authorized, id: inId, amount: inAmount});
+        return FlowTransferV1(new ERC20Transfer[](0), new ERC721Transfer[](0), erc1155Transfers);
+    }
+
     //forge-lint: disable-next-line(mixed-case-function)
     function transferERC721ToERC1155(
         address addressA,
