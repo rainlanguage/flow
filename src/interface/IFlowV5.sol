@@ -9,8 +9,6 @@ import {
 import {EvaluableV2} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV2.sol";
 //forge-lint: disable-next-line(unused-import)
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
-//forge-lint: disable-next-line(unused-import)
-import {Pointer} from "rain.solmem/lib/LibPointer.sol";
 import {
     FlowTransferV1,
 
@@ -116,13 +114,15 @@ import {UnregisteredFlow} from "../error/ErrFlow.sol";
 /// ```
 /// /* sentinel is always the same. */
 /// sentinel: 0xfea74d0c9bf4a3c28f0dd0674db22a3d7f8bf259c56af19f4ac1e735b156974f,
-/// /* erc1155 group sits at the bottom of the stack — written first in
-///    rainlang, consumed last. Just a sentinel here as there's nothing to do. */
+/// /* erc1155 group at the bottom — terminator sentinel, no tuples. */
 /// _: sentinel,
-/// /* erc721 group sits in the middle, with the token id as the last value */
+/// /* erc721 group — terminator sentinel, then one tuple
+///    (token, from, to, id). */
+/// _: sentinel,
 /// _: 0x1234 0xdeadbeef context<0 1>() 5678,
-/// /* erc20 group sits at the top of the stack — written last in rainlang,
-///    consumed first. The amount is the last value of the tuple. */
+/// /* erc20 group at the top — terminator sentinel, then one tuple
+///    (token, from, to, amount). */
+/// _: sentinel,
 /// _: 0xf00baa context<0 1>() 0xdeadbeef 1e18;
 /// ```
 ///

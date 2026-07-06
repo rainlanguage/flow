@@ -121,14 +121,18 @@ abstract contract FlowTest is FlowTransferOperation, InterpreterMockTest {
         vm.assume(account != address(0x000000000000000000636F6e736F6c652e6c6f67));
     }
 
+    function _buildFlowStack(FlowTransferV1 memory transfer) private pure returns (uint256[] memory, bytes32) {
+        bytes32 transferHash = keccak256(abi.encode(transfer));
+        uint256[] memory stack = Sentinel.unwrap(RAIN_FLOW_SENTINEL).generateFlowStack(transfer);
+        return (stack, transferHash);
+    }
+
     function burnFlowStack(address, uint256, uint256, FlowTransferV1 memory transfer)
         internal
         pure
         returns (uint256[] memory, bytes32)
     {
-        bytes32 transferHash = keccak256(abi.encode(transfer));
-        uint256[] memory stack = Sentinel.unwrap(RAIN_FLOW_SENTINEL).generateFlowStack(transfer);
-        return (stack, transferHash);
+        return _buildFlowStack(transfer);
     }
 
     function mintFlowStack(address, uint256, uint256, FlowTransferV1 memory transfer)
@@ -136,9 +140,7 @@ abstract contract FlowTest is FlowTransferOperation, InterpreterMockTest {
         pure
         returns (uint256[] memory, bytes32)
     {
-        bytes32 transferHash = keccak256(abi.encode(transfer));
-        uint256[] memory stack = Sentinel.unwrap(RAIN_FLOW_SENTINEL).generateFlowStack(transfer);
-        return (stack, transferHash);
+        return _buildFlowStack(transfer);
     }
 
     function buildConfig(string memory, string memory, string memory, address, EvaluableV4[] memory flowConfig)
@@ -181,8 +183,6 @@ abstract contract FlowTest is FlowTransferOperation, InterpreterMockTest {
         pure
         returns (uint256[] memory, bytes32)
     {
-        bytes32 transferHash = keccak256(abi.encode(transfer));
-        uint256[] memory stack = Sentinel.unwrap(RAIN_FLOW_SENTINEL).generateFlowStack(transfer);
-        return (stack, transferHash);
+        return _buildFlowStack(transfer);
     }
 }

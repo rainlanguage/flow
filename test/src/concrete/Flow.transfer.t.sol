@@ -28,7 +28,13 @@ import {LibContextWrapper} from "test/lib/LibContextWrapper.sol";
 import {IERC721} from "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import {IERC1155} from "openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
 import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
+import {MaliciousReenteringToken} from "test/concrete/MaliciousReenteringToken.sol";
+import {MaliciousReenteringStore} from "test/concrete/MaliciousReenteringStore.sol";
+import {MaliciousReenteringRecipient} from "test/concrete/MaliciousReenteringRecipient.sol";
+import {StubERC721WithReceiverHook} from "test/concrete/StubERC721WithReceiverHook.sol";
+import {StubERC1155WithReceiverHook} from "test/concrete/StubERC1155WithReceiverHook.sol";
 import {MissingSentinel} from "rain.solmem/lib/LibStackSentinel.sol";
+import {ReentrancyGuard} from "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
 
 /// `IERC721.safeTransferFrom` is overloaded (3-arg + 4-arg). Pin the 3-arg
 /// selector via a single-overload wrapper interface so the disambiguation
@@ -182,15 +188,9 @@ contract FlowTransferTest is FlowTest {
         assumeEtchable(bob, address(flow));
 
         {
-            ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](2);
-            erc20Transfers[0] = ERC20Transfer({token: TOKEN_A, from: bob, to: address(flow), amount: erc20Amount});
-            erc20Transfers[1] = ERC20Transfer({token: TOKEN_B, from: address(flow), to: alice, amount: erc20Amount});
-
             uint256[] memory stack = LibStackGeneration.generateFlowStack(
-                Sentinel.unwrap(RAIN_FLOW_SENTINEL),
-                FlowTransferV1(erc20Transfers, new ERC721Transfer[](0), new ERC1155Transfer[](0))
+                Sentinel.unwrap(RAIN_FLOW_SENTINEL), unauthorizedERC20Flow(bob, alice, address(flow), erc20Amount)
             );
-
             interpreterEval2MockCall(stack, new uint256[](0));
         }
 
@@ -236,15 +236,9 @@ contract FlowTransferTest is FlowTest {
         assumeEtchable(bob, address(flow));
 
         {
-            ERC721Transfer[] memory erc721Transfers = new ERC721Transfer[](2);
-            erc721Transfers[0] = ERC721Transfer({token: TOKEN_A, from: bob, to: address(flow), id: erc721TokenId});
-            erc721Transfers[1] = ERC721Transfer({token: TOKEN_B, from: address(flow), to: alice, id: erc721TokenId});
-
             uint256[] memory stack = LibStackGeneration.generateFlowStack(
-                Sentinel.unwrap(RAIN_FLOW_SENTINEL),
-                FlowTransferV1(new ERC20Transfer[](0), erc721Transfers, new ERC1155Transfer[](0))
+                Sentinel.unwrap(RAIN_FLOW_SENTINEL), unauthorizedERC721Flow(bob, alice, address(flow), erc721TokenId)
             );
-
             interpreterEval2MockCall(stack, new uint256[](0));
         }
 
@@ -277,20 +271,12 @@ contract FlowTransferTest is FlowTest {
         assumeEtchable(bob, address(flow));
 
         {
-            ERC1155Transfer[] memory erc1155Transfers = new ERC1155Transfer[](2);
-            erc1155Transfers[0] = ERC1155Transfer({
-                token: TOKEN_A, from: bob, to: address(flow), id: erc1155OutTokenId, amount: erc1155OutAmount
-            });
-
-            erc1155Transfers[1] = ERC1155Transfer({
-                token: TOKEN_B, from: address(flow), to: alice, id: erc1155InTokenId, amount: erc1155InAmount
-            });
-
             uint256[] memory stack = LibStackGeneration.generateFlowStack(
                 Sentinel.unwrap(RAIN_FLOW_SENTINEL),
-                FlowTransferV1(new ERC20Transfer[](0), new ERC721Transfer[](0), erc1155Transfers)
+                unauthorizedERC1155Flow(
+                    bob, alice, address(flow), erc1155OutTokenId, erc1155OutAmount, erc1155InTokenId, erc1155InAmount
+                )
             );
-
             interpreterEval2MockCall(stack, new uint256[](0));
         }
 
@@ -325,11 +311,14 @@ contract FlowTransferTest is FlowTest {
         vm.stopPrank();
     }
 
-    /**
-     * @notice Tests that the flow halts if it does not meet the 'ensure' requirement.
-     */
+    /// Generic interpreter-revert propagation. The interpreter mock is set
+    /// to revert on `eval2`; the test asserts the revert payload bubbles
+    /// out of `flow()`. This covers any path that produces an interpreter
+    /// revert (out-of-gas, stack underflow, runtime opcode error, failed
+    /// `ensure(...)`, etc.) — not the specific `ensure` opcode in
+    /// isolation.
     /// forge-config: default.fuzz.runs = 100
-    function testFlowHaltIfEnsureRequirementNotMet() external {
+    function testFlowRevertPropagatesFromInterpreter() external {
         (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
         assumeEtchable(address(0), address(flow));
 
@@ -431,6 +420,149 @@ contract FlowTransferTest is FlowTest {
 
         vm.startPrank(alice);
         vm.expectRevert();
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
+        vm.stopPrank();
+    }
+
+    /// `Flow.flow` carries `nonReentrant`. A malicious ERC20 token whose
+    /// `transferFrom` re-enters `flow.flow(...)` MUST cause the inner call
+    /// to revert with the OZ `ReentrancyGuardReentrantCall` error. This
+    /// pins the guard against a future change that drops `nonReentrant`.
+    /// forge-config: default.fuzz.runs = 100
+    function testFlowReentrancyGuardFiresOnTokenCallback(address alice, uint256 amount) external {
+        vm.assume(alice != address(0));
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != amount);
+        vm.label(alice, "Alice");
+
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
+        assumeEtchable(alice, address(flow));
+
+        MaliciousReenteringToken malToken = new MaliciousReenteringToken(flow);
+        malToken.setEvaluable(evaluable);
+
+        ERC20Transfer[] memory erc20Transfers = new ERC20Transfer[](1);
+        erc20Transfers[0] = ERC20Transfer({token: address(malToken), from: alice, to: address(flow), amount: amount});
+
+        uint256[] memory stack = LibStackGeneration.generateFlowStack(
+            Sentinel.unwrap(RAIN_FLOW_SENTINEL),
+            FlowTransferV1(erc20Transfers, new ERC721Transfer[](0), new ERC1155Transfer[](0))
+        );
+        interpreterEval2MockCall(stack, new uint256[](0));
+
+        vm.startPrank(alice);
+        vm.expectRevert(ReentrancyGuard.ReentrancyGuardReentrantCall.selector);
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
+        vm.stopPrank();
+    }
+
+    /// `Flow.flow` carries `nonReentrant`. A malicious interpreter store
+    /// whose `set` re-enters `flow.flow(...)` MUST cause the inner call
+    /// to revert.
+    function testFlowReentrancyGuardFiresOnStoreCallback(uint256 writeKey, uint256 writeValue) external {
+        address alice = address(uint160(uint256(keccak256("alice.reentrancy.store"))));
+        vm.label(alice, "Alice");
+
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
+        assumeEtchable(alice, address(flow));
+
+        // Replace the framework's mock STORE with the malicious bytecode so
+        // LibFlow.flow's `set(...)` lands in the re-entering implementation.
+        MaliciousReenteringStore malStore = new MaliciousReenteringStore(flow);
+        malStore.setEvaluable(evaluable);
+        vm.etch(address(STORE), address(malStore).code);
+        // The runtime still needs to know which evaluable to flow into; the
+        // MaliciousReenteringStore reads its `evaluable` storage slot, so
+        // copy it over after the etch.
+        bytes32 evalSlot0 = vm.load(address(malStore), bytes32(uint256(0)));
+        bytes32 evalSlot1 = vm.load(address(malStore), bytes32(uint256(1)));
+        bytes32 evalSlot2 = vm.load(address(malStore), bytes32(uint256(2)));
+        vm.store(address(STORE), bytes32(uint256(0)), evalSlot0);
+        vm.store(address(STORE), bytes32(uint256(1)), evalSlot1);
+        vm.store(address(STORE), bytes32(uint256(2)), evalSlot2);
+
+        // Eval2 returns non-empty kvs so LibFlow.flow takes the `set` branch.
+        uint256[] memory stack =
+            LibStackGeneration.generateFlowStack(Sentinel.unwrap(RAIN_FLOW_SENTINEL), transferEmpty());
+        uint256[] memory writes = new uint256[](2);
+        writes[0] = writeKey;
+        writes[1] = writeValue;
+        interpreterEval2MockCall(stack, writes);
+
+        vm.startPrank(alice);
+        vm.expectRevert(ReentrancyGuard.ReentrancyGuardReentrantCall.selector);
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
+        vm.stopPrank();
+    }
+
+    /// A malicious ERC721 recipient whose `onERC721Received` re-enters
+    /// `flow.flow(...)` MUST cause the inner call to revert. Exercises the
+    /// EIP-721 receiver-hook reentrancy path (the underlying token's
+    /// `safeTransferFrom` invokes the recipient hook on a contract `to`).
+    /// forge-config: default.fuzz.runs = 100
+    function testFlowReentrancyGuardFiresOnERC721Recipient(uint256 tokenId) external {
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != tokenId);
+        address alice = address(uint160(uint256(keccak256("alice.reentrancy.erc721"))));
+        vm.label(alice, "Alice");
+
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
+        assumeEtchable(alice, address(flow));
+
+        // Etch a stub ERC721 implementation at TOKEN_B that forwards
+        // safeTransferFrom into the recipient hook.
+        StubERC721WithReceiverHook stub = new StubERC721WithReceiverHook();
+        vm.etch(TOKEN_B, address(stub).code);
+
+        // Deploy the malicious recipient and arm it with the flow's
+        // evaluable.
+        MaliciousReenteringRecipient recipient = new MaliciousReenteringRecipient(flow);
+        recipient.setEvaluable(evaluable);
+
+        ERC721Transfer[] memory erc721Transfers = new ERC721Transfer[](1);
+        erc721Transfers[0] = ERC721Transfer({token: TOKEN_B, from: address(flow), to: address(recipient), id: tokenId});
+
+        uint256[] memory stack = LibStackGeneration.generateFlowStack(
+            Sentinel.unwrap(RAIN_FLOW_SENTINEL),
+            FlowTransferV1(new ERC20Transfer[](0), erc721Transfers, new ERC1155Transfer[](0))
+        );
+        interpreterEval2MockCall(stack, new uint256[](0));
+
+        vm.startPrank(alice);
+        vm.expectRevert(ReentrancyGuard.ReentrancyGuardReentrantCall.selector);
+        flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
+        vm.stopPrank();
+    }
+
+    /// A malicious ERC1155 recipient whose `onERC1155Received` re-enters
+    /// `flow.flow(...)` MUST cause the inner call to revert. Exercises the
+    /// EIP-1155 receiver-hook reentrancy path.
+    /// forge-config: default.fuzz.runs = 100
+    function testFlowReentrancyGuardFiresOnERC1155Recipient(uint256 tokenId, uint256 amount) external {
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != tokenId);
+        vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != amount);
+        address alice = address(uint160(uint256(keccak256("alice.reentrancy.erc1155"))));
+        vm.label(alice, "Alice");
+
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
+        assumeEtchable(alice, address(flow));
+
+        StubERC1155WithReceiverHook stub = new StubERC1155WithReceiverHook();
+        vm.etch(TOKEN_C, address(stub).code);
+
+        MaliciousReenteringRecipient recipient = new MaliciousReenteringRecipient(flow);
+        recipient.setEvaluable(evaluable);
+
+        ERC1155Transfer[] memory erc1155Transfers = new ERC1155Transfer[](1);
+        erc1155Transfers[0] =
+            ERC1155Transfer({token: TOKEN_C, from: address(flow), to: address(recipient), id: tokenId, amount: amount});
+
+        uint256[] memory stack = LibStackGeneration.generateFlowStack(
+            Sentinel.unwrap(RAIN_FLOW_SENTINEL),
+            FlowTransferV1(new ERC20Transfer[](0), new ERC721Transfer[](0), erc1155Transfers)
+        );
+        interpreterEval2MockCall(stack, new uint256[](0));
+
+        vm.startPrank(alice);
+        vm.expectRevert(ReentrancyGuard.ReentrancyGuardReentrantCall.selector);
         flow.flow(evaluable, new bytes32[](0), new SignedContextV1[](0));
         vm.stopPrank();
     }

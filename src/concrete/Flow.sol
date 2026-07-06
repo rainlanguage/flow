@@ -28,16 +28,10 @@ import {ERC1155Holder} from "openzeppelin-contracts/contracts/token/ERC1155/util
 import {ReentrancyGuard} from "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
 import {LibBytes32Matrix} from "rain.solmem/lib/LibBytes32Matrix.sol";
 import {LibNamespace, StateNamespace} from "rain.interpreter.interface/lib/ns/LibNamespace.sol";
-import {EmptyFlowConfig} from "../error/ErrFlow.sol";
+import {EmptyFlowConfig, BadMinStackLength} from "../error/ErrFlow.sol";
 import {IFlowV6, MIN_FLOW_SENTINELS, FlowTransferV1} from "../interface/IFlowV6.sol";
 import {ICloneableV2, ICLONEABLE_V2_SUCCESS} from "rain.factory/src/interface/ICloneableV2.sol";
 import {LibFlow} from "../lib/LibFlow.sol";
-
-/// Thrown when the min outputs for a flow is fewer than the sentinels.
-/// This is always an implementation bug as the min outputs and sentinel count
-/// should both be compile time constants.
-/// @param flowMinOutputs The min outputs for the flow.
-error BadMinStackLength(uint256 flowMinOutputs);
 
 /// @dev The entrypoint for a flow is always `0` because each flow has its own
 /// evaluable with its own entrypoint. Running multiple flows involves evaluating
@@ -54,35 +48,28 @@ uint256 constant FLOW_IS_REGISTERED = 1;
 uint256 constant FLOW_IS_NOT_REGISTERED = 0;
 
 /// @title Flow
-/// @notice Common functionality for flows. Largely handles the evaluable
-/// registration and dispatch. Also implementes the necessary interfaces for
-/// a smart contract to receive ERC721 and ERC1155 tokens.
+/// @notice The concrete `IFlowV6` implementation. Handles evaluable
+/// registration at init time, dispatches `flow` calls against registered
+/// evaluables, and implements the `stackToFlow` preview entrypoint
+/// directly. Also satisfies the receiver interfaces needed to hold ERC721
+/// and ERC1155 tokens.
 ///
-/// Flow contracts are expected to be deployed via. a proxy/factory as clones
-/// of an implementation contract. This makes flows cheap to deploy and every
-/// flow contract can be initialized with a different set of flows. This gives
-/// strong guarantees that the flow contract is only capable of evaluating
-/// registered flows, and that individual flow contracts cannot collide state
-/// with each other, given a correctly implemented interpreter store. Combining
-/// proxies with rainlang gives us a very powerful and flexible system for
-/// composing flows without significant gas overhead. Typically a flow contract
-/// deployment will cost well under 1M gas, which is very cheap for bespoke
-/// logic, without significant runtime overheads. This allows for new UX patterns
-/// where users can cheaply create many different tools such as NFT mints,
-/// auctions, escrows, etc. and aim to horizontally scale rather than design
-/// monolithic protocols.
+/// `Flow` is deployed as a reference implementation and cloned via a
+/// factory; the constructor disables initializers so the implementation
+/// itself is unusable. Every clone is initialized with its own set of
+/// evaluables, giving per-clone isolation: a clone can only
+/// evaluate flows it was registered with, and individual clones cannot
+/// collide state with each other given a correctly implemented
+/// interpreter store. Clone deployments cost well under 1M gas, so the
+/// pattern scales horizontally — many cheap bespoke flow contracts
+/// rather than one monolithic protocol.
 ///
-/// This does NOT implement the preview and flow logic directly because each
-/// flow implementation has different requirements for the mint and burn logic
-/// of the flow tokens. In the future, this may be refactored so that a single
-/// flow contract can handle all flows.
-///
-/// `Flow` is `Multicall` so it is NOT compatible with receiving ETH. This
-/// is because `Multicall` uses `delegatecall` in a loop which reuses `msg.value`
-/// for each loop iteration, effectively "double spending" the ETH it receives.
-/// This is a known issue with `Multicall` so in the future, we may refactor
-/// `Flow` to not use `Multicall` and instead implement flow batching
-/// directly in the flow contracts.
+/// `Flow` inherits `Multicall` and is therefore NOT compatible with
+/// receiving ETH. `Multicall` uses `delegatecall` in a loop which reuses
+/// `msg.value` for each iteration, "double-spending" any ETH received.
+/// Native flows were removed in V2 for this reason; reintroducing them
+/// would require replacing the batching primitive (samczsun, "two
+/// rights might make a wrong").
 contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInterpreterCallerV4, ICloneableV2, IFlowV6 {
     using LibUint256Array for uint256[];
     using LibBytes32Matrix for bytes32[];
@@ -104,19 +91,20 @@ contract Flow is ERC721Holder, ERC1155Holder, Multicall, ReentrancyGuard, IInter
     /// provide the same evaluable when they evaluate the flow.
     event FlowInitialized(address sender, EvaluableV4 evaluable);
 
-    /// Forwards config to `DeployerDiscoverableMetaV2` and disables
-    /// initializers. The initializers are disabled because inheriting contracts
-    /// are expected to implement some kind of initialization logic that is
-    /// compatible with cloning via. proxy/factory. Disabling initializers
-    /// in the implementation contract forces that the only way to initialize
-    /// the contract is via. a proxy, which should also strongly encourage
-    /// patterns that _atomically_ clone and initialize via. some factory.
+    /// Disables initializers on the implementation contract so that any
+    /// usable instance is a proxy / clone that runs `initialize` exactly
+    /// once. Forcing this through a factory encourages the
+    /// atomically-clone-then-initialize pattern; a directly-deployed
+    /// implementation is unusable.
     constructor() {
         _disableInitializers();
     }
 
-    /// Overloaded typed initialize function MUST revert with this error.
-    /// As per `ICloneableV2` interface.
+    /// The typed `initialize(EvaluableV4[])` overload exists only to
+    /// surface the parameter shape in the ABI for tooling. It MUST always
+    /// revert with `InitializeSignatureFn` per the `ICloneableV2`
+    /// contract; the canonical entrypoint is `initialize(bytes)`. The
+    /// parameter is unnamed because the function reverts before reading it.
     function initialize(EvaluableV4[] memory) external pure {
         revert InitializeSignatureFn();
     }

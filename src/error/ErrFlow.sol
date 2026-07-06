@@ -3,7 +3,12 @@
 pragma solidity ^0.8.25;
 
 /// Thrown when the flow being evaluated is unregistered.
-/// @param unregisteredHash Hash of the unregistered flow.
+/// @param unregisteredHash keccak256 of the `EvaluableV2` struct
+/// (`interpreter`, `store`, `expression`) as produced by
+/// `LibEvaluable.hash`. This is the same key used in the
+/// `registeredFlows` mapping; an integrator catching this error can
+/// hash any locally-known evaluable triple to identify which one was
+/// rejected.
 error UnregisteredFlow(bytes32 unregisteredHash);
 
 /// Thrown for unsupported erc20 transfers.
@@ -27,3 +32,9 @@ error InsufficientFlowOutputs();
 /// which would produce a permanently inert clone (every `flow()` call
 /// would revert with `UnregisteredFlow`).
 error EmptyFlowConfig();
+
+/// Thrown when the min outputs for a flow is fewer than the sentinels. This
+/// is always an implementation bug as the min outputs and sentinel count
+/// should both be compile time constants.
+/// @param flowMinOutputs The min outputs for the flow.
+error BadMinStackLength(uint256 flowMinOutputs);

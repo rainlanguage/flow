@@ -22,12 +22,15 @@ contract FlowSignedContextTest is FlowTest {
         uint256 fuzzedKeyAlice,
         uint256 fuzzedKeyBob
     ) public {
-        vm.assume(fuzzedKeyBob != fuzzedKeyAlice);
         (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
 
-        // Ensure the fuzzed key is within the valid range for secp256k1
-        uint256 aliceKey = (fuzzedKeyAlice % (SECP256K1_ORDER - 1)) + 1;
-        uint256 bobKey = (fuzzedKeyBob % (SECP256K1_ORDER - 1)) + 1;
+        uint256 aliceKey = boundPrivateKey(fuzzedKeyAlice);
+        uint256 bobKey = boundPrivateKey(fuzzedKeyBob);
+        // `boundPrivateKey` is not injective over the full uint256 domain, so
+        // distinct fuzz inputs can fold onto the same key. The bad-signature
+        // assertion below only holds when the two keys actually differ, so
+        // constrain the bounded keys (not the raw inputs).
+        vm.assume(aliceKey != bobKey);
 
         SignedContextV1[] memory signedContexts = new SignedContextV1[](2);
 
@@ -56,12 +59,15 @@ contract FlowSignedContextTest is FlowTest {
         uint256 fuzzedKeyAlice,
         uint256 fuzzedKeyBob
     ) public {
-        vm.assume(fuzzedKeyBob != fuzzedKeyAlice);
         (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
 
-        // Ensure the fuzzed key is within the valid range for secp256k1
-        uint256 aliceKey = (fuzzedKeyAlice % (SECP256K1_ORDER - 1)) + 1;
-        uint256 bobKey = (fuzzedKeyBob % (SECP256K1_ORDER - 1)) + 1;
+        uint256 aliceKey = boundPrivateKey(fuzzedKeyAlice);
+        uint256 bobKey = boundPrivateKey(fuzzedKeyBob);
+        // `boundPrivateKey` is not injective over the full uint256 domain, so
+        // distinct fuzz inputs can fold onto the same key. The bad-signature
+        // assertion below only holds when the two keys actually differ, so
+        // constrain the bounded keys (not the raw inputs).
+        vm.assume(aliceKey != bobKey);
 
         SignedContextV1[] memory signedContext = new SignedContextV1[](1);
         signedContext[0] = vm.signContext(aliceKey, aliceKey, context0);
