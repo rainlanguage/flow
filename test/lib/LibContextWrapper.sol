@@ -3,7 +3,7 @@
 pragma solidity ^0.8.25;
 
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
-import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
+import {SignedContextV1} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV2.sol";
 import {LibContext} from "rain.interpreter.interface/lib/caller/LibContext.sol";
 
 /**
@@ -21,10 +21,18 @@ library LibContextWrapper {
         address caller,
         address flowAddress
     ) internal view returns (uint256[][] memory) {
-        uint256[][] memory buildContextInput = LibContext.build(context, signedContext);
-        buildContextInput[0][0] = uint256(uint160(caller));
-        buildContextInput[0][1] = uint256(uint160(flowAddress));
-        return buildContextInput;
+        bytes32[][] memory ctx;
+        assembly ("memory-safe") {
+            ctx := context
+        }
+        bytes32[][] memory built = LibContext.build(ctx, signedContext);
+        built[0][0] = bytes32(uint256(uint160(caller)));
+        built[0][1] = bytes32(uint256(uint160(flowAddress)));
+        uint256[][] memory out;
+        assembly ("memory-safe") {
+            out := built
+        }
+        return out;
     }
 
     function buildAndSetContext(

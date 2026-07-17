@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.25;
 
-import {FlowTransferV1} from "../../src/interface/IFlowV5.sol";
+import {FlowTransferV1} from "../../src/interface/IFlowV6.sol";
 
 library LibStackGeneration {
     function generateFlowStack(uint256 sentinel, FlowTransferV1 memory flowTransfer)

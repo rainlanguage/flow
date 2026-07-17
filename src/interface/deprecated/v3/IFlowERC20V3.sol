@@ -2,9 +2,9 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.25;
 
-import {SourceIndex} from "rain.interpreter.interface/interface/deprecated/IInterpreterV1.sol";
-import {EvaluableConfig, Evaluable} from "rain.interpreter.interface/interface/deprecated/IInterpreterCallerV1.sol";
-import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
+import {SourceIndex} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterV1.sol";
+import {EvaluableConfig, Evaluable} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV1.sol";
+import {SignedContextV1} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV2.sol";
 import {Sentinel} from "rain.solmem/lib/LibStackSentinel.sol";
 import {MIN_FLOW_SENTINELS, SENTINEL_HIGH_BITS, FlowTransferV1} from "./IFlowV3.sol";
 import {UnsupportedHandleTransferInputs, InsufficientHandleTransferOutputs} from "./IFlowERC1155V3.sol";

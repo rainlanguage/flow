@@ -5,21 +5,19 @@ pragma solidity ^0.8.25;
 import {Vm} from "forge-std/Test.sol";
 import {FlowTransferOperation} from "test/abstract/FlowTransferOperation.sol";
 import {InterpreterMockTest} from "test/abstract/InterpreterMockTest.sol";
-import {EvaluableConfigV3} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
-import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
+import {EvaluableV4} from "rain.interpreter.interface/interface/IInterpreterCallerV4.sol";
 import {CloneFactory} from "rain.factory/src/concrete/CloneFactory.sol";
 import {LibLogHelper} from "test/lib/LibLogHelper.sol";
 import {LibStackGeneration} from "test/lib/LibStackGeneration.sol";
-import {Address} from "openzeppelin-contracts/contracts/utils/Address.sol";
-import {FlowTransferV1, IFlowV5, RAIN_FLOW_SENTINEL, Sentinel} from "../../src/interface/IFlowV5.sol";
+import {FlowTransferV1, IFlowV6, RAIN_FLOW_SENTINEL, Sentinel} from "../../src/interface/IFlowV6.sol";
 import {Flow} from "../../src/concrete/Flow.sol";
+import {StackItem} from "rain.interpreter.interface/interface/IInterpreterV4.sol";
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
 import {LibUint256Array} from "rain.solmem/lib/LibUint256Array.sol";
 
 abstract contract FlowTest is FlowTransferOperation, InterpreterMockTest {
     using LibLogHelper for Vm.Log[];
     using LibStackGeneration for uint256;
-    using Address for address;
     using LibUint256Matrix for uint256[];
     using LibUint256Array for uint256[];
 
@@ -31,19 +29,40 @@ abstract contract FlowTest is FlowTransferOperation, InterpreterMockTest {
         vm.resumeGasMetering();
     }
 
-    function expressionDeployer(address expression, uint256[] memory constants, bytes memory bytecode)
+    /// Reinterpret a `uint256[]` as `bytes32[]` (identical 32-byte layout) for
+    /// passing as V4 caller context.
+    function asBytes32(uint256[] memory a) internal pure returns (bytes32[] memory b) {
+        assembly ("memory-safe") {
+            b := a
+        }
+    }
+
+    /// Reinterpret a `uint256[]` stack as `StackItem[]` for V4 `stackToFlow`.
+    function asStackItems(uint256[] memory a) internal pure returns (StackItem[] memory b) {
+        assembly ("memory-safe") {
+            b := a
+        }
+    }
+
+    /// Build a mock V4 evaluable. There is no expression deployment in V4 — the
+    /// evaluable carries bytecode directly. The `expression`/`constants` params
+    /// are retained for call-site compatibility but unused (constants are
+    /// embedded in bytecode); `bytecode` is unique per flow so registered hashes
+    /// differ.
+    function expressionDeployer(address, uint256[] memory, bytes memory bytecode)
         internal
-        returns (EvaluableConfigV3 memory)
+        view
+        returns (EvaluableV4 memory)
     {
-        expressionDeployerDeployExpression2MockCall(bytecode, constants, expression, bytes(hex"00060001"));
-        return EvaluableConfigV3(DEPLOYER, bytecode, constants);
+        return EvaluableV4(INTERPRETER, STORE, bytecode);
     }
 
     function expressionDeployer(uint256 key, address expression, uint256[] memory constants)
         internal
-        returns (EvaluableConfigV3 memory)
+        view
+        returns (EvaluableV4 memory)
     {
-        return expressionDeployer(expression, constants, abi.encodePacked(vm.addr(key)));
+        return expressionDeployer(expression, constants, abi.encodePacked(expression));
     }
 
     function deployFlow(
@@ -53,11 +72,11 @@ abstract contract FlowTest is FlowTransferOperation, InterpreterMockTest {
         address[] memory expressions,
         address configExpression,
         uint256[][] memory constants
-    ) internal returns (address flow, EvaluableV2[] memory evaluables) {
+    ) internal returns (address flow, EvaluableV4[] memory evaluables) {
         require(expressions.length == constants.length, "Expressions and constants array lengths must match");
 
         {
-            EvaluableConfigV3[] memory flowConfig = new EvaluableConfigV3[](expressions.length);
+            EvaluableV4[] memory flowConfig = new EvaluableV4[](expressions.length);
 
             for (uint256 i = 0; i < expressions.length; i++) {
                 flowConfig[i] = expressionDeployer(i + 1, expressions[i], constants[i]);
@@ -71,32 +90,16 @@ abstract contract FlowTest is FlowTransferOperation, InterpreterMockTest {
 
         {
             Vm.Log[] memory logs = vm.getRecordedLogs();
-            logs = logs.findEvents(keccak256("FlowInitialized(address,(address,address,address))"));
-            evaluables = new EvaluableV2[](logs.length);
+            logs = logs.findEvents(keccak256("FlowInitialized(address,(address,address,bytes))"));
+            evaluables = new EvaluableV4[](logs.length);
             for (uint256 i = 0; i < logs.length; i++) {
-                (, EvaluableV2 memory evaluable) = abi.decode(logs[i].data, (address, EvaluableV2));
+                (, EvaluableV4 memory evaluable) = abi.decode(logs[i].data, (address, EvaluableV4));
                 evaluables[i] = evaluable;
             }
         }
     }
 
     function createMockBytecode() internal pure virtual returns (bytes memory) {
-        /*
-            Bytecode structure:
-            - First byte: 0x03 (sourceCount = 3)
-            - Next 2 bytes: 0x0002 (offset for sourceIndex = 0)
-            - Next 2 bytes: 0x0005 (offset for sourceIndex = 1)
-            - Next 2 bytes: 0x0008 (offset for sourceIndex = 2)
-            - Data for sourceIndex = 0:
-                - opsCount: 0x0A
-                - opcode: 0xAA
-            - Data for sourceIndex = 1:
-                - opsCount: 0x0B
-                - opcode: 0xBB
-            - Data for sourceIndex = 2:
-                - opsCount: 0x0C
-                - opcode: 0xCC
-        */
         return hex"030002000500080AAA0BBB0CCC";
     }
 
@@ -106,7 +109,6 @@ abstract contract FlowTest is FlowTransferOperation, InterpreterMockTest {
 
     function assumeEtchable(address account, address expression) internal view {
         assumeNotPrecompile(account);
-        vm.assume(account != address(DEPLOYER));
         vm.assume(account != address(INTERPRETER));
         vm.assume(account != address(STORE));
         vm.assume(account != address(I_CLONE_FACTORY));
@@ -114,7 +116,7 @@ abstract contract FlowTest is FlowTransferOperation, InterpreterMockTest {
         vm.assume(account != address(vm));
         vm.assume(Sentinel.unwrap(RAIN_FLOW_SENTINEL) != uint256(uint160(account)));
         vm.assume(account != address(expression));
-        vm.assume(!account.isContract());
+        vm.assume(account.code.length == 0);
         // The console.
         vm.assume(account != address(0x000000000000000000636F6e736F6c652e6c6f67));
     }
@@ -141,7 +143,7 @@ abstract contract FlowTest is FlowTransferOperation, InterpreterMockTest {
         return _buildFlowStack(transfer);
     }
 
-    function buildConfig(string memory, string memory, string memory, address, EvaluableConfigV3[] memory flowConfig)
+    function buildConfig(string memory, string memory, string memory, address, EvaluableV4[] memory flowConfig)
         internal
         pure
         returns (bytes memory)
@@ -153,19 +155,19 @@ abstract contract FlowTest is FlowTransferOperation, InterpreterMockTest {
         return address(new Flow());
     }
 
-    function deployFlow() internal returns (IFlowV5, EvaluableV2 memory) {
+    function deployFlow() internal returns (IFlowV6, EvaluableV4 memory) {
         address[] memory expressions = new address[](1);
         expressions[0] = address(uint160(uint256(keccak256("expression"))));
-        (IFlowV5 flow, EvaluableV2[] memory evaluables) =
+        (IFlowV6 flow, EvaluableV4[] memory evaluables) =
             deployFlow({expressions: expressions, constants: new uint256[](0).matrixFrom()});
         return (flow, evaluables[0]);
     }
 
     function deployFlow(address[] memory expressions, uint256[][] memory constants)
         internal
-        returns (IFlowV5, EvaluableV2[] memory)
+        returns (IFlowV6, EvaluableV4[] memory)
     {
-        (address flow, EvaluableV2[] memory evaluables) = deployFlow({
+        (address flow, EvaluableV4[] memory evaluables) = deployFlow({
             name: "",
             symbol: "",
             baseURI: "",
@@ -173,7 +175,7 @@ abstract contract FlowTest is FlowTransferOperation, InterpreterMockTest {
             configExpression: address(uint160(uint256(keccak256("configExpression")))),
             constants: constants
         });
-        return (IFlowV5(flow), evaluables);
+        return (IFlowV6(flow), evaluables);
     }
 
     function mintAndBurnFlowStack(address, uint256, uint256, uint256, FlowTransferV1 memory transfer)

@@ -5,12 +5,12 @@ pragma solidity =0.8.25;
 import {Vm} from "forge-std/Test.sol";
 
 import {FlowTest} from "test/abstract/FlowTest.sol";
-import {IFlowV5} from "../../../src/interface/IFlowV5.sol";
-import {EvaluableV2} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
-import {SignedContextV1} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
+import {IFlowV6} from "../../../src/interface/IFlowV6.sol";
+import {EvaluableV4} from "rain.interpreter.interface/lib/caller/LibEvaluable.sol";
+import {SignedContextV1} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV2.sol";
 import {LibUint256Matrix} from "rain.solmem/lib/LibUint256Matrix.sol";
 import {LibContextWrapper} from "test/lib/LibContextWrapper.sol";
-import {IInterpreterCallerV2} from "rain.interpreter.interface/interface/IInterpreterCallerV2.sol";
+import {IInterpreterCallerV2} from "rain.interpreter.interface/interface/deprecated/v1/IInterpreterCallerV2.sol";
 import {SignContextLib} from "test/lib/SignContextLib.sol";
 import {LibLogHelper} from "test/lib/LibLogHelper.sol";
 
@@ -32,10 +32,10 @@ contract FlowExpressionTest is FlowTest, IInterpreterCallerV2 {
 
         uint256[][] memory constants = new uint256[][](expressions.length);
 
-        (, EvaluableV2[] memory evaluables) = deployFlow(expressions, constants);
+        (, EvaluableV4[] memory evaluables) = deployFlow(expressions, constants);
 
         for (uint256 i = 0; i < evaluables.length; i++) {
-            assertEq(evaluables[i].expression, expressions[i]);
+            assertEq(evaluables[i].bytecode, abi.encodePacked(expressions[i]));
         }
     }
 
@@ -52,7 +52,7 @@ contract FlowExpressionTest is FlowTest, IInterpreterCallerV2 {
             fuzzedcallerContext1, fuzzedcallerContext0
         );
 
-        (IFlowV5 flow, EvaluableV2 memory evaluable) = deployFlow();
+        (IFlowV6 flow, EvaluableV4 memory evaluable) = deployFlow();
 
         SignedContextV1[] memory signedContext = new SignedContextV1[](matrixCallerContext.length);
         {
@@ -65,7 +65,7 @@ contract FlowExpressionTest is FlowTest, IInterpreterCallerV2 {
             interpreterEval2MockCall(stack, new uint256[](0));
 
             vm.recordLogs();
-            flow.flow(evaluable, fuzzedcallerContext0, signedContext);
+            flow.flow(evaluable, asBytes32(fuzzedcallerContext0), signedContext);
         }
 
         {
@@ -74,8 +74,8 @@ contract FlowExpressionTest is FlowTest, IInterpreterCallerV2 {
             );
 
             Vm.Log[] memory logs = vm.getRecordedLogs();
-            Vm.Log memory log = LibLogHelper.findEvent(logs, keccak256("Context(address,uint256[][])"));
-            (address sender, uint256[][] memory buildContextOutput) = abi.decode(log.data, (address, uint256[][]));
+            Vm.Log memory log = LibLogHelper.findEvent(logs, keccak256("ContextV2(address,bytes32[][])"));
+            (address sender, bytes32[][] memory buildContextOutput) = abi.decode(log.data, (address, bytes32[][]));
 
             assertEq(sender, address(this), "wrong sender");
             assertEq(
