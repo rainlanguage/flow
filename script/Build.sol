@@ -8,11 +8,11 @@ import {LibCodeGen} from "rain-sol-codegen-0.1.0/src/lib/LibCodeGen.sol";
 import {LibFs} from "rain-sol-codegen-0.1.0/src/lib/LibFs.sol";
 import {Flow} from "../src/concrete/Flow.sol";
 
-/// @title BuildPointers
+/// @title Build
 /// @notice Deploys the Flow implementation via the Zoltu factory in a local
 /// environment and generates `Flow.pointers.sol` with the deterministic deploy
 /// address and bytecode hash.
-contract BuildPointers is Script {
+contract Build is Script {
     function addressConstantString(address addr) internal pure returns (string memory) {
         return string.concat(
             "\n",
